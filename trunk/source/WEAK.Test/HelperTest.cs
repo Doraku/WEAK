@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace WEAK.Test
 {
@@ -37,16 +38,49 @@ namespace WEAK.Test
         #region Methods
 
         [TestMethod]
-        public void GetMemberNameTest()
+        public void GetMemberNameTestVariable()
         {
             object arg = null;
 
             Assert.AreEqual(Helper.GetMemberName(() => arg), "arg");
+        }
 
+        [TestMethod]
+        public void GetMemberNameTestField()
+        {
             Dummy dummy = new Dummy();
 
             Assert.AreEqual(Helper.GetMemberName(() => dummy.Field), "Field");
+        }
+
+        [TestMethod]
+        public void GetMemberNameTestProperty()
+        {
+            Dummy dummy = new Dummy();
+
             Assert.AreEqual(Helper.GetMemberName(() => dummy.Property), "Property");
+        }
+
+        [TestMethod]
+        public void GetMemberNameTestNull()
+        {
+            try
+            {
+                Helper.GetMemberName<string>(null);
+                Assert.Fail("Did not raise ArgumentNullException.");
+            }
+            catch (ArgumentNullException) { }
+        }
+
+        [TestMethod]
+        public void GetMemberNameTestNotMemberExpression()
+        {
+            try
+            {
+                Helper.GetMemberName<Action>(() => GetMemberNameTestNotMemberExpression);
+                Assert.Fail("Did not raise ArgumentException.");
+            }
+            catch (ArgumentException) { }
         }
 
         #endregion

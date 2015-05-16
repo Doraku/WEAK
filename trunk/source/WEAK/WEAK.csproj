@@ -47,6 +47,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs">
@@ -57,6 +60,7 @@
     <Compile Include="Communication\IRequest.cs" />
     <Compile Include="Communication\RequestPublishingMode.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Serialization\DataContractOperation.cs" />
     <Compile Include="Supervision\Factory.cs" />
     <Compile Include="Supervision\ReferenceManager.cs" />
     <Compile Include="Supervision\Linker.cs" />

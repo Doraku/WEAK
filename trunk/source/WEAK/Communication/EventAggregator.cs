@@ -8,6 +8,14 @@ using System.Threading.Tasks;
 
 namespace WEAK.Communication
 {
+    /// <summary>
+    /// Provides a base implementation of the IPublisher interface
+    /// using a SynchronizationContext for the Context RequestPublishingMode,
+    /// Task for Asynch RequestPublishingMode
+    /// and Task with LongRunning for LongRunning RequestPublishingMode.
+    /// Disposing an instance of EventAggregator will clear all its subscriptions 
+    /// but it will not stop running asynchrone tasks.
+    /// </summary>
     public sealed class EventAggregator : IPublisher, IDisposable
     {
         #region Types
@@ -41,7 +49,14 @@ namespace WEAK.Communication
 
             public static void Subscribe(int id, Action<object> action)
             {
-                Actions[id] += action;
+                Action<object> temp = Actions[id];
+                if (temp != null && temp != action
+                    && !temp.GetInvocationList().Contains(action))
+                {
+                    action = (Action<object>)Delegate.Combine(temp, action);
+                }
+
+                Actions[id] = action;
             }
 
             public static void Unsubscribe(int id, Action<object> action)
@@ -96,6 +111,11 @@ namespace WEAK.Communication
             _relayTypes[typeof(IRequest)].AddLast(typeof(IRequest));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the WEAK.Communication.EventAggregator class.
+        /// </summary>
+        /// <param name="context">The SynchronizationContext to use for Context RequestPublishingMode.</param>
+        /// <exception cref="ArgumentNullException">context is null.</exception>
         public EventAggregator(SynchronizationContext context)
         {
             if (context == null)
@@ -117,6 +137,10 @@ namespace WEAK.Communication
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the WEAK.Communication.EventAggregator class
+        /// with the current SynchronizationContext or create one if null.
+        /// </summary>
         public EventAggregator()
             : this(SynchronizationContext.Current ?? new SynchronizationContext())
         { }
@@ -352,36 +376,36 @@ namespace WEAK.Communication
             }
         }
 
-        void IPublisher.Publish<T>(T arg)
+        void IPublisher.Publish<T>(T request)
         {
             if (_isDisposed)
             {
                 throw new ObjectDisposedException("Resource was disposed.");
             }
-            if (arg == null)
+            if (request == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => arg));
+                throw new ArgumentNullException(Helper.GetMemberName(() => request));
             }
 
             Action<object> action = Publisher<T>.Actions[_id];
             if (action != null)
             {
-                switch (arg.PulishingMode)
+                switch (request.PulishingMode)
                 {
-                    case RequestPublishingMode.Async:
-                        Task.Factory.StartNew(action, arg);
+                    case RequestPublishingMode.Direct:
+                        action(request);
                         break;
 
-                    case RequestPublishingMode.Direct:
-                        action(arg);
+                    case RequestPublishingMode.Async:
+                        Task.Factory.StartNew(action, request);
                         break;
 
                     case RequestPublishingMode.Context:
-                        _context.Send(new SendOrPostCallback(action), arg);
+                        _context.Send(new SendOrPostCallback(action), request);
                         break;
 
                     case RequestPublishingMode.LongRunning:
-                        Task.Factory.StartNew(action, arg, TaskCreationOptions.LongRunning);
+                        Task.Factory.StartNew(action, request, TaskCreationOptions.LongRunning);
                         break;
                 }
             }

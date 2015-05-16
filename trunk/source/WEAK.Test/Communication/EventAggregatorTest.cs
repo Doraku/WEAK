@@ -21,6 +21,54 @@ namespace WEAK.Test.Communication
             #endregion
         }
 
+        private class Request2 : IRequest
+        {
+            #region IRequest
+
+            public RequestPublishingMode PulishingMode
+            {
+                get { return RequestPublishingMode.Direct; }
+            }
+
+            #endregion
+        }
+
+        private class Request3 : IRequest
+        {
+            #region IRequest
+
+            public RequestPublishingMode PulishingMode
+            {
+                get { return RequestPublishingMode.Direct; }
+            }
+
+            #endregion
+        }
+
+        private class Request4 : IRequest
+        {
+            #region IRequest
+
+            public RequestPublishingMode PulishingMode
+            {
+                get { return RequestPublishingMode.Direct; }
+            }
+
+            #endregion
+        }
+
+        private class Request5 : IRequest
+        {
+            #region IRequest
+
+            public RequestPublishingMode PulishingMode
+            {
+                get { return RequestPublishingMode.Direct; }
+            }
+
+            #endregion
+        }
+
         private class Dummy
         {
             #region Fields
@@ -30,6 +78,33 @@ namespace WEAK.Test.Communication
             #endregion
 
             #region Methods
+
+            [AutoHookUp]
+            private void PrivateStaticHook(Request3 request)
+            {
+                Action();
+            }
+
+            [AutoHookUp]
+            private void PrivateHook(Request2 request)
+            {
+                Action();
+            }
+
+            [AutoHookUp]
+            protected virtual void ProtectedHook2(Request4 request)
+            { }
+
+            [AutoHookUp]
+            protected virtual void ProtectedHook3(Request5 request)
+            {
+                Action();
+            }
+
+            protected virtual void ProtectedHook(Request request)
+            {
+                Action();
+            }
 
             public void On(Request request)
             {
@@ -41,8 +116,31 @@ namespace WEAK.Test.Communication
                 Action();
             }
 
+            public static void OnStatic(Request request)
+            {
+                Action();
+            }
+
+            #endregion
+        }
+
+        private class Dummy2 : Dummy
+        {
+            #region Dummy
+
             [AutoHookUp]
-            private void PrivateHook(IRequest request)
+            protected override void ProtectedHook(Request request)
+            {
+                base.ProtectedHook(request);
+            }
+
+            [AutoHookUp]
+            protected virtual void ProtectedHook3(Request5 request)
+            {
+                Action();
+            }
+
+            protected override void ProtectedHook2(Request4 request)
             {
                 Action();
             }
@@ -55,141 +153,436 @@ namespace WEAK.Test.Communication
         #region Methods
 
         [TestMethod]
-        public void PublishTest()
+        public void SubscribeTestNull()
         {
             IPublisher publisher = new EventAggregator();
 
+            try
+            {
+                publisher.Subscribe<IRequest>(null);
+                Assert.Fail("Did not raise ArgumentNullException.");
+            }
+            catch (ArgumentNullException) { }
+            finally
+            {
+                publisher.Dispose();
+            }
+        }
+
+        [TestMethod]
+        public void SubscribeTestDispose()
+        {
+            IPublisher publisher = new EventAggregator();
+            publisher.Dispose();
+
+            try
+            {
+                publisher.Subscribe<IRequest>(null);
+                Assert.Fail("Did not raise ObjectDisposedException.");
+            }
+            catch (ObjectDisposedException) { }
+        }
+
+        [TestMethod]
+        public void UnsubscribeTestNull()
+        {
+            IPublisher publisher = new EventAggregator();
+
+            try
+            {
+                publisher.Unsubscribe<IRequest>(null);
+                Assert.Fail("Did not raise ArgumentNullException.");
+            }
+            catch (ArgumentNullException) { }
+            finally
+            {
+                publisher.Dispose();
+            }
+        }
+
+        [TestMethod]
+        public void UnsubscribeTestDispose()
+        {
+            IPublisher publisher = new EventAggregator();
+            publisher.Dispose();
+
+            try
+            {
+                publisher.Unsubscribe<IRequest>(null);
+                Assert.Fail("Did not raise ObjectDisposedException.");
+            }
+            catch (ObjectDisposedException) { }
+        }
+
+        [TestMethod]
+        public void PublishTestNull()
+        {
+            IPublisher publisher = new EventAggregator();
+
+            try
+            {
+                publisher.Publish<IRequest>(null);
+                Assert.Fail("Did not raise ArgumentNullException.");
+            }
+            catch (ArgumentNullException) { }
+            finally
+            {
+                publisher.Dispose();
+            }
+        }
+
+        [TestMethod]
+        public void PublishTestDispose()
+        {
+            IPublisher publisher = new EventAggregator();
+            publisher.Dispose();
+
+            try
+            {
+                publisher.Publish<IRequest>(null);
+                Assert.Fail("Did not raise ObjectDisposedException.");
+            }
+            catch (ObjectDisposedException) { }
+        }
+
+        [TestMethod]
+        public void SubscribeTestReference()
+        {
+            IPublisher publisher = new EventAggregator();
             bool done = false;
             Dummy dummy = new Dummy();
             Dummy.Action = () => done = true;
             WeakReference reference = new WeakReference(dummy);
-
-            publisher.Subscribe<IRequest>(dummy.On);
-
-            publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
-
-            Assert.IsTrue(done);
-
-            done = false;
-
-            publisher.Unsubscribe<IRequest>(dummy.On);
-
-            publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
-
-            Assert.IsFalse(done);
-
-            done = false;
-            publisher.HookUp(dummy);
-
-            publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
-
-            Assert.IsTrue(done);
-
-            done = false;
-            publisher.UnHookUp(dummy);
-
-            publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
-
-            Assert.IsTrue(!done);
+            Request request = new Request { PulishingMode = RequestPublishingMode.Direct };
 
             publisher.Subscribe<Request>(dummy.On);
 
-            publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+            publisher.Publish(request);
 
-            Assert.IsTrue(done);
+            Assert.IsTrue(done, "Method haven't executed.");
 
             done = false;
+
             dummy = null;
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
-            Assert.IsFalse(reference.IsAlive);
+            Assert.IsFalse(reference.IsAlive, "Instance is still alive.");
 
-            publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+            publisher.Publish(request);
 
-            Assert.IsFalse(done);
+            Assert.IsFalse(done, "Mathod have executed.");
 
             publisher.Dispose();
         }
 
         [TestMethod]
-        public void PerformanceDirect()
+        public void PublishTestDirect()
         {
             using (IPublisher publisher = new EventAggregator())
             {
-                int total = 1000000;
-                int i = 0;
+                bool done = false;
                 Dummy dummy = new Dummy();
-                Dummy.Action = () => ++i;
+                Dummy.Action = () => done = true;
 
-                publisher.Subscribe<IRequest>(dummy.On);
+                publisher.Subscribe<Request>(dummy.On);
 
-                Request request = new Request { PulishingMode = RequestPublishingMode.Direct };
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
 
-                Stopwatch watch = Stopwatch.StartNew();
-
-                while (i < total)
-                {
-                    publisher.Publish(request);
-                }
-                watch.Stop();
-                long pubTime = watch.ElapsedMilliseconds;
-
-                i = 0;
-                watch.Restart();
-
-                while (i < total)
-                {
-                    dummy.On(request);
-                }
-                watch.Stop();
-
-                double ratio = (double)pubTime / (double)watch.ElapsedMilliseconds;
-
-                Assert.IsTrue(ratio < 15, string.Format("shit is too slow, ratio is {0}", ratio));
+                Assert.IsTrue(done, "Method haven't executed.");
             }
         }
 
         [TestMethod]
-        public void PerformanceContext()
+        public void PublishTestAsync()
         {
-            int total = 1000000;
+            using (IPublisher publisher = new EventAggregator())
+            using (ManualResetEvent handle = new ManualResetEvent(false))
+            {
+                Dummy dummy = new Dummy();
+                Dummy.Action = () => handle.Set();
+
+                publisher.Subscribe<Request>(dummy.On);
+
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Async });
+
+                Assert.IsTrue(handle.WaitOne(1000), "Method haven't executed.");
+            }
+        }
+
+        [TestMethod]
+        public void PublishTestLongRunning()
+        {
+            using (IPublisher publisher = new EventAggregator())
+            using (ManualResetEvent handle = new ManualResetEvent(false))
+            {
+                Dummy dummy = new Dummy();
+                Dummy.Action = () => handle.Set();
+
+                publisher.Subscribe<Request>(dummy.On);
+
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.LongRunning });
+
+                Assert.IsTrue(handle.WaitOne(1000), "Method haven't executed.");
+            }
+        }
+
+        [TestMethod]
+        public void PublishTestContextSame()
+        {
+            using (IPublisher publisher = new EventAggregator())
+            using (ManualResetEvent handle = new ManualResetEvent(false))
+            {
+                Dummy dummy = new Dummy();
+                Dummy.Action = () => handle.Set();
+
+                publisher.Subscribe<Request>(dummy.On);
+
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Context });
+
+                Assert.IsTrue(handle.WaitOne(1000), "Method haven't executed.");
+            }
+        }
+
+        [TestMethod]
+        public void PublishTestContextDifferent()
+        {
+            using (IPublisher publisher = new EventAggregator())
+            using (ManualResetEvent handle = new ManualResetEvent(false))
+            {
+                Assert.IsTrue(Task.Factory.StartNew(() =>
+                {
+                    Dummy dummy = new Dummy();
+                    Dummy.Action = () => handle.Set();
+
+                    publisher.Subscribe<Request>(dummy.On);
+
+                    publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Context });
+
+                    Assert.IsTrue(handle.WaitOne(1000), "Method haven't executed.");
+                }).Wait(1000), "Task haven't finished.");
+            }
+        }
+
+        [TestMethod]
+        public void PublishTestDerived()
+        {
+            using (IPublisher publisher = new EventAggregator())
+            {
+                bool done = false;
+                Dummy dummy = new Dummy();
+                Dummy.Action = () => done = true;
+
+                publisher.Subscribe<IRequest>(dummy.On);
+
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+
+                Assert.IsTrue(done, "Method haven't executed.");
+
+                done = false;
+
+                publisher.Publish(new Request2());
+
+                Assert.IsTrue(done, "Method haven't executed.");
+
+                done = false;
+
+                publisher.Publish(new Request3());
+
+                Assert.IsTrue(done, "Method haven't executed.");
+            }
+        }
+
+        [TestMethod]
+        public void PublishTestBase()
+        {
+            using (IPublisher publisher = new EventAggregator())
+            {
+                bool done = false;
+                Dummy dummy = new Dummy();
+                Dummy.Action = () => done = true;
+
+                publisher.Subscribe<Request>(dummy.On);
+
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct } as IRequest);
+
+                Assert.IsFalse(done, "Method have executed.");
+            }
+        }
+
+        [TestMethod]
+        public void UnsubscribeTestInstance()
+        {
+            using (IPublisher publisher = new EventAggregator())
+            {
+                bool done = false;
+                Dummy dummy = new Dummy();
+                Dummy.Action = () => done = true;
+
+                publisher.Subscribe<Request>(dummy.On);
+
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+
+                Assert.IsTrue(done, "Method haven't executed.");
+
+                publisher.Unsubscribe<Request>(dummy.On);
+                done = false;
+
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+
+                Assert.IsFalse(done, "Method have executed.");
+            }
+        }
+
+        [TestMethod]
+        public void UnsubscribeTestStatic()
+        {
+            using (IPublisher publisher = new EventAggregator())
+            {
+                bool done = false;
+                Dummy.Action = () => done = true;
+
+                publisher.Subscribe<Request>(Dummy.OnStatic);
+
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+
+                Assert.IsTrue(done, "Method haven't executed.");
+
+                publisher.Unsubscribe<Request>(Dummy.OnStatic);
+                done = false;
+
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+
+                Assert.IsFalse(done, "Method have executed.");
+            }
+        }
+
+        [TestMethod]
+        public void HookUpTest()
+        {
+            using (IPublisher publisher = new EventAggregator())
+            {
+                bool done = false;
+                Dummy.Action = () => done = true;
+                Dummy dummy = new Dummy2();
+
+                publisher.HookUp(dummy);
+
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+
+                Assert.IsTrue(done, "Method haven't executed.");
+
+                done = false;
+
+                publisher.Publish(new Request2());
+
+                Assert.IsTrue(done, "Method haven't executed.");
+
+                done = false;
+
+                publisher.Publish(new Request3());
+
+                Assert.IsTrue(done, "Method haven't executed.");
+
+                done = false;
+
+                publisher.Publish(new Request4());
+
+                Assert.IsTrue(done, "Method haven't executed.");
+
+                done = false;
+                int i = 0;
+                Dummy.Action = () => ++i;
+
+                publisher.Publish(new Request5());
+
+                Assert.AreEqual(i, 1, "Method have executed more than once.");
+
+                done = false;
+                Dummy.Action = () => done = true;
+
+                publisher.UnHookUp(dummy);
+
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+
+                Assert.IsFalse(done, "Method have executed.");
+
+                publisher.Publish(new Request2());
+
+                Assert.IsFalse(done, "Method have executed.");
+
+                publisher.Publish(new Request3());
+
+                Assert.IsFalse(done, "Method have executed.");
+
+                publisher.Publish(new Request4());
+
+                Assert.IsFalse(done, "Method have executed.");
+
+                publisher.Publish(new Request5());
+
+                Assert.IsFalse(done, "Method have executed.");
+            }
+        }
+
+        [TestMethod]
+        public void SubscribeTestOnce()
+        {
             using (IPublisher publisher = new EventAggregator())
             {
                 int i = 0;
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => ++i;
 
-                publisher.Subscribe<IRequest>(dummy.On);
+                publisher.Subscribe<Request>(dummy.On);
+                publisher.Subscribe<Request>(dummy.On);
 
-                Request request = new Request { PulishingMode = RequestPublishingMode.Context };
+                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
 
-                Stopwatch watch = Stopwatch.StartNew();
-
-                while (i < total)
-                {
-                    publisher.Publish(request);
-                }
-                watch.Stop();
-                long pubTime = watch.ElapsedMilliseconds;
-
-                i = 0;
-                watch.Restart();
-
-                while (i < total)
-                {
-                    dummy.On(request);
-                }
-                watch.Stop();
-
-                double ratio = (double)pubTime / (double)watch.ElapsedMilliseconds;
-
-                Assert.IsTrue(ratio < 15, string.Format("shit is too slow, ratio is {0}", ratio));
+                Assert.AreEqual(i, 1, "Method haven't executed only once.");
             }
         }
 
         [TestMethod]
-        public void PerformanceAsync()
+        public void PublishTestDirectPerf()
+        {
+             using (IPublisher publisher = new EventAggregator())
+             {
+                 int total = 1000000;
+                 int i = 0;
+                 Dummy dummy = new Dummy();
+                 Dummy.Action = () => ++i;
+
+                 publisher.Subscribe<IRequest>(dummy.On);
+
+                 Request request = new Request { PulishingMode = RequestPublishingMode.Direct };
+
+                 Stopwatch watch = Stopwatch.StartNew();
+
+                 while (i < total)
+                 {
+                     publisher.Publish(request);
+                 }
+                 watch.Stop();
+                 long pubTime = watch.ElapsedMilliseconds;
+
+                 i = 0;
+                 watch.Restart();
+
+                 while (i < total)
+                 {
+                     dummy.On(request);
+                 }
+                 watch.Stop();
+
+                 double ratio = (double)pubTime / (double)watch.ElapsedMilliseconds;
+
+                 Assert.Fail(string.Format("Ratio is {0}", ratio));
+             }
+        }
+
+        [TestMethod]
+        public void PublishTestAsyncPerf()
         {
             int total = 1000000;
             using (IPublisher publisher = new EventAggregator())
@@ -225,7 +618,7 @@ namespace WEAK.Test.Communication
 
                 double ratio = (double)pubTime / (double)watch.ElapsedMilliseconds;
 
-                Assert.IsTrue(ratio < 1.5, string.Format("shit is too slow, ratio is {0}", ratio));
+                Assert.Fail(string.Format("Ratio is {0}", ratio));
             }
         }
 
