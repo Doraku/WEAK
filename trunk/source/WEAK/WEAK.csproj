@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EB8D6B7E-6016-40C6-B914-9ADE34A1F094}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WEAK</RootNamespace>
+    <AssemblyName>WEAK</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\WEAK.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Communication\AutoHookUpAttribute.cs" />
+    <Compile Include="Communication\IPublisherExtension.cs" />
+    <Compile Include="Communication\IRequest.cs" />
+    <Compile Include="Communication\RequestPublishingMode.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="Supervision\Factory.cs" />
+    <Compile Include="Supervision\ReferenceManager.cs" />
+    <Compile Include="Supervision\Linker.cs" />
+    <Compile Include="Communication\EventAggregator.cs" />
+    <Compile Include="Communication\IPublisher.cs" />
+    <Compile Include="DelegateExtension.cs" />
+    <Compile Include="Supervision\Singleton.cs" />
+    <Compile Include="Ui\CollectionUnDo.cs" />
+    <Compile Include="Ui\DictionaryUnDo.cs" />
+    <Compile Include="Ui\GroupUnDo.cs" />
+    <Compile Include="Ui\ICollectionExtension.cs" />
+    <Compile Include="Ui\IDictionaryExtension.cs" />
+    <Compile Include="Ui\IListExtension.cs" />
+    <Compile Include="Ui\IUnDo.cs" />
+    <Compile Include="Ui\ListUnDo.cs" />
+    <Compile Include="Ui\UnDoManager.cs" />
+    <Compile Include="Ui\UnDoManagerExtension.cs" />
+    <Compile Include="Ui\ValueUnDo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
