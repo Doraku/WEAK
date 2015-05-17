@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WEAK.Ui
+namespace WEAK.Input
 {
     public class ValueUnDo<T> : IUnDo
     {
@@ -30,14 +30,14 @@ namespace WEAK.Ui
 
         #region IUnDo
 
-        void IUnDo.Undo()
-        {
-            _setter(_oldValue);
-        }
-
         void IUnDo.Do()
         {
             _setter(_newValue);
+        }
+
+        void IUnDo.Undo()
+        {
+            _setter(_oldValue);
         }
 
         #endregion

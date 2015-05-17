@@ -1,8 +1,8 @@
-﻿namespace WEAK.Ui
+﻿namespace WEAK.Input
 {
     public interface IUnDo
     {
-        void Undo();
         void Do();
+        void Undo();
     }
 }

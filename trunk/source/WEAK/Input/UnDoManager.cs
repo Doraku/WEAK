@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WEAK.Ui
+namespace WEAK.Input
 {
     public sealed class UnDoManager
     {

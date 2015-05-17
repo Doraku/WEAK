@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace WEAK.Ui
+namespace WEAK.Input
 {
     public static class UnDoManagerExtension
     {
@@ -10,8 +10,7 @@ namespace WEAK.Ui
 
         public static void Do<T>(this UnDoManager manager, Action<T> setter, T oldValue, T newValue)
         {
-            if ((!ReferenceEquals(oldValue, null) && !oldValue.Equals(newValue))
-                || (!ReferenceEquals(newValue, null) && !newValue.Equals(oldValue)))
+            if (!Equals(oldValue, newValue))
             {
                 manager.Do(new ValueUnDo<T>(setter, oldValue, newValue));
             }

@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace WEAK.Ui
+namespace WEAK.Input
 {
-    public class ListUnDo<T> : IUnDo
+    public sealed class DictionaryUnDo<TKey, TValue> : IUnDo
     {
         #region Fields
 
-        private readonly IList<T> _source;
-        private readonly int _index;
-        private readonly T _element;
+        private readonly IDictionary<TKey, TValue> _source;
+        private readonly TKey _key;
+        private readonly TValue _element;
         private readonly bool _isAdd;
 
         #endregion
 
         #region Initialisation
 
-        public ListUnDo(IList<T> source, int index, T element, bool isAdd)
+        public DictionaryUnDo(IDictionary<TKey, TValue> source, TKey key, TValue element, bool isAdd)
         {
             _source = source;
-            _index = index;
+            _key = key;
             _element = element;
             _isAdd = isAdd;
         }
@@ -32,11 +31,11 @@ namespace WEAK.Ui
         {
             if (isAdd)
             {
-                _source.Insert(_index, _element);
+                _source.Add(_key, _element);
             }
             else
             {
-                _source.RemoveAt(_index);
+                _source.Remove(_key);
             }
         }
 
@@ -44,14 +43,14 @@ namespace WEAK.Ui
 
         #region IUnDo
 
-        void IUnDo.Undo()
-        {
-            Action(!_isAdd);
-        }
-
         void IUnDo.Do()
         {
             Action(_isAdd);
+        }
+
+        void IUnDo.Undo()
+        {
+            Action(!_isAdd);
         }
 
         #endregion

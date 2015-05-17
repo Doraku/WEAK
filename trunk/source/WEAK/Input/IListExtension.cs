@@ -4,27 +4,58 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace WEAK.Ui
+namespace WEAK.Input
 {
-    public static class ICollectionExtension
+    public static class IListExtension
     {
         #region Types
 
-        private class UnDoCollection<T> : ICollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
+        private class UnDoList<T> : IList<T>, INotifyCollectionChanged, INotifyPropertyChanged
         {
             #region Fields
 
             private readonly UnDoManager _manager;
-            private readonly ICollection<T> _source;
+            private readonly IList<T> _source;
 
             #endregion
 
             #region Initialisation
 
-            public UnDoCollection(UnDoManager manager, ICollection<T> source)
+            public UnDoList(UnDoManager manager, IList<T> source)
             {
                 _manager = manager;
                 _source = source;
+            }
+
+            #endregion
+
+            #region IList
+
+            int IList<T>.IndexOf(T item)
+            {
+                return _source.IndexOf(item);
+            }
+
+            void IList<T>.Insert(int index, T item)
+            {
+                _manager.DoInsert(_source, index, item);
+            }
+
+            void IList<T>.RemoveAt(int index)
+            {
+                _manager.DoRemoveAt(_source, index);
+            }
+
+            T IList<T>.this[int index]
+            {
+                get
+                {
+                    return _source[index];
+                }
+                set
+                {
+                    _manager.Do(_source, index, value);
+                }
             }
 
             #endregion
@@ -131,7 +162,7 @@ namespace WEAK.Ui
 
         #region Methods
 
-        public static ICollection<T> ToUnDo<T>(this ICollection<T> source, UnDoManager manager)
+        public static IList<T> ToUnDo<T>(this IList<T> source, UnDoManager manager)
         {
             if (source == null)
             {
@@ -142,7 +173,7 @@ namespace WEAK.Ui
                 throw new ArgumentNullException(Helper.GetMemberName(() => manager));
             }
 
-            return new UnDoCollection<T>(manager, source);
+            return new UnDoList<T>(manager, source);
         }
 
         #endregion

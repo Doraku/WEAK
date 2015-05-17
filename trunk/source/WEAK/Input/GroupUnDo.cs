@@ -1,4 +1,4 @@
-﻿namespace WEAK.Ui
+﻿namespace WEAK.Input
 {
     public class GroupUnDo : IUnDo
     {
@@ -19,19 +19,19 @@
 
         #region IUnDo
 
-        void IUnDo.Undo()
-        {
-            for (int i = _commands.Length - 1; i >= 0; --i)
-            {
-                _commands[i].Undo();
-            }
-        }
-
         void IUnDo.Do()
         {
             foreach (IUnDo command in _commands)
             {
                 command.Do();
+            }
+        }
+
+        void IUnDo.Undo()
+        {
+            for (int i = _commands.Length - 1; i >= 0; --i)
+            {
+                _commands[i].Undo();
             }
         }
 

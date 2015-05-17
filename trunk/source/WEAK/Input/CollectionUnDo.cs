@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WEAK.Ui
+namespace WEAK.Input
 {
     public sealed class CollectionUnDo<T> : IUnDo
     {

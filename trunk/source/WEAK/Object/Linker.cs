@@ -144,6 +144,7 @@ namespace WEAK.Object
         /// or the type has not been mapped yet
         /// or the concrete type does not have a suitable constructor
         /// or a cyclic reference has been detected.</exception>
+        /// <exception cref="System.ArgumentException">key is null or empty.</exception>
         public static T Resolve(string key)
         {
             if (!typeof(T).IsInterface
@@ -155,15 +156,14 @@ namespace WEAK.Object
             {
                 throw new InvalidOperationException(string.Format("Type \"{0}\" is not yet mapped", typeof(T)));
             }
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException("Cannot be null or empty.", Helper.GetMemberName(() => key));
+            }
 
             if (_isSingleton)
             {
                 return _singleton.Value;
-            }
-
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new ArgumentException("Cannot be null or empty.", Helper.GetMemberName(() => key));
             }
 
             return (T)_referencesMethod.Invoke(null, new object[] { key });

@@ -4,24 +4,24 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace WEAK.Ui
+namespace WEAK.Input
 {
-    public static class IListExtension
+    public static class IDictionaryExtension
     {
         #region Types
 
-        private class UnDoList<T> : IList<T>, INotifyCollectionChanged, INotifyPropertyChanged
+        private class UnDoDictionary<TKey, TValue> : IDictionary<TKey, TValue>, INotifyCollectionChanged, INotifyPropertyChanged
         {
             #region Fields
 
             private readonly UnDoManager _manager;
-            private readonly IList<T> _source;
+            private readonly IDictionary<TKey, TValue> _source;
 
             #endregion
 
             #region Initialisation
 
-            public UnDoList(UnDoManager manager, IList<T> source)
+            public UnDoDictionary(UnDoManager manager, IDictionary<TKey, TValue> source)
             {
                 _manager = manager;
                 _source = source;
@@ -29,79 +29,94 @@ namespace WEAK.Ui
 
             #endregion
 
-            #region IList
+            #region IDictionary
 
-            int IList<T>.IndexOf(T item)
+            void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
             {
-                return _source.IndexOf(item);
+                _manager.DoAdd(_source, key, value);
             }
 
-            void IList<T>.Insert(int index, T item)
+            bool IDictionary<TKey, TValue>.ContainsKey(TKey key)
             {
-                _manager.DoInsert(_source, index, item);
+                return _source.ContainsKey(key);
             }
 
-            void IList<T>.RemoveAt(int index)
+            bool IDictionary<TKey, TValue>.Remove(TKey key)
             {
-                _manager.DoRemoveAt(_source, index);
+                return _manager.DoRemove(_source, key);
             }
 
-            T IList<T>.this[int index]
+            bool IDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)
+            {
+                return _source.TryGetValue(key, out value);
+            }
+
+            TValue IDictionary<TKey, TValue>.this[TKey key]
             {
                 get
                 {
-                    return _source[index];
+                    return _source[key];
                 }
                 set
                 {
-                    _manager.Do(_source, index, value);
+                    _manager.Do(_source, key, value);
                 }
+            }
+
+            ICollection<TKey> IDictionary<TKey, TValue>.Keys
+            {
+                get { return _source.Keys; }
+            }
+
+            ICollection<TValue> IDictionary<TKey, TValue>.Values
+            {
+                get { return _source.Values; }
             }
 
             #endregion
 
             #region ICollection
 
-            void ICollection<T>.Add(T item)
+            void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
             {
-                _manager.DoAdd(_source, item);
+                _manager.DoAdd(_source, item.Key, item.Value);
             }
 
-            void ICollection<T>.Clear()
+            void ICollection<KeyValuePair<TKey, TValue>>.Clear()
             {
                 _manager.DoClear(_source);
             }
 
-            bool ICollection<T>.Contains(T item)
+            bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
             {
                 return _source.Contains(item);
             }
 
-            void ICollection<T>.CopyTo(T[] array, int arrayIndex)
+            void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
             {
                 _source.CopyTo(array, arrayIndex);
             }
 
-            int ICollection<T>.Count
+            int ICollection<KeyValuePair<TKey, TValue>>.Count
             {
                 get { return _source.Count; }
             }
 
-            bool ICollection<T>.IsReadOnly
+            bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
             {
                 get { return _source.IsReadOnly; }
             }
 
-            bool ICollection<T>.Remove(T item)
+            bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
             {
-                return _manager.DoRemove(_source, item);
+                return _manager.DoRemove(_source, item.Key);
             }
 
             #endregion
 
             #region IEnumerator
 
-            IEnumerator<T> IEnumerable<T>.GetEnumerator()
+            IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
             {
                 return _source.GetEnumerator();
             }
@@ -162,7 +177,7 @@ namespace WEAK.Ui
 
         #region Methods
 
-        public static IList<T> ToUnDo<T>(this IList<T> source, UnDoManager manager)
+        public static IDictionary<TKey, TValue> ToUnDo<TKey, TValue>(this IDictionary<TKey, TValue> source, UnDoManager manager)
         {
             if (source == null)
             {
@@ -173,7 +188,7 @@ namespace WEAK.Ui
                 throw new ArgumentNullException(Helper.GetMemberName(() => manager));
             }
 
-            return new UnDoList<T>(manager, source);
+            return new UnDoDictionary<TKey, TValue>(manager, source);
         }
 
         #endregion
