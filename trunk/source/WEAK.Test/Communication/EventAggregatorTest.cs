@@ -546,39 +546,41 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void PublishTestDirectPerf()
         {
-             using (IPublisher publisher = new EventAggregator())
-             {
-                 int total = 1000000;
-                 int i = 0;
-                 Dummy dummy = new Dummy();
-                 Dummy.Action = () => ++i;
+            using (IPublisher publisher = new EventAggregator())
+            {
+                int total = 1000000;
+                int i = 0;
+                Dummy dummy = new Dummy();
+                Dummy.Action = () => ++i;
 
-                 publisher.Subscribe<IRequest>(dummy.On);
+                publisher.Subscribe<IRequest>(dummy.On);
 
-                 Request request = new Request { PulishingMode = RequestPublishingMode.Direct };
+                Request request = new Request { PulishingMode = RequestPublishingMode.Direct };
 
-                 Stopwatch watch = Stopwatch.StartNew();
+                Stopwatch watch = Stopwatch.StartNew();
 
-                 while (i < total)
-                 {
-                     publisher.Publish(request);
-                 }
-                 watch.Stop();
-                 long pubTime = watch.ElapsedMilliseconds;
+                while (i < total)
+                {
+                    publisher.Publish(request);
+                }
+                watch.Stop();
+                long pubTime = watch.ElapsedMilliseconds;
 
-                 i = 0;
-                 watch.Restart();
+                i = 0;
+                watch.Restart();
 
-                 while (i < total)
-                 {
-                     dummy.On(request);
-                 }
-                 watch.Stop();
+                while (i < total)
+                {
+                    dummy.On(request);
+                }
+                watch.Stop();
 
-                 double ratio = (double)pubTime / (double)watch.ElapsedMilliseconds;
+                double ratio = (double)pubTime / (double)watch.ElapsedMilliseconds;
 
-                 Assert.Fail(string.Format("Ratio is {0}", ratio));
-             }
+                Trace.WriteLine(string.Format("Ratio is {0}", ratio));
+
+                Assert.IsTrue(ratio < 12, string.Format("Ratio is {0}", ratio));
+            }
         }
 
         [TestMethod]
@@ -618,7 +620,9 @@ namespace WEAK.Test.Communication
 
                 double ratio = (double)pubTime / (double)watch.ElapsedMilliseconds;
 
-                Assert.Fail(string.Format("Ratio is {0}", ratio));
+                Trace.WriteLine(string.Format("Ratio is {0}", ratio));
+
+                Assert.IsTrue(ratio < 1.2, string.Format("Ratio is {0}", ratio));
             }
         }
 

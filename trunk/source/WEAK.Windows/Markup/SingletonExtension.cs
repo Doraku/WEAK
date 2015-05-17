@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Markup;
-using WEAK.Supervision;
+using WEAK.Object;
 
 namespace WEAK.Windows.Markup
 {

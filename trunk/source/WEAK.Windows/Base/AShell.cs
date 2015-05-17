@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using WEAK.Communication;
-using WEAK.Supervision;
+using WEAK.Object;
 
 namespace WEAK.Windows.Base
 {

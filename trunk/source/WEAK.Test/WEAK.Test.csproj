@@ -60,7 +60,10 @@
     <Compile Include="Communication\EventAggregatorTest.cs" />
     <Compile Include="HelperTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Supervision\LinkerTest.cs" />
+    <Compile Include="Object\FactoryTest.cs" />
+    <Compile Include="Object\LinkerTest.cs" />
+    <Compile Include="Object\ReferenceManagerTest.cs" />
+    <Compile Include="Object\SingletonTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WEAK\WEAK.csproj">

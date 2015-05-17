@@ -22,7 +22,7 @@ namespace WEAK.Communication
 
         private delegate void WeakDelegate(object source, object arg);
 
-        private static class Publisher<A>
+        private static class Publisher<T>
         {
             #region Fields
 
@@ -39,7 +39,7 @@ namespace WEAK.Communication
                 lock (_locker)
                 {
                     Add(_instances.Count - 1);
-                    RegisterType(typeof(A));
+                    RegisterType(typeof(T));
                 }
             }
 

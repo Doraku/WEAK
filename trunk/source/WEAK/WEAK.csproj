@@ -61,13 +61,13 @@
     <Compile Include="Communication\RequestPublishingMode.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Serialization\DataContractOperation.cs" />
-    <Compile Include="Supervision\Factory.cs" />
-    <Compile Include="Supervision\ReferenceManager.cs" />
-    <Compile Include="Supervision\Linker.cs" />
+    <Compile Include="Object\Factory.cs" />
+    <Compile Include="Object\ReferenceManager.cs" />
+    <Compile Include="Object\Linker.cs" />
     <Compile Include="Communication\EventAggregator.cs" />
     <Compile Include="Communication\IPublisher.cs" />
     <Compile Include="DelegateExtension.cs" />
-    <Compile Include="Supervision\Singleton.cs" />
+    <Compile Include="Object\Singleton.cs" />
     <Compile Include="Ui\CollectionUnDo.cs" />
     <Compile Include="Ui\DictionaryUnDo.cs" />
     <Compile Include="Ui\GroupUnDo.cs" />
