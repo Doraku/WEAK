@@ -77,7 +77,7 @@ namespace WEAK.Windows.Base
 
         #region Callbacks
 
-        [AutoHookUp]
+        [AutoHookUp(PublishingMode.Context)]
         protected void On(SetRegionContentRequest arg)
         {
             if (arg == null)

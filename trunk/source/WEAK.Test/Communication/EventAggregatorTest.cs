@@ -12,62 +12,20 @@ namespace WEAK.Test.Communication
     {
         #region Types
 
-        private class Request : IRequest
-        {
-            #region IRequest
+        private class Request
+        { }
 
-            public RequestPublishingMode PulishingMode { get; set; }
+        private class Request2
+        { }
 
-            #endregion
-        }
+        private class Request3
+        { }
 
-        private class Request2 : IRequest
-        {
-            #region IRequest
+        private class Request4
+        { }
 
-            public RequestPublishingMode PulishingMode
-            {
-                get { return RequestPublishingMode.Direct; }
-            }
-
-            #endregion
-        }
-
-        private class Request3 : IRequest
-        {
-            #region IRequest
-
-            public RequestPublishingMode PulishingMode
-            {
-                get { return RequestPublishingMode.Direct; }
-            }
-
-            #endregion
-        }
-
-        private class Request4 : IRequest
-        {
-            #region IRequest
-
-            public RequestPublishingMode PulishingMode
-            {
-                get { return RequestPublishingMode.Direct; }
-            }
-
-            #endregion
-        }
-
-        private class Request5 : IRequest
-        {
-            #region IRequest
-
-            public RequestPublishingMode PulishingMode
-            {
-                get { return RequestPublishingMode.Direct; }
-            }
-
-            #endregion
-        }
+        private class Request5
+        { }
 
         private class Dummy
         {
@@ -79,23 +37,23 @@ namespace WEAK.Test.Communication
 
             #region Methods
 
-            [AutoHookUp]
+            [AutoHookUp(PublishingMode.Direct)]
             private void PrivateStaticHook(Request3 request)
             {
                 Action();
             }
 
-            [AutoHookUp]
+            [AutoHookUp(PublishingMode.Direct)]
             private void PrivateHook(Request2 request)
             {
                 Action();
             }
 
-            [AutoHookUp]
+            [AutoHookUp(PublishingMode.Direct)]
             protected virtual void ProtectedHook2(Request4 request)
             { }
 
-            [AutoHookUp]
+            [AutoHookUp(PublishingMode.Direct)]
             protected virtual void ProtectedHook3(Request5 request)
             {
                 Action();
@@ -111,7 +69,7 @@ namespace WEAK.Test.Communication
                 Action();
             }
 
-            public void On(IRequest request)
+            public void On(object request)
             {
                 Action();
             }
@@ -128,13 +86,13 @@ namespace WEAK.Test.Communication
         {
             #region Dummy
 
-            [AutoHookUp]
+            [AutoHookUp(PublishingMode.Direct)]
             protected override void ProtectedHook(Request request)
             {
                 base.ProtectedHook(request);
             }
 
-            [AutoHookUp]
+            [AutoHookUp(PublishingMode.Direct)]
             protected virtual void ProtectedHook3(Request5 request)
             {
                 Action();
@@ -159,7 +117,7 @@ namespace WEAK.Test.Communication
 
             try
             {
-                publisher.Subscribe<IRequest>(null);
+                publisher.Subscribe<object>(null, PublishingMode.Direct);
                 Assert.Fail("Did not raise ArgumentNullException.");
             }
             catch (ArgumentNullException) { }
@@ -177,7 +135,7 @@ namespace WEAK.Test.Communication
 
             try
             {
-                publisher.Subscribe<IRequest>(null);
+                publisher.Subscribe<object>(null, PublishingMode.Direct);
                 Assert.Fail("Did not raise ObjectDisposedException.");
             }
             catch (ObjectDisposedException) { }
@@ -190,7 +148,7 @@ namespace WEAK.Test.Communication
 
             try
             {
-                publisher.Unsubscribe<IRequest>(null);
+                publisher.Unsubscribe<object>(null);
                 Assert.Fail("Did not raise ArgumentNullException.");
             }
             catch (ArgumentNullException) { }
@@ -208,27 +166,10 @@ namespace WEAK.Test.Communication
 
             try
             {
-                publisher.Unsubscribe<IRequest>(null);
+                publisher.Unsubscribe<object>(null);
                 Assert.Fail("Did not raise ObjectDisposedException.");
             }
             catch (ObjectDisposedException) { }
-        }
-
-        [TestMethod]
-        public void PublishTestNull()
-        {
-            IPublisher publisher = new EventAggregator();
-
-            try
-            {
-                publisher.Publish<IRequest>(null);
-                Assert.Fail("Did not raise ArgumentNullException.");
-            }
-            catch (ArgumentNullException) { }
-            finally
-            {
-                publisher.Dispose();
-            }
         }
 
         [TestMethod]
@@ -239,7 +180,7 @@ namespace WEAK.Test.Communication
 
             try
             {
-                publisher.Publish<IRequest>(null);
+                publisher.Publish<object>(null);
                 Assert.Fail("Did not raise ObjectDisposedException.");
             }
             catch (ObjectDisposedException) { }
@@ -253,9 +194,9 @@ namespace WEAK.Test.Communication
             Dummy dummy = new Dummy();
             Dummy.Action = () => done = true;
             WeakReference reference = new WeakReference(dummy);
-            Request request = new Request { PulishingMode = RequestPublishingMode.Direct };
+            Request request = new Request();
 
-            publisher.Subscribe<Request>(dummy.On);
+            publisher.Subscribe<Request>(dummy.On, PublishingMode.Direct);
 
             publisher.Publish(request);
 
@@ -285,9 +226,9 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => done = true;
 
-                publisher.Subscribe<Request>(dummy.On);
+                publisher.Subscribe<Request>(dummy.On, PublishingMode.Direct);
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+                publisher.Publish(new Request());
 
                 Assert.IsTrue(done, "Method haven't executed.");
             }
@@ -302,9 +243,9 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => handle.Set();
 
-                publisher.Subscribe<Request>(dummy.On);
+                publisher.Subscribe<Request>(dummy.On, PublishingMode.Async);
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Async });
+                publisher.Publish(new Request());
 
                 Assert.IsTrue(handle.WaitOne(1000), "Method haven't executed.");
             }
@@ -319,9 +260,9 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => handle.Set();
 
-                publisher.Subscribe<Request>(dummy.On);
+                publisher.Subscribe<Request>(dummy.On, PublishingMode.LongRunning);
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.LongRunning });
+                publisher.Publish(new Request());
 
                 Assert.IsTrue(handle.WaitOne(1000), "Method haven't executed.");
             }
@@ -336,9 +277,9 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => handle.Set();
 
-                publisher.Subscribe<Request>(dummy.On);
+                publisher.Subscribe<Request>(dummy.On, PublishingMode.Context);
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Context });
+                publisher.Publish(new Request());
 
                 Assert.IsTrue(handle.WaitOne(1000), "Method haven't executed.");
             }
@@ -355,9 +296,29 @@ namespace WEAK.Test.Communication
                     Dummy dummy = new Dummy();
                     Dummy.Action = () => handle.Set();
 
-                    publisher.Subscribe<Request>(dummy.On);
+                    publisher.Subscribe<Request>(dummy.On, PublishingMode.Context);
 
-                    publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Context });
+                    publisher.Publish(new Request());
+
+                    Assert.IsTrue(handle.WaitOne(1000), "Method haven't executed.");
+                }).Wait(1000), "Task haven't finished.");
+            }
+        }
+
+        [TestMethod]
+        public void PublishTestContextAsync()
+        {
+            using (IPublisher publisher = new EventAggregator())
+            using (ManualResetEvent handle = new ManualResetEvent(false))
+            {
+                Assert.IsTrue(Task.Factory.StartNew(() =>
+                {
+                    Dummy dummy = new Dummy();
+                    Dummy.Action = () => handle.Set();
+
+                    publisher.Subscribe<Request>(dummy.On, PublishingMode.ContextAsync);
+
+                    publisher.Publish(new Request());
 
                     Assert.IsTrue(handle.WaitOne(1000), "Method haven't executed.");
                 }).Wait(1000), "Task haven't finished.");
@@ -373,9 +334,9 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => done = true;
 
-                publisher.Subscribe<IRequest>(dummy.On);
+                publisher.Subscribe<object>(dummy.On, PublishingMode.Direct);
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+                publisher.Publish(new Request());
 
                 Assert.IsTrue(done, "Method haven't executed.");
 
@@ -402,9 +363,9 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => done = true;
 
-                publisher.Subscribe<Request>(dummy.On);
+                publisher.Subscribe<Request>(dummy.On, PublishingMode.Direct);
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct } as IRequest);
+                publisher.Publish(new Request() as object);
 
                 Assert.IsFalse(done, "Method have executed.");
             }
@@ -419,16 +380,16 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => done = true;
 
-                publisher.Subscribe<Request>(dummy.On);
+                publisher.Subscribe<Request>(dummy.On, PublishingMode.Direct);
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+                publisher.Publish(new Request());
 
                 Assert.IsTrue(done, "Method haven't executed.");
 
                 publisher.Unsubscribe<Request>(dummy.On);
                 done = false;
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+                publisher.Publish(new Request());
 
                 Assert.IsFalse(done, "Method have executed.");
             }
@@ -442,16 +403,16 @@ namespace WEAK.Test.Communication
                 bool done = false;
                 Dummy.Action = () => done = true;
 
-                publisher.Subscribe<Request>(Dummy.OnStatic);
+                publisher.Subscribe<Request>(Dummy.OnStatic, PublishingMode.Direct);
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+                publisher.Publish(new Request());
 
                 Assert.IsTrue(done, "Method haven't executed.");
 
                 publisher.Unsubscribe<Request>(Dummy.OnStatic);
                 done = false;
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+                publisher.Publish(new Request());
 
                 Assert.IsFalse(done, "Method have executed.");
             }
@@ -468,7 +429,7 @@ namespace WEAK.Test.Communication
 
                 publisher.HookUp(dummy);
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+                publisher.Publish(new Request());
 
                 Assert.IsTrue(done, "Method haven't executed.");
 
@@ -503,7 +464,7 @@ namespace WEAK.Test.Communication
 
                 publisher.UnHookUp(dummy);
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+                publisher.Publish(new Request());
 
                 Assert.IsFalse(done, "Method have executed.");
 
@@ -534,10 +495,10 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => ++i;
 
-                publisher.Subscribe<Request>(dummy.On);
-                publisher.Subscribe<Request>(dummy.On);
+                publisher.Subscribe<Request>(dummy.On, PublishingMode.Direct);
+                publisher.Subscribe<Request>(dummy.On, PublishingMode.Direct);
 
-                publisher.Publish(new Request { PulishingMode = RequestPublishingMode.Direct });
+                publisher.Publish(new Request());
 
                 Assert.AreEqual(i, 1, "Method haven't executed only once.");
             }
@@ -553,10 +514,16 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => ++i;
 
-                publisher.Subscribe<IRequest>(dummy.On);
+                publisher.Subscribe<object>(dummy.On, PublishingMode.Direct);
 
-                Request request = new Request { PulishingMode = RequestPublishingMode.Direct };
+                Request request = new Request();
 
+                while (i < total)
+                {
+                    publisher.Publish(request);
+                }
+
+                i = 0;
                 Stopwatch watch = Stopwatch.StartNew();
 
                 while (i < total)
@@ -565,6 +532,12 @@ namespace WEAK.Test.Communication
                 }
                 watch.Stop();
                 long pubTime = watch.ElapsedMilliseconds;
+
+                i = 0;
+                while (i < total)
+                {
+                    dummy.On(request);
+                }
 
                 i = 0;
                 watch.Restart();
@@ -579,7 +552,7 @@ namespace WEAK.Test.Communication
 
                 Trace.WriteLine(string.Format("Ratio is {0}", ratio));
 
-                Assert.IsTrue(ratio < 12, string.Format("Ratio is {0}", ratio));
+                Assert.IsTrue(ratio < 9, string.Format("Ratio is {0}", ratio));
             }
         }
 
@@ -594,10 +567,17 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => countDown.Signal();
 
-                publisher.Subscribe<IRequest>(dummy.On);
+                publisher.Subscribe<object>(dummy.On, PublishingMode.Async);
 
-                Request request = new Request { PulishingMode = RequestPublishingMode.Async };
+                Request request = new Request();
 
+                for (i = 0; i < total; ++i)
+                {
+                    publisher.Publish(request);
+                }
+                countDown.Wait();
+
+                countDown.Reset(total);
                 Stopwatch watch = Stopwatch.StartNew();
 
                 for (i = 0; i < total; ++i)
@@ -608,7 +588,15 @@ namespace WEAK.Test.Communication
                 watch.Stop();
                 long pubTime = watch.ElapsedMilliseconds;
 
-                countDown.Reset();
+                countDown.Reset(total);
+
+                for (i = 0; i < total; ++i)
+                {
+                    Task.Factory.StartNew(() => dummy.On(request));
+                }
+                countDown.Wait();
+
+                countDown.Reset(total);
                 watch.Restart();
 
                 for (i = 0; i < total; ++i)
@@ -623,6 +611,23 @@ namespace WEAK.Test.Communication
                 Trace.WriteLine(string.Format("Ratio is {0}", ratio));
 
                 Assert.IsTrue(ratio < 1.2, string.Format("Ratio is {0}", ratio));
+            }
+        }
+
+        [TestMethod]
+        public void SubscriptionTest()
+        {
+            using (IPublisher publisher = new EventAggregator())
+            {
+                bool done = false;
+                Dummy dummy = new Dummy();
+                Dummy.Action = () => done = true;
+                using (IDisposable subscription = publisher.Subscribe<object>(dummy.On, PublishingMode.Direct))
+                { }
+
+                publisher.Publish(new object());
+
+                Assert.IsFalse(done, "Method have executed.");
             }
         }
 

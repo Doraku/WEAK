@@ -57,8 +57,7 @@
     </Compile>
     <Compile Include="Communication\AutoHookUpAttribute.cs" />
     <Compile Include="Communication\IPublisherExtension.cs" />
-    <Compile Include="Communication\IRequest.cs" />
-    <Compile Include="Communication\RequestPublishingMode.cs" />
+    <Compile Include="Communication\PublishingMode.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Serialization\DataContractOperation.cs" />
     <Compile Include="Object\Factory.cs" />

@@ -3,7 +3,7 @@ using WEAK.Communication;
 
 namespace WEAK.Windows.Base
 {
-    public sealed class SetRegionContentRequest : IRequest
+    public sealed class SetRegionContentRequest
     {
         #region Fields
 
@@ -34,26 +34,8 @@ namespace WEAK.Windows.Base
         }
 
         #endregion
-
-        #region IRequest
-
-        public RequestPublishingMode PulishingMode
-        {
-            get { return RequestPublishingMode.Context; }
-        }
-
-        #endregion
     }
 
-    public sealed class ApplicationExitRequest : IRequest
-    {
-        #region IRequest
-
-        public RequestPublishingMode PulishingMode
-        {
-            get { return RequestPublishingMode.Context; }
-        }
-
-        #endregion
-    }
+    public sealed class ApplicationExitRequest
+    { }
 }

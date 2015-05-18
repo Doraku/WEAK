@@ -65,7 +65,7 @@ namespace WEAK.Windows.Base
             }
         }
 
-        [AutoHookUp]
+        [AutoHookUp(PublishingMode.Context)]
         protected virtual void OnShellClosed(ApplicationExitRequest arg)
         {
             Publisher = null;

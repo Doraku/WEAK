@@ -15,6 +15,7 @@ namespace WEAK.Communication
     /// and Task with LongRunning for LongRunning RequestPublishingMode.
     /// Disposing an instance of EventAggregator will clear all its subscriptions 
     /// but it will not stop running asynchrone tasks.
+    /// Subscribing twice a method with same or different PublishingMode will only keep the first one.
     /// </summary>
     public sealed class EventAggregator : IPublisher, IDisposable
     {
@@ -49,14 +50,17 @@ namespace WEAK.Communication
 
             public static void Subscribe(int id, Action<object> action)
             {
-                Action<object> temp = Actions[id];
-                if (temp != null && temp != action
-                    && !temp.GetInvocationList().Contains(action))
+                if (action != null)
                 {
-                    action = (Action<object>)Delegate.Combine(temp, action);
-                }
+                    Action<object> temp = Actions[id];
+                    if (temp != null && temp != action
+                        && !temp.GetInvocationList().Contains(action))
+                    {
+                        action = (Action<object>)Delegate.Combine(temp, action);
+                    }
 
-                Actions[id] = action;
+                    Actions[id] = action;
+                }
             }
 
             public static void Unsubscribe(int id, Action<object> action)
@@ -72,6 +76,60 @@ namespace WEAK.Communication
             public static void Add(int id)
             {
                 Actions.AddRange(Enumerable.Repeat<Action<object>>(null, id + 1 - Actions.Count));
+            }
+
+            #endregion
+        }
+
+        private class Subscription<T> : IDisposable
+        {
+            #region Fields
+
+            private readonly IPublisher _publisher;
+            private readonly Action<T> _action;
+
+            private bool _isDisposed;
+
+            #endregion
+
+            #region Initialisation
+
+            public Subscription(IPublisher publisher, Action<T> action)
+            {
+                _publisher = publisher;
+                _action = action;
+
+                _isDisposed = false;
+            }
+
+            ~Subscription()
+            {
+                Dispose(false);
+            }
+
+            #endregion
+
+            #region Methods
+
+            private void Dispose(bool isDisposing)
+            {
+                if (!_isDisposed
+                    && isDisposing)
+                {
+                    _publisher.Unsubscribe(_action);
+
+                    _isDisposed = true;
+                    GC.SuppressFinalize(this);
+                }
+            }
+
+            #endregion
+
+            #region IDisposable
+
+            void IDisposable.Dispose()
+            {
+                Dispose(true);
             }
 
             #endregion
@@ -105,10 +163,10 @@ namespace WEAK.Communication
             _relayTypes = new Dictionary<Type, LinkedList<Type>>();
             _weakDelegates = new Dictionary<MethodInfo, WeakDelegate>();
 
-            _subTypes[typeof(IRequest)] = new LinkedList<Type>();
-            _subTypes[typeof(IRequest)].AddLast(typeof(IRequest));
-            _relayTypes[typeof(IRequest)] = new LinkedList<Type>();
-            _relayTypes[typeof(IRequest)].AddLast(typeof(IRequest));
+            _subTypes[typeof(object)] = new LinkedList<Type>();
+            _subTypes[typeof(object)].AddLast(typeof(object));
+            _relayTypes[typeof(object)] = new LinkedList<Type>();
+            _relayTypes[typeof(object)].AddLast(typeof(object));
         }
 
         /// <summary>
@@ -173,15 +231,14 @@ namespace WEAK.Communication
 
         private static void RegisterType(Type type)
         {
-            if (_subTypes.ContainsKey(type) ||
-                !type.GetInterfaces().Contains(typeof(IRequest)))
+            if (_subTypes.ContainsKey(type))
             {
                 return;
             }
 
             _subTypes[type] = new LinkedList<Type>();
             _subTypes[type].AddLast(type);
-            _subTypes[type].AddLast(typeof(IRequest));
+            _subTypes[type].AddLast(typeof(object));
 
             foreach (Type inter in type.GetInterfaces())
             {
@@ -229,10 +286,10 @@ namespace WEAK.Communication
             if (!_weakDelegates.ContainsKey(method))
             {
                 DynamicMethod dynamicDelegate = new DynamicMethod(
-                    "weak_" + method.Name,
+                    string.Format("weak_{0}", _weakDelegates.Count),
                     typeof(void),
                     new Type[] { typeof(object), typeof(object) },
-                    targetType,
+                    typeof(EventAggregator),
                     true);
                 ILGenerator il = dynamicDelegate.GetILGenerator();
                 il.Emit(OpCodes.Ldarg_0);
@@ -244,6 +301,22 @@ namespace WEAK.Communication
             }
 
             return _weakDelegates[method];
+        }
+
+        private Action<object> TryGetWrapper<T>(Action<T> action)
+        {
+            if (_registrations.ContainsKey(action.Method))
+            {
+                foreach (WeakReference reference in _registrations[action.Method].Keys)
+                {
+                    if (reference.Target == (action.Method.IsStatic ? action.Method.DeclaringType : action.Target))
+                    {
+                        return _registrations[action.Method][reference];
+                    }
+                }
+            }
+
+            return null;
         }
 
         private Action<object> GetWrapper(WeakDelegate weakDelegate, MethodInfo method, WeakReference reference)
@@ -262,47 +335,65 @@ namespace WEAK.Communication
             };
         }
 
-        private Action<object> GetWrapper<T>(Action<T> action)
-            where T : IRequest
+        private Action<object> GetWrapper<T>(Action<T> action, PublishingMode publishingMode)
         {
-            WeakReference key;
-            if (_registrations.ContainsKey(action.Method))
-            {
-                foreach (WeakReference reference in _registrations[action.Method].Keys)
-                {
-                    if (reference.Target == (action.Method.IsStatic ? action.Method.DeclaringType : action.Target))
-                    {
-                        return _registrations[action.Method][reference];
-                    }
-                }
-            }
-            else
+            Action<object> ret = TryGetWrapper(action);
+
+            if (ret == null)
             {
                 _registrations[action.Method] = new Dictionary<WeakReference, Action<object>>();
+
+                WeakDelegate weakDelegate = GetWeakDelegate(action.Method, action.Method.DeclaringType);
+
+                WeakReference key;
+                Action<object> weakAction = null;
+                if (action.Method.IsStatic)
+                {
+                    key = new WeakReference(action.Method.DeclaringType);
+
+                    weakAction = (arg) => weakDelegate(null, arg);
+                }
+                else
+                {
+                    key = new WeakReference(action.Target);
+
+                    weakAction = GetWrapper(weakDelegate, action.Method, key);
+                }
+
+                switch (publishingMode)
+                {
+                    case PublishingMode.Direct:
+                        ret = weakAction;
+                        break;
+
+                    case PublishingMode.Async:
+                        ret = (o) => Task.Factory.StartNew(weakAction, o);
+                        break;
+
+                    case PublishingMode.LongRunning:
+                        ret = (o) => Task.Factory.StartNew(weakAction, o, TaskCreationOptions.LongRunning);
+                        break;
+
+                    case PublishingMode.Context:
+                        SendOrPostCallback callback = new SendOrPostCallback(weakAction);
+                        ret = (o) => _context.Send(callback, o);
+                        break;
+
+                    case PublishingMode.ContextAsync:
+                        callback = new SendOrPostCallback(weakAction);
+                        ret = (o) => _context.Post(callback, o);
+                        break;
+                }
+
+                _registrations[action.Method][key] = ret;
             }
 
-            Action<object> weakAction = null;
-            if (action.Method.IsStatic)
-            {
-                key = new WeakReference(action.Method.DeclaringType);
-
-                weakAction = (arg) => action((T)arg);
-            }
-            else
-            {
-                key = new WeakReference(action.Target);
-
-                weakAction = GetWrapper(GetWeakDelegate(action.Method, action.Target.GetType()), action.Method, key);
-            }
-
-            _registrations[action.Method][key] = weakAction;
-
-            return weakAction;
+            return ret;
         }
 
         private void Clean(MethodInfo method, WeakReference key)
         {
-            Action<IRequest> action = null;
+            Action<object> action = null;
             lock (_locker)
             {
                 if (_registrations.ContainsKey(method) && _registrations[method].ContainsKey(key))
@@ -330,7 +421,7 @@ namespace WEAK.Communication
 
         #region IPublisher
 
-        void IPublisher.Subscribe<T>(Action<T> action)
+        IDisposable IPublisher.Subscribe<T>(Action<T> action, PublishingMode publishingMode)
         {
             if (_isDisposed)
             {
@@ -345,11 +436,14 @@ namespace WEAK.Communication
             {
                 Publisher<T>.Add(_id);
 
-                Action<object> wrapper = GetWrapper(action);
+                Action<object> wrapper = GetWrapper(action, publishingMode);
+
                 foreach (Type type in _relayTypes[typeof(T)])
                 {
                     typeof(Publisher<>).MakeGenericType(type).GetMethod("Subscribe").Invoke(null, new object[] { _id, wrapper });
                 }
+
+                return new Subscription<T>(this, action);
             }
         }
 
@@ -368,46 +462,28 @@ namespace WEAK.Communication
             {
                 Publisher<T>.Add(_id);
 
-                Action<IRequest> wrapper = GetWrapper(action);
-                foreach (Type type in _relayTypes[typeof(T)])
+                Action<object> wrapper = TryGetWrapper(action);
+                if (wrapper != null)
                 {
-                    typeof(Publisher<>).MakeGenericType(type).GetMethod("Unsubscribe").Invoke(null, new object[] { _id, wrapper });
+                    foreach (Type type in _relayTypes[typeof(T)])
+                    {
+                        typeof(Publisher<>).MakeGenericType(type).GetMethod("Unsubscribe").Invoke(null, new object[] { _id, wrapper });
+                    }
                 }
             }
         }
 
-        void IPublisher.Publish<T>(T request)
+        void IPublisher.Publish<T>(T arg)
         {
             if (_isDisposed)
             {
                 throw new ObjectDisposedException("Resource was disposed.");
             }
-            if (request == null)
-            {
-                throw new ArgumentNullException(Helper.GetMemberName(() => request));
-            }
 
             Action<object> action = Publisher<T>.Actions[_id];
             if (action != null)
             {
-                switch (request.PulishingMode)
-                {
-                    case RequestPublishingMode.Direct:
-                        action(request);
-                        break;
-
-                    case RequestPublishingMode.Async:
-                        Task.Factory.StartNew(action, request);
-                        break;
-
-                    case RequestPublishingMode.Context:
-                        _context.Send(new SendOrPostCallback(action), request);
-                        break;
-
-                    case RequestPublishingMode.LongRunning:
-                        Task.Factory.StartNew(action, request, TaskCreationOptions.LongRunning);
-                        break;
-                }
+                action(arg);
             }
         }
 

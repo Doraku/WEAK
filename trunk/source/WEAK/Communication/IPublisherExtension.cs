@@ -32,10 +32,10 @@ namespace WEAK.Communication
             {
                 foreach (MethodInfo method in type.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
                 {
-                    if (Attribute.GetCustomAttribute(method, typeof(AutoHookUpAttribute)) != null)
+                    AutoHookUpAttribute attribute = Attribute.GetCustomAttribute(method, typeof(AutoHookUpAttribute)) as AutoHookUpAttribute;
+                    if (attribute != null)
                     {
-                        if (method.GetParameters().Length != 1
-                            || !typeof(IRequest).IsAssignableFrom(method.GetParameters()[0].ParameterType))
+                        if (method.GetParameters().Length != 1)
                         {
                             throw new ArgumentException(string.Format("Can't apply AutoHookUpAttribute to method \"{0}\".", method.Name));
                         }
@@ -43,7 +43,11 @@ namespace WEAK.Communication
                         Type argType = method.GetParameters()[0].ParameterType;
                         typeof(IPublisher).GetMethod("Subscribe").MakeGenericMethod(argType).Invoke(
                             publisher,
-                            new object[] { Delegate.CreateDelegate(typeof(Action<>).MakeGenericType(argType), method) });
+                            new object[]
+                            {
+                                Delegate.CreateDelegate(typeof(Action<>).MakeGenericType(argType), method),
+                                attribute.PublishingMode
+                            });
                     }
                 }
 
@@ -74,10 +78,10 @@ namespace WEAK.Communication
             {
                 foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
                 {
-                    if (Attribute.GetCustomAttribute(method, typeof(AutoHookUpAttribute)) != null)
+                    AutoHookUpAttribute attribute = Attribute.GetCustomAttribute(method, typeof(AutoHookUpAttribute)) as AutoHookUpAttribute;
+                    if (attribute != null)
                     {
-                        if (method.GetParameters().Length != 1
-                            || !typeof(IRequest).IsAssignableFrom(method.GetParameters()[0].ParameterType))
+                        if (method.GetParameters().Length != 1)
                         {
                             throw new ArgumentException(string.Format("Can't apply AutoHookUpAttribute to method \"{0}\".", method.Name));
                         }
@@ -85,7 +89,11 @@ namespace WEAK.Communication
                         Type argType = method.GetParameters()[0].ParameterType;
                         typeof(IPublisher).GetMethod("Subscribe").MakeGenericMethod(argType).Invoke(
                             publisher,
-                            new object[] { Delegate.CreateDelegate(typeof(Action<>).MakeGenericType(argType), target, method) });
+                            new object[]
+                            {
+                                Delegate.CreateDelegate(typeof(Action<>).MakeGenericType(argType), target, method),
+                                attribute.PublishingMode
+                            });
                     }
                 }
 
@@ -119,8 +127,7 @@ namespace WEAK.Communication
                 {
                     if (Attribute.GetCustomAttribute(method, typeof(AutoHookUpAttribute)) != null)
                     {
-                        if (method.GetParameters().Length != 1
-                            || !typeof(IRequest).IsAssignableFrom(method.GetParameters()[0].ParameterType))
+                        if (method.GetParameters().Length != 1)
                         {
                             throw new ArgumentException(string.Format("Can't apply AutoHookUpAttribute to method \"{0}\".", method.Name));
                         }
@@ -161,8 +168,7 @@ namespace WEAK.Communication
                 {
                     if (Attribute.GetCustomAttribute(method, typeof(AutoHookUpAttribute)) != null)
                     {
-                        if (method.GetParameters().Length != 1
-                            || !typeof(IRequest).IsAssignableFrom(method.GetParameters()[0].ParameterType))
+                        if (method.GetParameters().Length != 1)
                         {
                             throw new ArgumentException(string.Format("Can't apply AutoHookUpAttribute to method \"{0}\".", method.Name));
                         }

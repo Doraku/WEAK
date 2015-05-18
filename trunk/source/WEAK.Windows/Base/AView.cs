@@ -43,7 +43,7 @@ namespace WEAK.Windows.Base
 
         #region Callbacks
 
-        [AutoHookUp]
+        [AutoHookUp(PublishingMode.Context)]
         protected virtual void OnShellClosed(ApplicationExitRequest arg)
         {
             Publisher = null;
