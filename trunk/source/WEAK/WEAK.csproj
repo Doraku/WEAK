@@ -59,6 +59,8 @@
     <Compile Include="Communication\IPublisherExtension.cs" />
     <Compile Include="Communication\PublishingMode.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Module\IUnit.cs" />
+    <Compile Include="Module\IUnitManager.cs" />
     <Compile Include="Serialization\DataContractOperation.cs" />
     <Compile Include="Object\Factory.cs" />
     <Compile Include="Object\ReferenceManager.cs" />

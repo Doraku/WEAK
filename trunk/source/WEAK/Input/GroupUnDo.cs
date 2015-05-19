@@ -1,6 +1,6 @@
 ﻿namespace WEAK.Input
 {
-    public class GroupUnDo : IUnDo
+    public sealed class GroupUnDo : IUnDo
     {
         #region Fields
 

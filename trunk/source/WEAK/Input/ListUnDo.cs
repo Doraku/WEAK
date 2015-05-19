@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WEAK.Input
 {
-    public class ListUnDo<T> : IUnDo
+    public sealed class ListUnDo<T> : IUnDo
     {
         #region Fields
 

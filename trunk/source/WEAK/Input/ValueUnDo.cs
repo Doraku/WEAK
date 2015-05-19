@@ -2,7 +2,7 @@
 
 namespace WEAK.Input
 {
-    public class ValueUnDo<T> : IUnDo
+    public sealed class ValueUnDo<T> : IUnDo
     {
         #region Fields
 

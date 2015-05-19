@@ -13,9 +13,9 @@ namespace WEAK.Communication
     /// using a SynchronizationContext for the Context RequestPublishingMode,
     /// Task for Asynch RequestPublishingMode
     /// and Task with LongRunning for LongRunning RequestPublishingMode.
+    /// Subscribing twice a method with same or different PublishingMode will only keep the first one.
     /// Disposing an instance of EventAggregator will clear all its subscriptions 
     /// but it will not stop running asynchrone tasks.
-    /// Subscribing twice a method with same or different PublishingMode will only keep the first one.
     /// </summary>
     public sealed class EventAggregator : IPublisher, IDisposable
     {
@@ -116,9 +116,10 @@ namespace WEAK.Communication
                 if (!_isDisposed
                     && isDisposing)
                 {
+                    _isDisposed = true;
+
                     _publisher.Unsubscribe(_action);
 
-                    _isDisposed = true;
                     GC.SuppressFinalize(this);
                 }
             }
@@ -205,7 +206,7 @@ namespace WEAK.Communication
 
         ~EventAggregator()
         {
-            (this as IDisposable).Dispose();
+            Dispose();
         }
 
         #endregion
@@ -491,7 +492,7 @@ namespace WEAK.Communication
 
         #region IDisposable
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             if (_isDisposed)
             {
@@ -499,6 +500,7 @@ namespace WEAK.Communication
             }
 
             _isDisposed = true;
+
             foreach (Type type in _subTypes.Keys)
             {
                 typeof(Publisher<>).MakeGenericType(type).GetMethod("Clear").Invoke(null, new object[] { _id });
