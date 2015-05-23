@@ -111,7 +111,7 @@ namespace WEAK.Windows.AttachedProperty
                         ControlTemplate template = Application.Current.TryFindResource("WEAK_WindowBehavior_DefaultTemplate") as ControlTemplate;
                         if (template == null)
                         {
-                            Application.Current.Resources.MergedDictionaries.Add(Application.LoadComponent(new Uri("/WEAK;component/Themes/WindowBehavior.xaml", UriKind.Relative)) as ResourceDictionary);
+                            Application.Current.Resources.MergedDictionaries.Add(Application.LoadComponent(new Uri("/WEAK.Windows;component/Themes/WindowBehavior.xaml", UriKind.Relative)) as ResourceDictionary);
                         }
                         if (window.GetTitleTemplate() == null)
                         {

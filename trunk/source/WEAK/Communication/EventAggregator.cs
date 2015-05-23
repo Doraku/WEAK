@@ -319,7 +319,10 @@ namespace WEAK.Communication
                     typeof(EventAggregator),
                     true);
                 ILGenerator il = dynamicDelegate.GetILGenerator();
-                il.Emit(OpCodes.Ldarg_0);
+                if (!method.IsStatic)
+                {
+                    il.Emit(OpCodes.Ldarg_0);
+                }
                 il.Emit(OpCodes.Ldarg_1);
                 il.Emit(OpCodes.Call, method);
                 il.Emit(OpCodes.Ret);

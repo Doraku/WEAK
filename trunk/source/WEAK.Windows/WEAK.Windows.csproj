@@ -74,22 +74,22 @@
     <Compile Include="Windows\ZoomControl.cs" />
   </ItemGroup>
   <ItemGroup>
-    <CodeAnalysisDictionary Include="Themes\Generic.xaml">
+    <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </CodeAnalysisDictionary>
+    </Page>
   </ItemGroup>
   <ItemGroup>
-    <CodeAnalysisDictionary Include="Themes\WindowBehavior.xaml">
+    <Page Include="Themes\WindowBehavior.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </CodeAnalysisDictionary>
+    </Page>
   </ItemGroup>
   <ItemGroup>
-    <CodeAnalysisDictionary Include="WEAKResources.xaml">
+    <Page Include="WEAKResources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </CodeAnalysisDictionary>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WEAK\WEAK.csproj">
