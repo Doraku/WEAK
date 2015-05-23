@@ -23,7 +23,6 @@ namespace WEAK.Windows.Base
             {
                 if (_publisher != value)
                 {
-                    Publisher.UnHookUp(this);
                     _publisher = value;
                     Publisher.HookUp(this);
                 }
@@ -65,7 +64,7 @@ namespace WEAK.Windows.Base
             }
         }
 
-        [AutoHookUp(PublishingMode.Context)]
+        [AutoHookUp(ExecutionMode.Context)]
         protected virtual void OnShellClosed(ApplicationExitRequest arg)
         {
             Publisher = null;

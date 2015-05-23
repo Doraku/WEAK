@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,23 +38,23 @@ namespace WEAK.Test.Communication
 
             #region Methods
 
-            [AutoHookUp(PublishingMode.Direct)]
+            [AutoHookUp(ExecutionMode.Direct)]
             private void PrivateStaticHook(Request3 request)
             {
                 Action();
             }
 
-            [AutoHookUp(PublishingMode.Direct)]
+            [AutoHookUp(ExecutionMode.Direct)]
             private void PrivateHook(Request2 request)
             {
                 Action();
             }
 
-            [AutoHookUp(PublishingMode.Direct)]
+            [AutoHookUp(ExecutionMode.Direct)]
             protected virtual void ProtectedHook2(Request4 request)
             { }
 
-            [AutoHookUp(PublishingMode.Direct)]
+            [AutoHookUp(ExecutionMode.Direct)]
             protected virtual void ProtectedHook3(Request5 request)
             {
                 Action();
@@ -86,14 +87,14 @@ namespace WEAK.Test.Communication
         {
             #region Dummy
 
-            [AutoHookUp(PublishingMode.Direct)]
+            [AutoHookUp(ExecutionMode.Direct)]
             protected override void ProtectedHook(Request request)
             {
                 base.ProtectedHook(request);
             }
 
-            [AutoHookUp(PublishingMode.Direct)]
-            protected virtual void ProtectedHook3(Request5 request)
+            [AutoHookUp(ExecutionMode.Direct)]
+            protected override void ProtectedHook3(Request5 request)
             {
                 Action();
             }
@@ -117,7 +118,7 @@ namespace WEAK.Test.Communication
 
             try
             {
-                publisher.Subscribe<object>(null, PublishingMode.Direct);
+                publisher.Subscribe<object>(null, ExecutionMode.Direct);
                 Assert.Fail("Did not raise ArgumentNullException.");
             }
             catch (ArgumentNullException) { }
@@ -135,38 +136,7 @@ namespace WEAK.Test.Communication
 
             try
             {
-                publisher.Subscribe<object>(null, PublishingMode.Direct);
-                Assert.Fail("Did not raise ObjectDisposedException.");
-            }
-            catch (ObjectDisposedException) { }
-        }
-
-        [TestMethod]
-        public void UnsubscribeTestNull()
-        {
-            IPublisher publisher = new EventAggregator();
-
-            try
-            {
-                publisher.Unsubscribe<object>(null);
-                Assert.Fail("Did not raise ArgumentNullException.");
-            }
-            catch (ArgumentNullException) { }
-            finally
-            {
-                publisher.Dispose();
-            }
-        }
-
-        [TestMethod]
-        public void UnsubscribeTestDispose()
-        {
-            IPublisher publisher = new EventAggregator();
-            publisher.Dispose();
-
-            try
-            {
-                publisher.Unsubscribe<object>(null);
+                publisher.Subscribe<object>(null, ExecutionMode.Direct);
                 Assert.Fail("Did not raise ObjectDisposedException.");
             }
             catch (ObjectDisposedException) { }
@@ -196,7 +166,7 @@ namespace WEAK.Test.Communication
             WeakReference reference = new WeakReference(dummy);
             Request request = new Request();
 
-            publisher.Subscribe<Request>(dummy.On, PublishingMode.Direct);
+            IDisposable register = publisher.Subscribe<Request>(dummy.On, ExecutionMode.Direct);
 
             publisher.Publish(request);
 
@@ -226,7 +196,7 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => done = true;
 
-                publisher.Subscribe<Request>(dummy.On, PublishingMode.Direct);
+                IDisposable register = publisher.Subscribe<Request>(dummy.On, ExecutionMode.Direct);
 
                 publisher.Publish(new Request());
 
@@ -243,7 +213,7 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => handle.Set();
 
-                publisher.Subscribe<Request>(dummy.On, PublishingMode.Async);
+                IDisposable register = publisher.Subscribe<Request>(dummy.On, ExecutionMode.Async);
 
                 publisher.Publish(new Request());
 
@@ -260,7 +230,7 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => handle.Set();
 
-                publisher.Subscribe<Request>(dummy.On, PublishingMode.LongRunning);
+                IDisposable register = publisher.Subscribe<Request>(dummy.On, ExecutionMode.LongRunning);
 
                 publisher.Publish(new Request());
 
@@ -277,7 +247,7 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => handle.Set();
 
-                publisher.Subscribe<Request>(dummy.On, PublishingMode.Context);
+                IDisposable register = publisher.Subscribe<Request>(dummy.On, ExecutionMode.Context);
 
                 publisher.Publish(new Request());
 
@@ -296,7 +266,7 @@ namespace WEAK.Test.Communication
                     Dummy dummy = new Dummy();
                     Dummy.Action = () => handle.Set();
 
-                    publisher.Subscribe<Request>(dummy.On, PublishingMode.Context);
+                    IDisposable register = publisher.Subscribe<Request>(dummy.On, ExecutionMode.Context);
 
                     publisher.Publish(new Request());
 
@@ -316,7 +286,7 @@ namespace WEAK.Test.Communication
                     Dummy dummy = new Dummy();
                     Dummy.Action = () => handle.Set();
 
-                    publisher.Subscribe<Request>(dummy.On, PublishingMode.ContextAsync);
+                    IDisposable register = publisher.Subscribe<Request>(dummy.On, ExecutionMode.ContextAsync);
 
                     publisher.Publish(new Request());
 
@@ -334,7 +304,7 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => done = true;
 
-                publisher.Subscribe<object>(dummy.On, PublishingMode.Direct);
+                IDisposable register = publisher.Subscribe<object>(dummy.On, ExecutionMode.Direct);
 
                 publisher.Publish(new Request());
 
@@ -363,7 +333,7 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => done = true;
 
-                publisher.Subscribe<Request>(dummy.On, PublishingMode.Direct);
+                IDisposable register = publisher.Subscribe<Request>(dummy.On, ExecutionMode.Direct);
 
                 publisher.Publish(new Request() as object);
 
@@ -380,13 +350,13 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => done = true;
 
-                publisher.Subscribe<Request>(dummy.On, PublishingMode.Direct);
+                using (IDisposable register = publisher.Subscribe<Request>(dummy.On, ExecutionMode.Direct))
+                {
+                    publisher.Publish(new Request());
 
-                publisher.Publish(new Request());
+                    Assert.IsTrue(done, "Method haven't executed.");
+                }
 
-                Assert.IsTrue(done, "Method haven't executed.");
-
-                publisher.Unsubscribe<Request>(dummy.On);
                 done = false;
 
                 publisher.Publish(new Request());
@@ -403,13 +373,13 @@ namespace WEAK.Test.Communication
                 bool done = false;
                 Dummy.Action = () => done = true;
 
-                publisher.Subscribe<Request>(Dummy.OnStatic, PublishingMode.Direct);
+                using (IDisposable register = publisher.Subscribe<Request>(Dummy.OnStatic, ExecutionMode.Direct))
+                {
+                    publisher.Publish(new Request());
 
-                publisher.Publish(new Request());
+                    Assert.IsTrue(done, "Method haven't executed.");
+                }
 
-                Assert.IsTrue(done, "Method haven't executed.");
-
-                publisher.Unsubscribe<Request>(Dummy.OnStatic);
                 done = false;
 
                 publisher.Publish(new Request());
@@ -427,7 +397,7 @@ namespace WEAK.Test.Communication
                 Dummy.Action = () => done = true;
                 Dummy dummy = new Dummy2();
 
-                publisher.HookUp(dummy);
+                IEnumerable<IDisposable> registers = publisher.HookUp(dummy);
 
                 publisher.Publish(new Request());
 
@@ -462,7 +432,10 @@ namespace WEAK.Test.Communication
                 done = false;
                 Dummy.Action = () => done = true;
 
-                publisher.UnHookUp(dummy);
+                foreach (IDisposable register in registers)
+                {
+                    register.Dispose();
+                }
 
                 publisher.Publish(new Request());
 
@@ -495,8 +468,8 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => ++i;
 
-                publisher.Subscribe<Request>(dummy.On, PublishingMode.Direct);
-                publisher.Subscribe<Request>(dummy.On, PublishingMode.Direct);
+                IDisposable register = publisher.Subscribe<Request>(dummy.On, ExecutionMode.Direct);
+                IDisposable register2 = publisher.Subscribe<Request>(dummy.On, ExecutionMode.Direct);
 
                 publisher.Publish(new Request());
 
@@ -514,7 +487,7 @@ namespace WEAK.Test.Communication
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => ++i;
 
-                publisher.Subscribe<object>(dummy.On, PublishingMode.Direct);
+                IDisposable register = publisher.Subscribe<object>(dummy.On, ExecutionMode.Direct);
 
                 Request request = new Request();
 
@@ -553,6 +526,8 @@ namespace WEAK.Test.Communication
                 Trace.WriteLine(string.Format("Ratio is {0}", ratio));
 
                 Assert.IsTrue(ratio < 9, string.Format("Ratio is {0}", ratio));
+
+                register.Dispose();
             }
         }
 
@@ -565,52 +540,57 @@ namespace WEAK.Test.Communication
             {
                 int i = 0;
                 Dummy dummy = new Dummy();
-                Dummy.Action = () => countDown.Signal();
-
-                publisher.Subscribe<object>(dummy.On, PublishingMode.Async);
-
-                Request request = new Request();
-
-                for (i = 0; i < total; ++i)
+                Dummy.Action = () =>
                 {
-                    publisher.Publish(request);
-                }
-                countDown.Wait();
+                    countDown.Signal();
+                };
 
-                countDown.Reset(total);
-                Stopwatch watch = Stopwatch.StartNew();
-
-                for (i = 0; i < total; ++i)
+                using (IDisposable register = publisher.Subscribe<object>(dummy.On, ExecutionMode.Async))
                 {
-                    publisher.Publish(request);
+                    Request request = new Request();
+
+                    for (i = 0; i < total; ++i)
+                    {
+                        publisher.Publish(request);
+                    }
+
+                    countDown.Wait();
+
+                    countDown.Reset(total);
+                    Stopwatch watch = Stopwatch.StartNew();
+
+                    for (i = 0; i < total; ++i)
+                    {
+                        publisher.Publish(request);
+                    }
+                    countDown.Wait();
+                    watch.Stop();
+                    long pubTime = watch.ElapsedMilliseconds;
+
+                    countDown.Reset(total);
+
+                    for (i = 0; i < total; ++i)
+                    {
+                        Task.Factory.StartNew(() => dummy.On(request));
+                    }
+                    countDown.Wait();
+
+                    countDown.Reset(total);
+                    watch.Restart();
+
+                    for (i = 0; i < total; ++i)
+                    {
+                        Task.Factory.StartNew(() => dummy.On(request));
+                    }
+                    countDown.Wait();
+                    watch.Stop();
+
+                    double ratio = (double)pubTime / (double)watch.ElapsedMilliseconds;
+
+                    Trace.WriteLine(string.Format("Ratio is {0}", ratio));
+
+                    Assert.IsTrue(ratio < 1.1, string.Format("Ratio is {0}", ratio));
                 }
-                countDown.Wait();
-                watch.Stop();
-                long pubTime = watch.ElapsedMilliseconds;
-
-                countDown.Reset(total);
-
-                for (i = 0; i < total; ++i)
-                {
-                    Task.Factory.StartNew(() => dummy.On(request));
-                }
-                countDown.Wait();
-
-                countDown.Reset(total);
-                watch.Restart();
-
-                for (i = 0; i < total; ++i)
-                {
-                    Task.Factory.StartNew(() => dummy.On(request));
-                }
-                countDown.Wait();
-                watch.Stop();
-
-                double ratio = (double)pubTime / (double)watch.ElapsedMilliseconds;
-
-                Trace.WriteLine(string.Format("Ratio is {0}", ratio));
-
-                Assert.IsTrue(ratio < 1.2, string.Format("Ratio is {0}", ratio));
             }
         }
 
@@ -622,12 +602,51 @@ namespace WEAK.Test.Communication
                 bool done = false;
                 Dummy dummy = new Dummy();
                 Dummy.Action = () => done = true;
-                using (IDisposable subscription = publisher.Subscribe<object>(dummy.On, PublishingMode.Direct))
+                using (IDisposable subscription = publisher.Subscribe<object>(dummy.On, ExecutionMode.Direct))
                 { }
 
                 publisher.Publish(new object());
 
                 Assert.IsFalse(done, "Method have executed.");
+            }
+        }
+
+        [TestMethod]
+        public void ExecutionOrderTest()
+        {
+            using (IPublisher publisher = new EventAggregator())
+            {
+                ManualResetEvent handle = new ManualResetEvent(false);
+
+                using (IDisposable s1 = publisher.Subscribe<Dummy>(o => { if (!handle.WaitOne(1000)) Assert.Fail("Order not respected"); }, ExecutionMode.Direct))
+                using (IDisposable s2 = publisher.Subscribe<object>(o => handle.Set(), ExecutionMode.Async))
+                {
+                    publisher.Publish(new Dummy2());
+                }
+
+                handle.Reset();
+
+                using (IDisposable s1 = publisher.Subscribe<object>(o => { if (!handle.WaitOne(1000)) Assert.Fail("Order not respected"); }, ExecutionMode.Direct))
+                using (IDisposable s2 = publisher.Subscribe<Dummy>(o => handle.Set(), ExecutionMode.Async))
+                {
+                    publisher.Publish(new Dummy2());
+                }
+
+                handle.Reset();
+
+                using (IDisposable s1 = publisher.Subscribe<object>(o => { if (!handle.WaitOne(1000)) Assert.Fail("Order not respected"); }, ExecutionMode.Direct))
+                using (IDisposable s2 = publisher.Subscribe<object>(o => handle.Set(), ExecutionMode.Async))
+                {
+                    publisher.Publish(new object());
+                }
+
+                handle.Reset();
+
+                using (IDisposable s1 = publisher.Subscribe<object>(o => { if (!handle.WaitOne(1000)) Assert.Fail("Order not respected"); }, ExecutionMode.Direct))
+                using (IDisposable s2 = publisher.Subscribe<object>(o => handle.Set(), ExecutionMode.Async))
+                {
+                    publisher.Publish(new object());
+                }
             }
         }
 

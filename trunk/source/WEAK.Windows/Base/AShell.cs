@@ -25,7 +25,6 @@ namespace WEAK.Windows.Base
             {
                 if (_publisher != value)
                 {
-                    Publisher.UnHookUp(this);
                     _publisher = value;
                     Publisher.HookUp(this);
                 }
@@ -77,7 +76,7 @@ namespace WEAK.Windows.Base
 
         #region Callbacks
 
-        [AutoHookUp(PublishingMode.Context)]
+        [AutoHookUp(ExecutionMode.Context)]
         protected void On(SetRegionContentRequest arg)
         {
             if (arg == null)

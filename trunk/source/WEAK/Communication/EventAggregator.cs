@@ -10,10 +10,10 @@ namespace WEAK.Communication
 {
     /// <summary>
     /// Provides a base implementation of the IPublisher interface
-    /// using a SynchronizationContext for the Context RequestPublishingMode,
-    /// Task for Asynch RequestPublishingMode
-    /// and Task with LongRunning for LongRunning RequestPublishingMode.
-    /// Subscribing twice a method with same or different PublishingMode will only keep the first one.
+    /// using a SynchronizationContext for the Context ExecutionMode,
+    /// Task for Asynch ExecutionMode
+    /// and Task with LongRunning for LongRunning ExecutionMode.
+    /// Subscribing twice a method with same or different ExecutionMode will only keep the first one.
     /// Disposing an instance of EventAggregator will clear all its subscriptions 
     /// but it will not stop running asynchrone tasks.
     /// </summary>
@@ -48,7 +48,7 @@ namespace WEAK.Communication
 
             #region Methods
 
-            public static void Subscribe(int id, Action<object> action)
+            public static void Subscribe(int id, Action<object> action, bool isFirst)
             {
                 if (action != null)
                 {
@@ -56,7 +56,14 @@ namespace WEAK.Communication
                     if (temp != null && temp != action
                         && !temp.GetInvocationList().Contains(action))
                     {
-                        action = (Action<object>)Delegate.Combine(temp, action);
+                        if (isFirst)
+                        {
+                            action = (Action<object>)Delegate.Combine(action, temp);
+                        }
+                        else
+                        {
+                            action = (Action<object>)Delegate.Combine(temp, action);
+                        }
                     }
 
                     Actions[id] = action;
@@ -81,12 +88,12 @@ namespace WEAK.Communication
             #endregion
         }
 
-        private class Subscription<T> : IDisposable
+        private sealed class Subscription<T> : IDisposable
         {
             #region Fields
 
-            private readonly IPublisher _publisher;
-            private readonly Action<T> _action;
+            private readonly int _publisherId;
+            private readonly Action<object> _action;
 
             private bool _isDisposed;
 
@@ -94,9 +101,9 @@ namespace WEAK.Communication
 
             #region Initialisation
 
-            public Subscription(IPublisher publisher, Action<T> action)
+            public Subscription(int publisherId, Action<object> action)
             {
-                _publisher = publisher;
+                _publisherId = publisherId;
                 _action = action;
 
                 _isDisposed = false;
@@ -104,33 +111,29 @@ namespace WEAK.Communication
 
             ~Subscription()
             {
-                Dispose(false);
-            }
-
-            #endregion
-
-            #region Methods
-
-            private void Dispose(bool isDisposing)
-            {
-                if (!_isDisposed
-                    && isDisposing)
-                {
-                    _isDisposed = true;
-
-                    _publisher.Unsubscribe(_action);
-
-                    GC.SuppressFinalize(this);
-                }
+                Dispose();
             }
 
             #endregion
 
             #region IDisposable
 
-            void IDisposable.Dispose()
+            public void Dispose()
             {
-                Dispose(true);
+                if (!_isDisposed)
+                {
+                    _isDisposed = true;
+
+                    lock (_locker)
+                    {
+                        foreach (Type type in _relayTypes[typeof(T)])
+                        {
+                            typeof(Publisher<>).MakeGenericType(type).GetMethod("Unsubscribe").Invoke(null, new object[] { _publisherId, _action });
+                        }
+                    }
+
+                    GC.SuppressFinalize(this);
+                }
             }
 
             #endregion
@@ -148,6 +151,7 @@ namespace WEAK.Communication
 
         private readonly SynchronizationContext _context;
         private readonly Dictionary<MethodInfo, Dictionary<WeakReference, Action<object>>> _registrations;
+        private readonly List<Action<object>> _firstActions;
 
         private int _id;
         private volatile bool _isDisposed = false;
@@ -173,7 +177,7 @@ namespace WEAK.Communication
         /// <summary>
         /// Initializes a new instance of the WEAK.Communication.EventAggregator class.
         /// </summary>
-        /// <param name="context">The SynchronizationContext to use for Context RequestPublishingMode.</param>
+        /// <param name="context">The SynchronizationContext to use for Context ExecutionMode.</param>
         /// <exception cref="ArgumentNullException">context is null.</exception>
         public EventAggregator(SynchronizationContext context)
         {
@@ -184,6 +188,7 @@ namespace WEAK.Communication
 
             _context = context;
             _registrations = new Dictionary<MethodInfo, Dictionary<WeakReference, Action<object>>>();
+            _firstActions = new List<Action<object>>();
 
             lock (_locker)
             {
@@ -212,6 +217,22 @@ namespace WEAK.Communication
         #endregion
 
         #region Methods
+
+        private static bool IsFirst(ExecutionMode executionMode)
+        {
+            switch (executionMode)
+            {
+                case ExecutionMode.Async:
+                case ExecutionMode.ContextAsync:
+                case ExecutionMode.LongRunning:
+                    return true;
+
+                case ExecutionMode.Direct:
+                case ExecutionMode.Context:
+                default:
+                    return false;
+            }
+        }
 
         private static void RegisterType(Type main, Type sub)
         {
@@ -267,15 +288,20 @@ namespace WEAK.Communication
                     foreach (WeakReference<EventAggregator> reference in _instances)
                     {
                         EventAggregator publisher;
-                        if (!reference.TryGetTarget(out publisher) || publisher == null)
+                        if (!reference.TryGetTarget(out publisher)
+                            || publisher == null)
                         {
                             continue;
                         }
 
                         List<Action<object>> actions = (List<Action<object>>)typeof(Publisher<>).MakeGenericType(sub).GetField("Actions").GetValue(null);
-                        if (actions.Count > publisher._id)
+
+                        if (actions[publisher._id] != null)
                         {
-                            typeof(Publisher<>).MakeGenericType(type).GetMethod("Subscribe").Invoke(null, new object[] { publisher._id, actions[publisher._id] });
+                            foreach (Action<object> action in actions[publisher._id].GetInvocationList())
+                            {
+                                typeof(Publisher<>).MakeGenericType(type).GetMethod("Subscribe").Invoke(null, new object[] { publisher._id, action, publisher._firstActions.Contains(action) });
+                            }
                         }
                     }
                 }
@@ -336,7 +362,7 @@ namespace WEAK.Communication
             };
         }
 
-        private Action<object> GetWrapper<T>(Action<T> action, PublishingMode publishingMode)
+        private Action<object> GetWrapper<T>(Action<T> action, ExecutionMode executionMode)
         {
             Action<object> ret = TryGetWrapper(action);
 
@@ -361,28 +387,31 @@ namespace WEAK.Communication
                     weakAction = GetWrapper(weakDelegate, action.Method, key);
                 }
 
-                switch (publishingMode)
+                switch (executionMode)
                 {
-                    case PublishingMode.Direct:
+                    case ExecutionMode.Direct:
                         ret = weakAction;
                         break;
 
-                    case PublishingMode.Async:
+                    case ExecutionMode.Async:
                         ret = (o) => Task.Factory.StartNew(weakAction, o);
+                        _firstActions.Add(ret);
                         break;
 
-                    case PublishingMode.LongRunning:
+                    case ExecutionMode.LongRunning:
                         ret = (o) => Task.Factory.StartNew(weakAction, o, TaskCreationOptions.LongRunning);
+                        _firstActions.Add(ret);
                         break;
 
-                    case PublishingMode.Context:
+                    case ExecutionMode.Context:
                         SendOrPostCallback callback = new SendOrPostCallback(weakAction);
                         ret = (o) => _context.Send(callback, o);
                         break;
 
-                    case PublishingMode.ContextAsync:
+                    case ExecutionMode.ContextAsync:
                         callback = new SendOrPostCallback(weakAction);
                         ret = (o) => _context.Post(callback, o);
+                        _firstActions.Add(ret);
                         break;
                 }
 
@@ -409,6 +438,7 @@ namespace WEAK.Communication
                     {
                         _registrations.Remove(method);
                     }
+                    _firstActions.Remove(action);
 
                     foreach (Type type in _relayTypes[method.GetParameters()[0].ParameterType])
                     {
@@ -422,7 +452,7 @@ namespace WEAK.Communication
 
         #region IPublisher
 
-        IDisposable IPublisher.Subscribe<T>(Action<T> action, PublishingMode publishingMode)
+        IDisposable IPublisher.Subscribe<T>(Action<T> action, ExecutionMode executionMode)
         {
             if (_isDisposed)
             {
@@ -437,40 +467,14 @@ namespace WEAK.Communication
             {
                 Publisher<T>.Add(_id);
 
-                Action<object> wrapper = GetWrapper(action, publishingMode);
+                Action<object> wrapper = GetWrapper(action, executionMode);
 
                 foreach (Type type in _relayTypes[typeof(T)])
                 {
-                    typeof(Publisher<>).MakeGenericType(type).GetMethod("Subscribe").Invoke(null, new object[] { _id, wrapper });
+                    typeof(Publisher<>).MakeGenericType(type).GetMethod("Subscribe").Invoke(null, new object[] { _id, wrapper, IsFirst(executionMode) });
                 }
 
-                return new Subscription<T>(this, action);
-            }
-        }
-
-        void IPublisher.Unsubscribe<T>(Action<T> action)
-        {
-            if (_isDisposed)
-            {
-                throw new ObjectDisposedException("Resource was disposed.");
-            }
-            if (action == null)
-            {
-                throw new ArgumentNullException(Helper.GetMemberName(() => action));
-            }
-
-            lock (_locker)
-            {
-                Publisher<T>.Add(_id);
-
-                Action<object> wrapper = TryGetWrapper(action);
-                if (wrapper != null)
-                {
-                    foreach (Type type in _relayTypes[typeof(T)])
-                    {
-                        typeof(Publisher<>).MakeGenericType(type).GetMethod("Unsubscribe").Invoke(null, new object[] { _id, wrapper });
-                    }
-                }
+                return new Subscription<T>(_id, wrapper);
             }
         }
 

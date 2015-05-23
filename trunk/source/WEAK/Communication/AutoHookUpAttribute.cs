@@ -10,13 +10,16 @@ namespace WEAK.Communication
     {
         #region Fields
 
-        private readonly PublishingMode _publishingMode;
+        private readonly ExecutionMode _publishingMode;
 
         #endregion
 
         #region Properties
 
-        public PublishingMode PublishingMode
+        /// <summary>
+        /// Gets the PublishingMode of the attribute.
+        /// </summary>
+        public ExecutionMode PublishingMode
         {
             get { return _publishingMode; }
         }
@@ -25,7 +28,11 @@ namespace WEAK.Communication
 
         #region Initialisation
 
-        public AutoHookUpAttribute(PublishingMode publishingMode)
+        /// <summary>
+        /// Initialise a new instance of AutoHookUpAttribute.
+        /// </summary>
+        /// <param name="publishingMode"></param>
+        public AutoHookUpAttribute(ExecutionMode publishingMode)
         {
             _publishingMode = publishingMode;
         }

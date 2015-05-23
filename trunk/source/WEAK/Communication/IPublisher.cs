@@ -12,15 +12,9 @@ namespace WEAK.Communication
         /// </summary>
         /// <typeparam name="T">The type of the request.</typeparam>
         /// <param name="action">The action to subscribe.</param>
-        /// <param name="publishingMode">The mode of publication.</param>
+        /// <param name="executionMode">The mode of execution.</param>
         /// <returns>A System.IDisposable to dispose to remove the subscription.</returns>
-        IDisposable Subscribe<T>(Action<T> action, PublishingMode publishingMode);
-        /// <summary>
-        /// Unsubscribes an action to publishing request of type T or derived types.
-        /// </summary>
-        /// <typeparam name="T">The type of the request.</typeparam>
-        /// <param name="action">The action to unsubscribe.</param>
-        void Unsubscribe<T>(Action<T> action);
+        IDisposable Subscribe<T>(Action<T> action, ExecutionMode executionMode);
         /// <summary>
         /// Publish an argument of type T.
         /// </summary>

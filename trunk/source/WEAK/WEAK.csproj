@@ -57,7 +57,7 @@
     </Compile>
     <Compile Include="Communication\AutoHookUpAttribute.cs" />
     <Compile Include="Communication\IPublisherExtension.cs" />
-    <Compile Include="Communication\PublishingMode.cs" />
+    <Compile Include="Communication\ExecutionMode.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Module\IUnit.cs" />
     <Compile Include="Module\IUnitManager.cs" />
