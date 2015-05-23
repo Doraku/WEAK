@@ -22,7 +22,7 @@ namespace WEAK.Windows.Base
                 if (Publisher != value)
                 {
                     _publisher = value;
-                    Publisher.HookUp(this);
+                    Publisher.Subscribe(this);
                 }
             }
         }
@@ -43,7 +43,7 @@ namespace WEAK.Windows.Base
 
         #region Callbacks
 
-        [AutoHookUp(ExecutionMode.Context)]
+        [Subscribe(ExecutionMode.Context)]
         protected virtual void OnShellClosed(ApplicationExitRequest arg)
         {
             Publisher = null;

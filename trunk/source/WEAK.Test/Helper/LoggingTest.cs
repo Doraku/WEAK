@@ -1,10 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using WEAK.Helper;
 
-namespace WEAK.Test
+namespace WEAK.Test.Helper
 {
     [TestClass]
-    public class HelperTest
+    public class LoggingTest
     {
         #region Types
 
@@ -42,7 +43,7 @@ namespace WEAK.Test
         {
             object arg = null;
 
-            Assert.AreEqual(Helper.GetMemberName(() => arg), "arg");
+            Assert.AreEqual(Logging.GetMemberName(() => arg), "arg");
         }
 
         [TestMethod]
@@ -50,7 +51,7 @@ namespace WEAK.Test
         {
             Dummy dummy = new Dummy();
 
-            Assert.AreEqual(Helper.GetMemberName(() => dummy.Field), "Field");
+            Assert.AreEqual(Logging.GetMemberName(() => dummy.Field), "Field");
         }
 
         [TestMethod]
@@ -58,7 +59,7 @@ namespace WEAK.Test
         {
             Dummy dummy = new Dummy();
 
-            Assert.AreEqual(Helper.GetMemberName(() => dummy.Property), "Property");
+            Assert.AreEqual(Logging.GetMemberName(() => dummy.Property), "Property");
         }
 
         [TestMethod]
@@ -66,7 +67,7 @@ namespace WEAK.Test
         {
             try
             {
-                Helper.GetMemberName<string>(null);
+                Logging.GetMemberName<string>(null);
                 Assert.Fail("Did not raise ArgumentNullException.");
             }
             catch (ArgumentNullException) { }
@@ -77,7 +78,7 @@ namespace WEAK.Test
         {
             try
             {
-                Helper.GetMemberName<Action>(() => GetMemberNameTestNotMemberExpression);
+                Logging.GetMemberName<Action>(() => GetMemberNameTestNotMemberExpression);
                 Assert.Fail("Did not raise ArgumentException.");
             }
             catch (ArgumentException) { }

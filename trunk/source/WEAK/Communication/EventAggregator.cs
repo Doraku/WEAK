@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
 using System.Threading.Tasks;
+using WEAK.Helper;
 
 namespace WEAK.Communication
 {
@@ -122,8 +123,6 @@ namespace WEAK.Communication
             {
                 if (!_isDisposed)
                 {
-                    _isDisposed = true;
-
                     lock (_locker)
                     {
                         foreach (Type type in _relayTypes[typeof(T)])
@@ -132,6 +131,7 @@ namespace WEAK.Communication
                         }
                     }
 
+                    _isDisposed = true;
                     GC.SuppressFinalize(this);
                 }
             }
@@ -154,7 +154,7 @@ namespace WEAK.Communication
         private readonly List<Action<object>> _firstActions;
 
         private int _id;
-        private volatile bool _isDisposed = false;
+        private bool _isDisposed = false;
 
         #endregion
 
@@ -183,7 +183,7 @@ namespace WEAK.Communication
         {
             if (context == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => context));
+                throw new ArgumentNullException(Logging.GetMemberName(() => context));
             }
 
             _context = context;
@@ -460,7 +460,7 @@ namespace WEAK.Communication
             }
             if (action == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => action));
+                throw new ArgumentNullException(Logging.GetMemberName(() => action));
             }
 
             lock (_locker)
@@ -503,14 +503,13 @@ namespace WEAK.Communication
                 return;
             }
 
-            _isDisposed = true;
-
             foreach (Type type in _subTypes.Keys)
             {
                 typeof(Publisher<>).MakeGenericType(type).GetMethod("Clear").Invoke(null, new object[] { _id });
             }
             _registrations.Clear();
 
+            _isDisposed = true;
             GC.SuppressFinalize(this);
         }
 

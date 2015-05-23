@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using WEAK.Helper;
 
 namespace WEAK.Input
 {
+    /// <summary>
+    /// Provides a method to wrap an IList to an UnDo list linked to an UnDoManager to automatically generate IUnDo operations.
+    /// </summary>
     public static class IListExtension
     {
         #region Types
@@ -162,15 +166,22 @@ namespace WEAK.Input
 
         #region Methods
 
+        /// <summary>
+        ///  Wraps an IList to an UnDo list linked to an UnDoManager to automatically generate IUnDo operations.
+        /// </summary>
+        /// <typeparam name="T">The type of the list.</typeparam>
+        /// <param name="source">The list.</param>
+        /// <param name="manager">The UnDoManager.</param>
+        /// <returns>A wrapped IList.</returns>
         public static IList<T> ToUnDo<T>(this IList<T> source, UnDoManager manager)
         {
             if (source == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => source));
+                throw new ArgumentNullException(Logging.GetMemberName(() => source));
             }
             if (manager == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => manager));
+                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
             }
 
             return new UnDoList<T>(manager, source);

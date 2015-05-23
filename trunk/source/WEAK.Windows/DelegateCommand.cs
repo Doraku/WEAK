@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
+using WEAK.Helper;
 
 namespace WEAK.Windows
 {
@@ -17,7 +18,7 @@ namespace WEAK.Windows
         public DelegateCommand(Action execute, Func<bool> canExecute)
         {
             if (execute == null)
-                throw new ArgumentNullException(Helper.GetMemberName(() => execute));
+                throw new ArgumentNullException(Logging.GetMemberName(() => execute));
 
             _execute = execute;
             _canExecute = canExecute;
@@ -66,7 +67,7 @@ namespace WEAK.Windows
         {
             if (execute == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => execute));
+                throw new ArgumentNullException(Logging.GetMemberName(() => execute));
             }
 
             _execute = execute;

@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using WEAK.Helper;
 
 namespace WEAK.Input
 {
+    /// <summary>
+    /// Provides a method to wrap an IDictionary to an UnDo dictionary linked to an UnDoManager to automatically generate IUnDo operations.
+    /// </summary>
     public static class IDictionaryExtension
     {
         #region Types
@@ -177,15 +181,23 @@ namespace WEAK.Input
 
         #region Methods
 
+        /// <summary>
+        ///  Wraps an IDictionary to an UnDo dictionary linked to an UnDoManager to automatically generate IUnDo operations.
+        /// </summary>
+        /// <typeparam name="TKey">The type of keys.</typeparam>
+        /// <typeparam name="TValue">The type of values.</typeparam>
+        /// <param name="source">The dictionary.</param>
+        /// <param name="manager">The UnDoManager.</param>
+        /// <returns>A wrapped IDictionary.</returns>
         public static IDictionary<TKey, TValue> ToUnDo<TKey, TValue>(this IDictionary<TKey, TValue> source, UnDoManager manager)
         {
             if (source == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => source));
+                throw new ArgumentNullException(Logging.GetMemberName(() => source));
             }
             if (manager == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => manager));
+                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
             }
 
             return new UnDoDictionary<TKey, TValue>(manager, source);

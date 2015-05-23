@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using WEAK.Helper;
 
 namespace WEAK.Object
 {
@@ -158,7 +159,7 @@ namespace WEAK.Object
             }
             if (string.IsNullOrEmpty(key))
             {
-                throw new ArgumentException("Cannot be null or empty.", Helper.GetMemberName(() => key));
+                throw new ArgumentException("Cannot be null or empty.", Logging.GetMemberName(() => key));
             }
 
             if (_isSingleton)

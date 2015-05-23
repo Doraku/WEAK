@@ -38,23 +38,23 @@ namespace WEAK.Test.Communication
 
             #region Methods
 
-            [AutoHookUp(ExecutionMode.Direct)]
+            [Subscribe(ExecutionMode.Direct)]
             private void PrivateStaticHook(Request3 request)
             {
                 Action();
             }
 
-            [AutoHookUp(ExecutionMode.Direct)]
+            [Subscribe(ExecutionMode.Direct)]
             private void PrivateHook(Request2 request)
             {
                 Action();
             }
 
-            [AutoHookUp(ExecutionMode.Direct)]
+            [Subscribe(ExecutionMode.Direct)]
             protected virtual void ProtectedHook2(Request4 request)
             { }
 
-            [AutoHookUp(ExecutionMode.Direct)]
+            [Subscribe(ExecutionMode.Direct)]
             protected virtual void ProtectedHook3(Request5 request)
             {
                 Action();
@@ -87,13 +87,13 @@ namespace WEAK.Test.Communication
         {
             #region Dummy
 
-            [AutoHookUp(ExecutionMode.Direct)]
+            [Subscribe(ExecutionMode.Direct)]
             protected override void ProtectedHook(Request request)
             {
                 base.ProtectedHook(request);
             }
 
-            [AutoHookUp(ExecutionMode.Direct)]
+            [Subscribe(ExecutionMode.Direct)]
             protected override void ProtectedHook3(Request5 request)
             {
                 Action();
@@ -397,7 +397,7 @@ namespace WEAK.Test.Communication
                 Dummy.Action = () => done = true;
                 Dummy dummy = new Dummy2();
 
-                IEnumerable<IDisposable> registers = publisher.HookUp(dummy);
+                IDisposable registers = publisher.Subscribe(dummy);
 
                 publisher.Publish(new Request());
 
@@ -432,10 +432,7 @@ namespace WEAK.Test.Communication
                 done = false;
                 Dummy.Action = () => done = true;
 
-                foreach (IDisposable register in registers)
-                {
-                    register.Dispose();
-                }
+                registers.Dispose();
 
                 publisher.Publish(new Request());
 

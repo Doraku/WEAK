@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using WEAK.Helper;
 
 namespace WEAK.Object
 {
@@ -74,7 +75,7 @@ namespace WEAK.Object
         {
             if (key == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => key));
+                throw new ArgumentNullException(Logging.GetMemberName(() => key));
             }
 
             TInstance ret = null;
@@ -101,11 +102,11 @@ namespace WEAK.Object
         {
             if (key == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => key));
+                throw new ArgumentNullException(Logging.GetMemberName(() => key));
             }
             if (creator == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => creator));
+                throw new ArgumentNullException(Logging.GetMemberName(() => creator));
             }
 
             TInstance ret = null;
@@ -142,7 +143,7 @@ namespace WEAK.Object
         {
             if (key == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => key));
+                throw new ArgumentNullException(Logging.GetMemberName(() => key));
             }
 
             return GetOrCreate(key, k => Factory<TInstance>.CreateInstance());
@@ -158,7 +159,7 @@ namespace WEAK.Object
         {
             if (key == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => key));
+                throw new ArgumentNullException(Logging.GetMemberName(() => key));
             }
 
             TInstance ret;

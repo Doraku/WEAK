@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using WEAK.Helper;
 
 namespace WEAK.Input
 {
+    /// <summary>
+    /// Provides a method to wrap an ICollection to an UnDo collection linked to an UnDoManager to automatically generate IUnDo operations.
+    /// </summary>
     public static class ICollectionExtension
     {
         #region Types
@@ -131,15 +135,22 @@ namespace WEAK.Input
 
         #region Methods
 
+        /// <summary>
+        ///  Wraps an ICollection to an UnDo collection linked to an UnDoManager to automatically generate IUnDo operations.
+        /// </summary>
+        /// <typeparam name="T">The type of the collection.</typeparam>
+        /// <param name="source">The collection.</param>
+        /// <param name="manager">The UnDoManager.</param>
+        /// <returns>A wrapped ICollection.</returns>
         public static ICollection<T> ToUnDo<T>(this ICollection<T> source, UnDoManager manager)
         {
             if (source == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => source));
+                throw new ArgumentNullException(Logging.GetMemberName(() => source));
             }
             if (manager == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => manager));
+                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
             }
 
             return new UnDoCollection<T>(manager, source);

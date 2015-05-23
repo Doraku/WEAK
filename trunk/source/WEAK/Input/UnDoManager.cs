@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using WEAK.Helper;
 
 namespace WEAK.Input
 {
+    /// <summary>
+    /// Provides an implementation of the command pattern to execute operations and return to a previous state by undoing them.
+    /// </summary>
     public sealed class UnDoManager
     {
         #region Types
 
-        private class Linker : IDisposable
+        private sealed class Linker : IDisposable
         {
             #region Fields
 
@@ -27,11 +31,16 @@ namespace WEAK.Input
                 ++_manager._linkerCount;
             }
 
+            ~Linker()
+            {
+                Dispose();
+            }
+
             #endregion
 
             #region IDisposable
 
-            void IDisposable.Dispose()
+            public void Dispose()
             {
                 if (!_isDisposed)
                 {
@@ -71,6 +80,9 @@ namespace WEAK.Input
 
         #region Initialisation
 
+        /// <summary>
+        /// Initialises an instance of UnDoManager.
+        /// </summary>
         public UnDoManager()
         {
             _doneActions = new Stack<IUnDo>();
@@ -82,22 +94,34 @@ namespace WEAK.Input
 
         #region Methods
 
+        /// <summary>
+        /// Starts a group of operation and return an IDisposable to stop the group.
+        /// If multiple calls to this method are made, the group will be stop once each IDisposable returned are disposed.
+        /// </summary>
+        /// <returns>An IDisposable to stop the group operation.</returns>
         public IDisposable BeginGroup()
         {
             return new Linker(this);
         }
 
+        /// <summary>
+        /// Clears the history of IUnDo operations.
+        /// </summary>
         public void Clear()
         {
             _doneActions.Clear();
             _undoneActions.Clear();
         }
 
+        /// <summary>
+        /// Executes the IUnDo command and store it in the manager hostory.
+        /// </summary>
+        /// <param name="command">The IUnDo to execute.</param>
         public void Do(IUnDo command)
         {
             if (command == null)
             {
-                throw new ArgumentNullException(Helper.GetMemberName(() => command));
+                throw new ArgumentNullException(Logging.GetMemberName(() => command));
             }
 
             command.Do();
@@ -114,11 +138,18 @@ namespace WEAK.Input
             _undoneActions.Clear();
         }
 
+        /// <summary>
+        /// Returns a boolean to express if an undo can be executed.
+        /// </summary>
+        /// <returns>true if there is an IUnDo in the history and no group operation is in progress, else false.</returns>
         public bool CanUndo()
         {
             return _doneActions.Count > 0 && _linkerCount == 0;
         }
 
+        /// <summary>
+        /// UnDoes the last executed IUnDo command of the manager history.
+        /// </summary>
         public void Undo()
         {
             if (CanUndo())
@@ -129,6 +160,9 @@ namespace WEAK.Input
             }
         }
 
+        /// <summary>
+        /// UnDoes all executed IUnDo commands of the manager history.
+        /// </summary>
         public void UndoAll()
         {
             while (CanUndo())
@@ -137,11 +171,18 @@ namespace WEAK.Input
             }
         }
 
+        /// <summary>
+        /// Returns a boolean to express if a redo can be executed.
+        /// </summary>
+        /// <returns>true if there is an IUnDo in the undone history and no group poeration is in progress, else false.</returns>
         public bool CanRedo()
         {
             return _undoneActions.Count > 0 && _linkerCount == 0;
         }
 
+        /// <summary>
+        /// ReDoes the last undone IUnDo commands of the manager history.
+        /// </summary>
         public void Redo()
         {
             if (CanRedo())
@@ -152,6 +193,9 @@ namespace WEAK.Input
             }
         }
 
+        /// <summary>
+        /// ReDoes all undone IUnDo commands of the manager history.
+        /// </summary>
         public void RedoAll()
         {
             while (CanRedo())

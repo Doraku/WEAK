@@ -1,5 +1,12 @@
-﻿namespace WEAK.Input
+﻿using System;
+using WEAK.Helper;
+using System.Linq;
+
+namespace WEAK.Input
 {
+    /// <summary>
+    /// Provides an implementation of the IUnDo interface for a group of operations.
+    /// </summary>
     public sealed class GroupUnDo : IUnDo
     {
         #region Fields
@@ -10,8 +17,23 @@
 
         #region Initialisation
 
+        /// <summary>
+        /// Initialise an instance of GroupUnDo.
+        /// </summary>
+        /// <param name="commands">The sequence of IUnDo contained by the instance.</param>
+        /// <exception cref="System.ArgumentNullException">commands is null.</exception>
+        /// <exception cref="System.ArgumentException">commands contains null elements.</exception>
         public GroupUnDo(params IUnDo[] commands)
         {
+            if (commands == null)
+            {
+                throw new ArgumentNullException(Logging.GetMemberName(() => commands));
+            }
+            if (commands.Any(i => i == null))
+            {
+                throw new ArgumentException("IUnDo sequence contains null elements.", Logging.GetMemberName(() => commands));
+            }
+
             _commands = commands;
         }
 

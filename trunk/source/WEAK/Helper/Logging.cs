@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace WEAK
+namespace WEAK.Helper
 {
     /// <summary>
     /// Provides a set of static methods to get extra informations automatically to reduce typo.
     /// </summary>
-    public static class Helper
+    public static class Logging
     {
         /// <summary>
         /// Gets the member name of an expression, useful to get the name of a variable, field or property.

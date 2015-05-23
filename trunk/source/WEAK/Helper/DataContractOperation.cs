@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace WEAK.Serialization
+namespace WEAK.Helper
 {
     public static class DataContractOperation
     {
