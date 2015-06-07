@@ -82,6 +82,22 @@ namespace WEAK.Test.Object
             #endregion
         }
 
+        private class DummyWithKey
+        {
+            #region Fields
+
+            public readonly IDummy Param;
+            public readonly object Param2;
+
+            #endregion
+
+            public DummyWithKey([Key("test")]IDummy param, [Key("test2")]object param2)
+            {
+                Param = param;
+                Param2 = param2;
+            }
+        }
+
         #endregion
 
         #region Methods
@@ -164,6 +180,17 @@ namespace WEAK.Test.Object
             IDummy instance = Factory<IDummy>.CreateInstance();
 
             Assert.IsNotNull(instance, "instance is null");
+        }
+
+        [TestMethod]
+        public void CreateInstanceWithKey()
+        {
+            DummyWithKey instance1 = Factory<DummyWithKey>.CreateInstance();
+            DummyWithKey instance2 = Factory<DummyWithKey>.CreateInstance();
+
+            Assert.AreNotSame(instance1, instance2, "same object");
+            Assert.AreSame(instance1.Param, instance2.Param, "different object");
+            Assert.AreSame(instance1.Param2, instance2.Param2, "different object");
         }
 
         #endregion

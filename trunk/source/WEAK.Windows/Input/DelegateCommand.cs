@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using WEAK.Helper;
 
-namespace WEAK.Windows
+namespace WEAK.Windows.Input
 {
     public class DelegateCommand : ICommand
     {

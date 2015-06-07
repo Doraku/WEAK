@@ -43,8 +43,7 @@ namespace WEAK.Object
         public static bool TryRegister<TConcrete>(bool isSingleton)
             where TConcrete : class, T
         {
-            if (!typeof(T).IsInterface
-                && !typeof(T).IsAbstract)
+            if (!typeof(T).IsAbstract)
             {
                 throw new InvalidOperationException(string.Format("Type \"{0}\" is not an interface or an abstract class.", typeof(T)));
             }
@@ -57,13 +56,13 @@ namespace WEAK.Object
                 {
                     _isSingleton = isSingleton;
                     _concreteType = typeof(TConcrete);
-                    _factoryMethod = typeof(Factory<>).MakeGenericType(_concreteType).GetMethod("CreateInstance");
                     if (_isSingleton)
                     {
                         _singleton = new Lazy<T>(() => (T)typeof(Singleton<>).MakeGenericType(_concreteType).GetProperty("Instance").GetValue(null), true);
                     }
                     else
                     {
+                        _factoryMethod = typeof(Factory<>).MakeGenericType(_concreteType).GetMethod("CreateInstance");
                         _referencesMethod = typeof(ReferenceManager<,>).MakeGenericType(typeof(string), _concreteType).GetMethod("GetOrCreate", new[] { typeof(string) });
                     }
 
@@ -123,8 +122,7 @@ namespace WEAK.Object
         /// or a cyclic reference has been detected.</exception>
         public static T Resolve()
         {
-            if (!typeof(T).IsInterface
-                && !typeof(T).IsAbstract)
+            if (!typeof(T).IsAbstract)
             {
                 throw new InvalidOperationException(string.Format("Type \"{0}\" is not an interface or an abstract class.", typeof(T)));
             }
@@ -148,8 +146,7 @@ namespace WEAK.Object
         /// <exception cref="System.ArgumentException">key is null or empty.</exception>
         public static T Resolve(string key)
         {
-            if (!typeof(T).IsInterface
-                && !typeof(T).IsAbstract)
+            if (!typeof(T).IsAbstract)
             {
                 throw new InvalidOperationException(string.Format("Type \"{0}\" is not an interface or an abstract class.", typeof(T)));
             }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WEAK.Windows;
+using WEAK.Windows.Input;
 
 namespace WEAK.Windows.Test
 {

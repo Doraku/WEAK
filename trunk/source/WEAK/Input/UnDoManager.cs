@@ -49,10 +49,12 @@ namespace WEAK.Input
                         if (_manager._linkedCommands.Count == 1)
                         {
                             _manager._doneActions.Push(_manager._linkedCommands[0]);
+                            _manager.AddVersion();
                         }
                         else if (_manager._linkedCommands.Count > 0)
                         {
                             _manager._doneActions.Push(new GroupUnDo(_manager._linkedCommands.ToArray()));
+                            _manager.AddVersion();
                         }
 
                         _manager._linkedCommands.Clear();
@@ -73,7 +75,11 @@ namespace WEAK.Input
         private readonly Stack<IUnDo> _doneActions;
         private readonly Stack<IUnDo> _undoneActions;
         private readonly List<IUnDo> _linkedCommands;
+        private readonly Stack<int> _doneVersions;
+        private readonly Stack<int> _undoneVersions;
 
+        private int _currentVersion;
+        private int _lastVersion;
         private int _linkerCount;
 
         #endregion
@@ -88,15 +94,41 @@ namespace WEAK.Input
             _doneActions = new Stack<IUnDo>();
             _undoneActions = new Stack<IUnDo>();
             _linkedCommands = new List<IUnDo>();
+            _doneVersions = new Stack<int>();
+            _undoneVersions = new Stack<int>();
+
+            _currentVersion = 0;
+            _lastVersion = 0;
+
+            _doneVersions.Push(_currentVersion);
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets an int representing the state of the UnDoManager.
+        /// </summary>
+        public int Version
+        {
+            get { return _currentVersion; }
         }
 
         #endregion
 
         #region Methods
 
+        private void AddVersion()
+        {
+            _doneVersions.Push(++_lastVersion);
+            _currentVersion = _lastVersion;
+            _undoneVersions.Clear();
+        }
+
         /// <summary>
         /// Starts a group of operation and return an IDisposable to stop the group.
-        /// If multiple calls to this method are made, the group will be stop once each IDisposable returned are disposed.
+        /// If multiple calls to this method are made, the group will be stoped once each IDisposable returned are disposed.
         /// </summary>
         /// <returns>An IDisposable to stop the group operation.</returns>
         public IDisposable BeginGroup()
@@ -133,6 +165,7 @@ namespace WEAK.Input
             else
             {
                 _doneActions.Push(command);
+                AddVersion();
             }
 
             _undoneActions.Clear();
@@ -157,6 +190,10 @@ namespace WEAK.Input
                 IUnDo command = _doneActions.Pop();
                 command.Undo();
                 _undoneActions.Push(command);
+
+                int version = _doneVersions.Pop();
+                _undoneVersions.Push(version);
+                _currentVersion = _doneVersions.Peek();
             }
         }
 
@@ -190,6 +227,10 @@ namespace WEAK.Input
                 IUnDo command = _undoneActions.Pop();
                 command.Do();
                 _doneActions.Push(command);
+
+                int version = _undoneVersions.Pop();
+                _doneVersions.Push(version);
+                _currentVersion = version;
             }
         }
 

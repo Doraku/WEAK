@@ -83,7 +83,10 @@ namespace WEAK.Communication
 
             public static void Add(int id)
             {
-                Actions.AddRange(Enumerable.Repeat<Action<object>>(null, id + 1 - Actions.Count));
+                if (id >= Actions.Count)
+                {
+                    Actions.AddRange(Enumerable.Repeat<Action<object>>(null, id + 1 - Actions.Count));
+                }
             }
 
             #endregion

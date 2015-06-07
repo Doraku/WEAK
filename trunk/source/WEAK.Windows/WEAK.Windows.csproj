@@ -52,16 +52,11 @@
     </Compile>
     <Compile Include="AttachedProperty\SelectorBehavior.cs" />
     <Compile Include="AttachedProperty\TextBoxBehavior.cs" />
+    <Compile Include="AttachedProperty\UIElementBehavior.cs" />
     <Compile Include="AttachedProperty\WindowBehavior.cs" />
-    <Compile Include="Base\AShell.cs" />
-    <Compile Include="Base\AView.cs" />
-    <Compile Include="Base\AViewDataTemplate.cs" />
-    <Compile Include="Base\AViewModel.cs" />
-    <Compile Include="Base\IModule.cs" />
-    <Compile Include="Base\Request.cs" />
     <Compile Include="Data\ContainsConverter.cs" />
     <Compile Include="Data\EqualsConverter.cs" />
-    <Compile Include="DelegateCommand.cs" />
+    <Compile Include="Input\DelegateCommand.cs" />
     <Compile Include="DependencyObjectExtensions.cs" />
     <Compile Include="Markup\EnumExtension.cs" />
     <Compile Include="Markup\ReferenceExtension.cs" />

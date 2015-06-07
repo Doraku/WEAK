@@ -16,7 +16,7 @@ namespace WEAK.Object
     {
         #region Fields
 
-        private static readonly Lazy<ConstructorInfo> _constructorInfo;
+        private static readonly Lazy<Func<T>> _factory;
 
         [ThreadStatic]
         private static bool _isInitialising;
@@ -28,19 +28,40 @@ namespace WEAK.Object
         static Factory()
         {
             _isInitialising = false;
+
             if (!typeof(T).IsAbstract)
             {
-                _constructorInfo = new Lazy<ConstructorInfo>(
+                _factory = new Lazy<Func<T>>(
                     () =>
                     {
-                        ConstructorInfo ret = typeof(T).GetConstructors().OrderBy(i => i.GetParameters().Length).FirstOrDefault();
-
-                        if (ret == null)
+                        ConstructorInfo constructor = typeof(T).GetConstructors().OrderBy(i => i.GetParameters().Length).FirstOrDefault();
+                        if (constructor == null)
                         {
                             throw new InvalidOperationException(string.Format("No suitable constructor found for type \"{0}\".", typeof(T)));
                         }
 
-                        return ret;
+                        List<Func<object>> parameters = new List<Func<object>>();
+
+                        foreach (ParameterInfo info in constructor.GetParameters())
+                        {
+                            KeyAttribute attribute = info.GetCustomAttribute<KeyAttribute>();
+                            MethodInfo creator;
+                            object[] innerParameters;
+                            if (attribute == null)
+                            {
+                                creator = typeof(Factory<>).MakeGenericType(info.ParameterType).GetMethod("CreateInstance", new Type[0]);
+                                innerParameters = new object[0];
+                            }
+                            else
+                            {
+                                creator = typeof(ReferenceManager<,>).MakeGenericType(typeof(string), info.ParameterType).GetMethod("GetOrCreate", new[] { typeof(string) });
+                                innerParameters = new object[] { attribute.Value };
+                            }
+
+                            parameters.Add(() => creator.Invoke(null, innerParameters));
+                        }
+
+                        return () => (T)constructor.Invoke(parameters.Select(i => i()).ToArray());
                     },
                     true);
             }
@@ -67,7 +88,7 @@ namespace WEAK.Object
                 throw new InvalidOperationException(string.Format("Cyclic reference for type \"{0}\"", typeof(T)));
             }
 
-            if (_constructorInfo == null)
+            if (_factory == null)
             {
                 ret = Linker<T>.Resolve();
             }
@@ -77,22 +98,7 @@ namespace WEAK.Object
                 {
                     _isInitialising = true;
 
-                    List<object> parameters = new List<object>();
-
-                    foreach (ParameterInfo info in _constructorInfo.Value.GetParameters())
-                    {
-                        if (info.ParameterType.IsInterface
-                            || info.ParameterType.IsAbstract)
-                        {
-                            parameters.Add(typeof(Linker<>).MakeGenericType(info.ParameterType).GetMethod("Resolve", new Type[0]).Invoke(null, new object[0]));
-                        }
-                        else
-                        {
-                            parameters.Add(typeof(Factory<>).MakeGenericType(info.ParameterType).GetMethod("CreateInstance", new Type[0]).Invoke(null, new object[0]));
-                        }
-                    }
-
-                    ret = (T)_constructorInfo.Value.Invoke(parameters.ToArray());
+                    ret = _factory.Value();
                 }
                 catch (TargetInvocationException damn)
                 {

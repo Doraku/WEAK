@@ -86,7 +86,7 @@ namespace WEAK.Helper
 
                     if (errors.Count > 0)
                     {
-                        throw new AggregateException(errors);
+                        throw new AggregateException("An error occured while disposing one or more elements.", errors);
                     }
 
                     _isDisposed = true;

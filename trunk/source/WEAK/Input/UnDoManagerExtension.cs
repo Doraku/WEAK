@@ -12,6 +12,20 @@ namespace WEAK.Input
     {
         #region Methods
 
+        public static void Do(this UnDoManager manager, Action doAction, Action undoAction)
+        {
+            if (doAction == null)
+            {
+                throw new ArgumentNullException(Logging.GetMemberName(() => doAction));
+            }
+            if (undoAction == null)
+            {
+                throw new ArgumentNullException(Logging.GetMemberName(() => undoAction));
+            }
+
+            manager.Do(new UnDo(doAction, undoAction));
+        }
+
         public static void Do<T>(this UnDoManager manager, Action<T> setter, T oldValue, T newValue)
         {
             if (manager == null)
@@ -23,7 +37,10 @@ namespace WEAK.Input
                 throw new ArgumentNullException(Logging.GetMemberName(() => setter));
             }
 
-            manager.Do(new ValueUnDo<T>(setter, oldValue, newValue));
+            if (!ReferenceEquals(oldValue, newValue))
+            {
+                manager.Do(new ValueUnDo<T>(setter, oldValue, newValue));
+            }
         }
 
         public static void DoAdd<T>(this UnDoManager manager, ICollection<T> source, T value)

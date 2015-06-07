@@ -29,7 +29,7 @@ namespace WEAK.Communication
         #region Initialisation
 
         /// <summary>
-        /// Initialise a new instance of AutoHookUpAttribute.
+        /// Initialise a new instance of SubscribeAttribute.
         /// </summary>
         /// <param name="publishingMode"></param>
         public SubscribeAttribute(ExecutionMode publishingMode)

@@ -477,7 +477,11 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void PublishTestDirectPerf()
         {
+            using (IPublisher publisher1 = new EventAggregator())
+            using (IPublisher publisher2 = new EventAggregator())
             using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher3 = new EventAggregator())
+            using (IPublisher publisher4 = new EventAggregator())
             {
                 int total = 1000000;
                 int i = 0;

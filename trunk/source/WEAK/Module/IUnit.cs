@@ -9,5 +9,6 @@ namespace WEAK.Module
     public interface IUnit
     {
         void Load();
+        void Unload();
     }
 }

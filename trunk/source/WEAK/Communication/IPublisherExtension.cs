@@ -37,7 +37,7 @@ namespace WEAK.Communication
             {
                 foreach (MethodInfo method in type.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
                 {
-                    SubscribeAttribute attribute = Attribute.GetCustomAttribute(method, typeof(SubscribeAttribute)) as SubscribeAttribute;
+                    SubscribeAttribute attribute = method.GetCustomAttribute<SubscribeAttribute>();
                     if (attribute != null)
                     {
                         if (method.GetParameters().Length != 1)
@@ -88,7 +88,7 @@ namespace WEAK.Communication
             {
                 foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
                 {
-                    SubscribeAttribute attribute = Attribute.GetCustomAttribute(method, typeof(SubscribeAttribute)) as SubscribeAttribute;
+                    SubscribeAttribute attribute = method.GetCustomAttribute<SubscribeAttribute>();
                     if (attribute != null)
                     {
                         if (method.GetParameters().Length != 1)
