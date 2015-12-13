@@ -8,21 +8,12 @@ namespace WEAK.Object
     [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class KeyAttribute : Attribute
     {
-        #region Fields
-
-        private readonly string _value;
-
-        #endregion
-
         #region Properties
 
         /// <summary>
         /// Gets the value of the attribute.
         /// </summary>
-        public string Value
-        {
-            get { return _value; }
-        }
+        public string Value { get; }
 
         #endregion
 
@@ -34,7 +25,7 @@ namespace WEAK.Object
         /// <param name="publishingMode"></param>
         public KeyAttribute(string value)
         {
-            _value = value;
+            Value = value;
         }
 
         #endregion

@@ -8,21 +8,12 @@ namespace WEAK.Communication
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class SubscribeAttribute : Attribute
     {
-        #region Fields
-
-        private readonly ExecutionMode _publishingMode;
-
-        #endregion
-
         #region Properties
 
         /// <summary>
         /// Gets the PublishingMode of the attribute.
         /// </summary>
-        public ExecutionMode PublishingMode
-        {
-            get { return _publishingMode; }
-        }
+        public ExecutionMode PublishingMode { get; }
 
         #endregion
 
@@ -34,7 +25,7 @@ namespace WEAK.Communication
         /// <param name="publishingMode"></param>
         public SubscribeAttribute(ExecutionMode publishingMode)
         {
-            _publishingMode = publishingMode;
+            PublishingMode = publishingMode;
         }
 
         #endregion

@@ -43,6 +43,11 @@ namespace WEAK.Helper
                 }
             }
 
+            ~DisposableGroup()
+            {
+                Dispose();
+            }
+
             #endregion
 
             #region Methods
@@ -114,7 +119,7 @@ namespace WEAK.Helper
             {
                 throw new ArgumentNullException(Logging.GetMemberName(() => disposables));
             }
-
+            
             return new DisposableGroup(disposables);
         }
 

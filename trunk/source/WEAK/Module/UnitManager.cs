@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using WEAK.Communication;
@@ -187,6 +188,22 @@ namespace WEAK.Module
             }
         }
 
+        public void Add(Assembly assembly)
+        {
+            Type interfaceType = typeof(IUnit);
+            MethodInfo methodInfo = typeof(UnitManager).GetMethod("Add", Type.EmptyTypes);
+
+            foreach (Type type in assembly.GetTypes())
+            {
+                if (interfaceType.IsAssignableFrom(type)
+                    && type.IsClass
+                    && !type.IsAbstract)
+                {
+                    methodInfo.MakeGenericMethod(type).Invoke(this, null);
+                }
+            }
+        }
+
         public bool Remove<T>()
             where T : class, IUnit
         {
@@ -257,7 +274,7 @@ namespace WEAK.Module
             {
                 _pendingUnits[result.Type].Dispose();
                 _pendingUnits.Remove(result.Type);
-                if (result.LoadException != null)
+                if (result.LoadException == null)
                 {
                     _loadedUnits.Add(result.Type, result.Unit);
                 }
