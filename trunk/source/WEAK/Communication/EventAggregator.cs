@@ -471,7 +471,7 @@ namespace WEAK.Communication
 
             lock (_locker)
             {
-                Publisher<T>.Add(_id);
+                Publisher<T>.Add(_instances.Count - 1);
 
                 Action<object> wrapper = GetWrapper(action, executionMode);
 
