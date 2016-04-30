@@ -16,11 +16,11 @@ namespace WEAK.Input
         {
             if (doAction == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => doAction));
+                throw new ArgumentNullException(nameof(doAction));
             }
             if (undoAction == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => undoAction));
+                throw new ArgumentNullException(nameof(undoAction));
             }
 
             manager.Do(new UnDo(doAction, undoAction));
@@ -30,11 +30,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (setter == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => setter));
+                throw new ArgumentNullException(nameof(setter));
             }
 
             if (!ReferenceEquals(oldValue, newValue))
@@ -47,11 +47,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             manager.Do(new CollectionUnDo<T>(source, value, true));
@@ -61,11 +61,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             if (source.Contains(value))
@@ -82,11 +82,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             using (manager.BeginGroup())
@@ -102,11 +102,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             manager.Do(new ListUnDo<T>(source, source.Count, value, true));
@@ -116,11 +116,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             manager.Do(new ListUnDo<T>(source, index, value, true));
@@ -130,11 +130,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             manager.Do(v => source[index] = v, source[index], value);
@@ -144,11 +144,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             if (source.Contains(value))
@@ -165,11 +165,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             manager.Do(new ListUnDo<T>(source, index, source[index], false));
@@ -179,11 +179,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             using (manager.BeginGroup())
@@ -199,11 +199,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             manager.Do(new DictionaryUnDo<TKey, TValue>(source, key, value, true));
@@ -213,11 +213,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             if (source.ContainsKey(key))
@@ -234,11 +234,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             if (source.ContainsKey(key))
@@ -255,11 +255,11 @@ namespace WEAK.Input
         {
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             using (manager.BeginGroup())

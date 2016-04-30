@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Windows.Input;
-using WEAK.Helper;
 
 namespace WEAK.Windows.Input
 {
-    public class DelegateCommand : ICommand
+    public sealed class DelegateCommand : ICommand
     {
         #region Fields
 
@@ -18,7 +17,9 @@ namespace WEAK.Windows.Input
         public DelegateCommand(Action execute, Func<bool> canExecute)
         {
             if (execute == null)
-                throw new ArgumentNullException(Logging.GetMemberName(() => execute));
+            {
+                throw new ArgumentNullException(nameof(execute));
+            }
 
             _execute = execute;
             _canExecute = canExecute;
@@ -30,28 +31,42 @@ namespace WEAK.Windows.Input
 
         #endregion
 
-        #region ICommand
+        #region Methods
 
-        public event EventHandler CanExecuteChanged
+        public bool CanExecute()
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
+            return _canExecute?.Invoke() ?? true;
         }
 
-        public bool CanExecute(object parameter)
-        {
-            return _canExecute == null ? true : _canExecute();
-        }
-
-        public void Execute(object parameter)
+        public void Execute()
         {
             _execute();
         }
 
         #endregion
+
+        #region ICommand
+
+        event EventHandler ICommand.CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
+
+        bool ICommand.CanExecute(object parameter)
+        {
+            return CanExecute();
+        }
+
+        void ICommand.Execute(object parameter)
+        {
+            Execute();
+        }
+
+        #endregion
     }
 
-    public class DelegateCommand<T> : ICommand
+    public sealed class DelegateCommand<T> : ICommand
     {
         #region Fields
 
@@ -67,7 +82,7 @@ namespace WEAK.Windows.Input
         {
             if (execute == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => execute));
+                throw new ArgumentNullException(nameof(execute));
             }
 
             _execute = execute;
@@ -81,15 +96,29 @@ namespace WEAK.Windows.Input
 
         #endregion
 
+        #region Methods
+
+        public bool CanExecute(T parameter)
+        {
+            return _canExecute?.Invoke(parameter) ?? true;
+        }
+
+        public void Execute(T parameter)
+        {
+            _execute(parameter);
+        }
+
+        #endregion
+
         #region ICommand
 
-        public event EventHandler CanExecuteChanged
+        event EventHandler ICommand.CanExecuteChanged
         {
             add { CommandManager.RequerySuggested += value; }
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        public bool CanExecute(object parameter)
+        bool ICommand.CanExecute(object parameter)
         {
             if (!(parameter is T)
                 || (parameter == null && !_isClass))
@@ -97,12 +126,12 @@ namespace WEAK.Windows.Input
                 return false;
             }
 
-            return _canExecute == null ? true : _canExecute((T)parameter);
+            return CanExecute((T)parameter);
         }
 
-        public void Execute(object parameter)
+        void ICommand.Execute(object parameter)
         {
-            _execute((T)parameter);
+            Execute((T)parameter);
         }
 
         #endregion

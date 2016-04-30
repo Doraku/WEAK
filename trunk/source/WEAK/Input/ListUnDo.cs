@@ -33,7 +33,7 @@ namespace WEAK.Input
         {
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
 
             _source = source;

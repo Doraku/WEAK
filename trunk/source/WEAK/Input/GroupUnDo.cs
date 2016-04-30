@@ -27,11 +27,11 @@ namespace WEAK.Input
         {
             if (commands == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => commands));
+                throw new ArgumentNullException(nameof(commands));
             }
             if (commands.Any(i => i == null))
             {
-                throw new ArgumentException("IUnDo sequence contains null elements.", Logging.GetMemberName(() => commands));
+                throw new ArgumentException("IUnDo sequence contains null elements.", nameof(commands));
             }
 
             _commands = commands;

@@ -186,7 +186,7 @@ namespace WEAK.Communication
         {
             if (context == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => context));
+                throw new ArgumentNullException(nameof(context));
             }
 
             _context = context;
@@ -466,7 +466,7 @@ namespace WEAK.Communication
             }
             if (action == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             lock (_locker)

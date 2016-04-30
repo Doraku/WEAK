@@ -156,7 +156,7 @@ namespace WEAK.Object
             }
             if (string.IsNullOrEmpty(key))
             {
-                throw new ArgumentException("Cannot be null or empty.", Logging.GetMemberName(() => key));
+                throw new ArgumentException("Cannot be null or empty.", nameof(key));
             }
 
             if (_isSingleton)

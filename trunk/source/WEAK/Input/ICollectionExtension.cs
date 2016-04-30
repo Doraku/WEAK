@@ -146,11 +146,11 @@ namespace WEAK.Input
         {
             if (source == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => source));
+                throw new ArgumentNullException(nameof(source));
             }
             if (manager == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => manager));
+                throw new ArgumentNullException(nameof(manager));
             }
 
             return new UnDoCollection<T>(manager, source);

@@ -30,7 +30,7 @@ namespace WEAK.Input
         {
             if (setter == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => setter));
+                throw new ArgumentNullException(nameof(setter));
             }
 
             _setter = setter;

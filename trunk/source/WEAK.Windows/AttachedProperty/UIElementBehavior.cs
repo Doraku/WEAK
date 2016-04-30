@@ -34,7 +34,7 @@ namespace WEAK.Windows.AttachedProperty
             UIElement control = source as UIElement;
             if (control == null)
             {
-                throw new ArgumentException(string.Format("Not of type \"{0}\" or null.", typeof(UIElement).Name), Logging.GetMemberName(() => source));
+                throw new ArgumentException(string.Format("Not of type \"{0}\" or null.", typeof(UIElement).Name), nameof(source));
             }
 
             control.InputBindings.Clear();

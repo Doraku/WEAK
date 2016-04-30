@@ -24,11 +24,11 @@ namespace WEAK.Communication
         {
             if (publisher == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => publisher));
+                throw new ArgumentNullException(nameof(publisher));
             }
             if (type == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => type));
+                throw new ArgumentNullException(nameof(type));
             }
 
             List<IDisposable> ret = new List<IDisposable>();
@@ -74,11 +74,11 @@ namespace WEAK.Communication
         {
             if (publisher == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => publisher));
+                throw new ArgumentNullException(nameof(publisher));
             }
             if (target == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => target));
+                throw new ArgumentNullException(nameof(target));
             }
 
             List<IDisposable> ret = new List<IDisposable>();

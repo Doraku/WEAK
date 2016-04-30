@@ -21,9 +21,9 @@ namespace WEAK.Windows.Test
             bool done = false;
             DelegateCommand command = new DelegateCommand(() => done = true);
 
-            if (command.CanExecute(null))
+            if (command.CanExecute())
             {
-                command.Execute(null);
+                command.Execute();
             }
 
             Assert.IsTrue(done);
@@ -31,17 +31,17 @@ namespace WEAK.Windows.Test
             done = false;
             command = new DelegateCommand(Assert.Fail, () => false);
 
-            if (command.CanExecute(null))
+            if (command.CanExecute())
             {
-                command.Execute(null);
+                command.Execute();
             }
 
             done = false;
             command = new DelegateCommand(() => done = true, () => true);
 
-            if (command.CanExecute(null))
+            if (command.CanExecute())
             {
-                command.Execute(null);
+                command.Execute();
             }
 
             Assert.IsTrue(done);
@@ -71,15 +71,6 @@ namespace WEAK.Windows.Test
             Assert.IsTrue(done);
 
             done = false;
-            command = new DelegateCommand<Dummy>(p => Assert.Fail(), p => false);
-            parameter = new Dummy();
-
-            if (command.CanExecute(null))
-            {
-                command.Execute(null);
-            }
-
-            done = false;
             command = new DelegateCommand<Dummy>(p => done = true, p => true);
             parameter = new Dummy();
 
@@ -89,14 +80,6 @@ namespace WEAK.Windows.Test
             }
 
             Assert.IsTrue(done);
-
-            done = false;
-            command = new DelegateCommand<Dummy>(p => Assert.Fail(), p => true);
-
-            if (command.CanExecute(this))
-            {
-                command.Execute(this);
-            }
         }
 
         [TestMethod]
@@ -130,14 +113,6 @@ namespace WEAK.Windows.Test
             }
 
             Assert.IsTrue(done);
-
-            done = false;
-            command = new DelegateCommand<int>(p => Assert.Fail(), p => true);
-
-            if (command.CanExecute(this))
-            {
-                command.Execute(this);
-            }
         }
 
         #endregion

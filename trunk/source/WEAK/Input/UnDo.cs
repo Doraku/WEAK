@@ -29,11 +29,11 @@ namespace WEAK.Input
         {
             if (doAction == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => doAction));
+                throw new ArgumentNullException(nameof(doAction));
             }
             if (undoAction == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => undoAction));
+                throw new ArgumentNullException(nameof(undoAction));
             }
 
             _doAction = doAction;

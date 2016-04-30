@@ -153,7 +153,7 @@ namespace WEAK.Input
         {
             if (command == null)
             {
-                throw new ArgumentNullException(Logging.GetMemberName(() => command));
+                throw new ArgumentNullException(nameof(command));
             }
 
             command.Do();
