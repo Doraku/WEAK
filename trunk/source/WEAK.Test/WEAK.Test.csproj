@@ -67,7 +67,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Communication\EventAggregatorTest.cs" />
-    <Compile Include="Helper\DataContractOperationTest.cs" />
+    <Compile Include="Serialization\DataContractOperationTest.cs" />
     <Compile Include="Helper\IDisposableExtensionTest.cs" />
     <Compile Include="Helper\ObjectExtensionTest.cs" />
     <Compile Include="Input\CollectionUnDoTest.cs" />

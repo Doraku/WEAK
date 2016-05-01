@@ -3,8 +3,9 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Linq;
+using WEAK.Helper;
 
-namespace WEAK.Helper
+namespace WEAK.Serialization
 {
     /// <summary>
     /// Provides methods to do load and save operation on data contract decored classes.

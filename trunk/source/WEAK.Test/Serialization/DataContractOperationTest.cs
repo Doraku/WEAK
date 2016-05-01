@@ -6,9 +6,9 @@ using System.Runtime.Serialization;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
-using WEAK.Helper;
+using WEAK.Serialization;
 
-namespace WEAK.Test.Helper
+namespace WEAK.Test.Serialization
 {
     [TestClass]
     public class DataContractOperationTest

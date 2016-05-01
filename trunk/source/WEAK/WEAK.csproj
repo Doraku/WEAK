@@ -65,7 +65,7 @@
     <Compile Include="Input\UnDo.cs" />
     <Compile Include="Module\IUnit.cs" />
     <Compile Include="Module\UnitManager.cs" />
-    <Compile Include="Helper\DataContractOperation.cs" />
+    <Compile Include="Serialization\DataContractOperation.cs" />
     <Compile Include="Object\Factory.cs" />
     <Compile Include="Object\KeyAttribute.cs" />
     <Compile Include="Object\ReferenceManager.cs" />
