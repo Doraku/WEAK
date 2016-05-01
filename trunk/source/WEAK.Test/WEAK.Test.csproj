@@ -73,8 +73,13 @@
     <Compile Include="Input\CollectionUnDoTest.cs" />
     <Compile Include="Input\DictionaryUnDoTest.cs" />
     <Compile Include="Input\GroupUnDoTest.cs" />
+    <Compile Include="Input\ICollectionExtensionTest.cs" />
+    <Compile Include="Input\IDictionaryExtensionTest.cs" />
+    <Compile Include="Input\IListExtensionTest.cs" />
+    <Compile Include="Input\IUnDoManagerExtensionTest.cs" />
     <Compile Include="Input\ListUnDoTest.cs" />
     <Compile Include="Input\UnDoManagerTest.cs" />
+    <Compile Include="Input\UnDoTest.cs" />
     <Compile Include="Input\ValueUnDoTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Object\FactoryTest.cs" />

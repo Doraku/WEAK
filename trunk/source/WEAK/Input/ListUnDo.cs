@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using WEAK.Helper;
 
 namespace WEAK.Input
@@ -31,10 +30,7 @@ namespace WEAK.Input
         /// <exception cref="System.ArgumentNullException">source is null.</exception>
         public ListUnDo(IList<T> source, int index, T element, bool isAdd)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
+            source.CheckParameter(nameof(source));
 
             _source = source;
             _index = index;

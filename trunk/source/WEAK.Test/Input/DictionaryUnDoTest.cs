@@ -1,6 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NFluent;
+using NSubstitute;
 using WEAK.Input;
 
 namespace WEAK.Test.Input
@@ -11,46 +13,92 @@ namespace WEAK.Test.Input
         #region Methods
 
         [TestMethod]
-        public void DictionaryUnDoTestNull()
+        public void DictionaryUnDo_Should_throw_ArgumentNullException_When_source_is_null()
         {
-            try
-            {
-                new DictionaryUnDo<object, int>(null, new object(), 0, false);
-                Assert.Fail("Did not raise ArgumentNullException.");
-            }
-            catch (ArgumentNullException) { }
-
-            try
-            {
-                new DictionaryUnDo<object, int>(new Dictionary<object, int>(), null, 0, false);
-                Assert.Fail("Did not raise ArgumentNullException.");
-            }
-            catch (ArgumentNullException) { }
+            Check
+                .ThatCode(() => new DictionaryUnDo<object, object>(null, new object(), 0, false))
+                .Throws<ArgumentNullException>()
+                .WithProperty("ParamName", "source");
         }
 
         [TestMethod]
-        public void DoTest()
+        public void DictionaryUnDo_Should_throw_ArgumentNullException_When_key_is_null()
         {
-            Dictionary<int, object> values = new Dictionary<int, object>();
+            IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
+
+            Check
+                .ThatCode(() => new DictionaryUnDo<object, object>(source, null, 0, false))
+                .Throws<ArgumentNullException>()
+                .WithProperty("ParamName", "key");
+        }
+
+        [TestMethod]
+        public void Do_Should_add_element_to_source_When_isAdd_is_true()
+        {
+            object key = new object();
             object value = new object();
-            IUnDo undo = new DictionaryUnDo<int, object>(values, 42, value, true);
+            IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
+            IUnDo undo = new DictionaryUnDo<object, object>(source, key, value, true);
+
+            bool done = false;
+
+            source.When(s => s.Add(key, value)).Do(_ => done = true);
 
             undo.Do();
 
-            Assert.AreSame(values[42], value, "Value is wrong.");
+            Check.That(done).IsTrue();
+        }
+
+
+        [TestMethod]
+        public void Do_Should_remove_element_from_source_When_isAdd_is_false()
+        {
+            object key = new object();
+            object value = new object();
+            IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
+            IUnDo undo = new DictionaryUnDo<object, object>(source, key, value, false);
+
+            bool done = false;
+
+            source.When(s => s.Remove(key)).Do(_ => done = true);
+
+            undo.Do();
+
+            Check.That(done).IsTrue();
         }
 
         [TestMethod]
-        public void UndoTest()
+        public void Undo_Should_remove_element_from_source_When_isAdd_is_true()
         {
-            Dictionary<int, object> values = new Dictionary<int, object>();
+            object key = new object();
             object value = new object();
-            values.Add(42, value);
-            IUnDo undo = new DictionaryUnDo<int, object>(values, 42, value, true);
+            IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
+            IUnDo undo = new DictionaryUnDo<object, object>(source, key, value, true);
+
+            bool done = false;
+
+            source.When(s => s.Remove(key)).Do(_ => done = true);
 
             undo.Undo();
 
-            Assert.IsFalse(values.ContainsKey(42) || values.ContainsValue(value), "Value is wrong.");
+            Check.That(done).IsTrue();
+        }
+
+        [TestMethod]
+        public void Undo_Should_add_element_to_source_When_isAdd_is_false()
+        {
+            object key = new object();
+            object value = new object();
+            IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
+            IUnDo undo = new DictionaryUnDo<object, object>(source, key, value, false);
+
+            bool done = false;
+
+            source.When(s => s.Add(key, value)).Do(_ => done = true);
+
+            undo.Undo();
+
+            Check.That(done).IsTrue();
         }
 
         #endregion

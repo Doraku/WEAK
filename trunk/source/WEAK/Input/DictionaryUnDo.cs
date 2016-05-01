@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using WEAK.Helper;
 
 namespace WEAK.Input
@@ -32,14 +31,8 @@ namespace WEAK.Input
         /// <exception cref="System.ArgumentNullException">source or key is null.</exception>
         public DictionaryUnDo(IDictionary<TKey, TValue> source, TKey key, TValue element, bool isAdd)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            source.CheckParameter(nameof(source));
+            key.CheckParameter(nameof(key));
 
             _source = source;
             _key = key;

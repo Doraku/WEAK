@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using WEAK.Helper;
 
 namespace WEAK.Input
@@ -14,18 +10,19 @@ namespace WEAK.Input
     {
         #region Types
 
-        private class UnDoList<T> : IList<T>, INotifyCollectionChanged, INotifyPropertyChanged
+        private class UnDoList<T> : ICollectionExtension.UnDoCollection<T>, IList<T>
         {
             #region Fields
 
-            private readonly UnDoManager _manager;
+            private readonly IUnDoManager _manager;
             private readonly IList<T> _source;
 
             #endregion
 
             #region Initialisation
 
-            public UnDoList(UnDoManager manager, IList<T> source)
+            public UnDoList(IUnDoManager manager, IList<T> source)
+                : base(manager, source)
             {
                 _manager = manager;
                 _source = source;
@@ -63,103 +60,6 @@ namespace WEAK.Input
             }
 
             #endregion
-
-            #region ICollection
-
-            void ICollection<T>.Add(T item)
-            {
-                _manager.DoAdd(_source, item);
-            }
-
-            void ICollection<T>.Clear()
-            {
-                _manager.DoClear(_source);
-            }
-
-            bool ICollection<T>.Contains(T item)
-            {
-                return _source.Contains(item);
-            }
-
-            void ICollection<T>.CopyTo(T[] array, int arrayIndex)
-            {
-                _source.CopyTo(array, arrayIndex);
-            }
-
-            int ICollection<T>.Count
-            {
-                get { return _source.Count; }
-            }
-
-            bool ICollection<T>.IsReadOnly
-            {
-                get { return _source.IsReadOnly; }
-            }
-
-            bool ICollection<T>.Remove(T item)
-            {
-                return _manager.DoRemove(_source, item);
-            }
-
-            #endregion
-
-            #region IEnumerator
-
-            IEnumerator<T> IEnumerable<T>.GetEnumerator()
-            {
-                return _source.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return _source.GetEnumerator();
-            }
-
-            #endregion
-
-            #region INotifyCollectionChanged
-
-            event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged
-            {
-                add
-                {
-                    if (_source is INotifyCollectionChanged)
-                    {
-                        (_source as INotifyCollectionChanged).CollectionChanged += value;
-                    }
-                }
-                remove
-                {
-                    if (_source is INotifyCollectionChanged)
-                    {
-                        (_source as INotifyCollectionChanged).CollectionChanged -= value;
-                    }
-                }
-            }
-
-            #endregion
-
-            #region INotifyPropertyChanged
-
-            event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
-            {
-                add
-                {
-                    if (_source is INotifyPropertyChanged)
-                    {
-                        (_source as INotifyPropertyChanged).PropertyChanged += value;
-                    }
-                }
-                remove
-                {
-                    if (_source is INotifyPropertyChanged)
-                    {
-                        (_source as INotifyPropertyChanged).PropertyChanged -= value;
-                    }
-                }
-            }
-
-            #endregion
         }
 
         #endregion
@@ -173,16 +73,10 @@ namespace WEAK.Input
         /// <param name="source">The list.</param>
         /// <param name="manager">The UnDoManager.</param>
         /// <returns>A wrapped IList.</returns>
-        public static IList<T> ToUnDo<T>(this IList<T> source, UnDoManager manager)
+        public static IList<T> ToUnDo<T>(this IList<T> source, IUnDoManager manager)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (manager == null)
-            {
-                throw new ArgumentNullException(nameof(manager));
-            }
+            source.CheckParameter(nameof(source));
+            manager.CheckParameter(nameof(manager));
 
             return new UnDoList<T>(manager, source);
         }

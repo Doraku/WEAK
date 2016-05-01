@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -8,24 +7,24 @@ using WEAK.Helper;
 namespace WEAK.Input
 {
     /// <summary>
-    /// Provides a method to wrap an ICollection to an UnDo collection linked to an UnDoManager to automatically generate IUnDo operations.
+    /// Provides a method to wrap an ICollection to an UnDo collection linked to an IUnDoManager to automatically generate IUnDo operations.
     /// </summary>
     public static class ICollectionExtension
     {
         #region Types
 
-        private class UnDoCollection<T> : ICollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
+        internal class UnDoCollection<T> : ICollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
         {
             #region Fields
 
-            private readonly UnDoManager _manager;
+            private readonly IUnDoManager _manager;
             private readonly ICollection<T> _source;
 
             #endregion
 
             #region Initialisation
 
-            public UnDoCollection(UnDoManager manager, ICollection<T> source)
+            public UnDoCollection(IUnDoManager manager, ICollection<T> source)
             {
                 _manager = manager;
                 _source = source;
@@ -81,7 +80,7 @@ namespace WEAK.Input
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return _source.GetEnumerator();
+                return (_source as IEnumerable).GetEnumerator();
             }
 
             #endregion
@@ -136,22 +135,16 @@ namespace WEAK.Input
         #region Methods
 
         /// <summary>
-        ///  Wraps an ICollection to an UnDo collection linked to an UnDoManager to automatically generate IUnDo operations.
+        ///  Wraps an ICollection to an UnDo collection linked to an IUnDoManager to automatically generate IUnDo operations.
         /// </summary>
         /// <typeparam name="T">The type of the collection.</typeparam>
         /// <param name="source">The collection.</param>
-        /// <param name="manager">The UnDoManager.</param>
+        /// <param name="manager">The IUnDoManager.</param>
         /// <returns>A wrapped ICollection.</returns>
-        public static ICollection<T> ToUnDo<T>(this ICollection<T> source, UnDoManager manager)
+        public static ICollection<T> ToUnDo<T>(this ICollection<T> source, IUnDoManager manager)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (manager == null)
-            {
-                throw new ArgumentNullException(nameof(manager));
-            }
+            source.CheckParameter(nameof(source));
+            manager.CheckParameter(nameof(manager));
 
             return new UnDoCollection<T>(manager, source);
         }

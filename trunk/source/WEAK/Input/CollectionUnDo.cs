@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using WEAK.Helper;
 
 namespace WEAK.Input
@@ -28,10 +27,7 @@ namespace WEAK.Input
         /// <param name="isAdd">true if the operation is an Add, false for a Remove.</param>
         public CollectionUnDo(ICollection<T> source, T element, bool isAdd)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
+            source.CheckParameter(nameof(source));
 
             _source = source;
             _element = element;

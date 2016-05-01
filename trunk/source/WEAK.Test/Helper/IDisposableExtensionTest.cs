@@ -35,7 +35,15 @@ namespace WEAK.Test.Helper
         }
 
         [TestMethod]
-        public void DisposableGroup_Should_dispose_children_in_reverse_order_When_disposed()
+        public void Merge_Should_return_an_IDisposable()
+        {
+            IDisposable disposable = Substitute.For<IDisposable>();
+
+            Check.That(disposable.Merge()).IsNotNull();
+        }
+
+        [TestMethod]
+        public void DisposableGroup_Dispose_Should_dispose_children_in_reverse_order()
         {
             List<IDisposable> disposed = new List<IDisposable>();
 
@@ -58,7 +66,7 @@ namespace WEAK.Test.Helper
         }
 
         [TestMethod]
-        public void DisposableGroup_Should_dispose_once_When_disposed_multiple_times()
+        public void DisposableGroup_Dispose_Should_dispose_only_once()
         {
             int disposedCount = 0;
 
@@ -76,7 +84,7 @@ namespace WEAK.Test.Helper
         }
 
         [TestMethod]
-        public void DisposableGroup_Should_merge_already_merged_IDisposable()
+        public void Merge_Should_merge_already_merged_IDisposable()
         {
             List<IDisposable> disposed = new List<IDisposable>();
 

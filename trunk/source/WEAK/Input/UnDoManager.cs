@@ -7,7 +7,7 @@ namespace WEAK.Input
     /// <summary>
     /// Provides an implementation of the command pattern to execute operations and return to a previous state by undoing them.
     /// </summary>
-    public sealed class UnDoManager
+    public sealed class UnDoManager : IUnDoManager
     {
         #region Types
 
@@ -31,16 +31,11 @@ namespace WEAK.Input
                 ++_manager._linkerCount;
             }
 
-            ~Linker()
-            {
-                Dispose();
-            }
-
             #endregion
 
             #region IDisposable
 
-            public void Dispose()
+            void IDisposable.Dispose()
             {
                 if (!_isDisposed)
                 {
@@ -105,18 +100,6 @@ namespace WEAK.Input
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        /// Gets an int representing the state of the UnDoManager.
-        /// </summary>
-        public int Version
-        {
-            get { return _currentVersion; }
-        }
-
-        #endregion
-
         #region Methods
 
         private void AddVersion()
@@ -126,35 +109,39 @@ namespace WEAK.Input
             _undoneVersions.Clear();
         }
 
-        /// <summary>
-        /// Starts a group of operation and return an IDisposable to stop the group.
-        /// If multiple calls to this method are made, the group will be stoped once each IDisposable returned are disposed.
-        /// </summary>
-        /// <returns>An IDisposable to stop the group operation.</returns>
-        public IDisposable BeginGroup()
+        #endregion
+
+        #region IUnDoManager
+
+        int IUnDoManager.Version
+        {
+            get { return _currentVersion; }
+        }
+
+        bool IUnDoManager.CanUndo
+        {
+            get { return _doneActions.Count > 0; }
+        }
+
+        bool IUnDoManager.CanRedo
+        {
+            get { return _undoneActions.Count > 0; }
+        }
+
+        IDisposable IUnDoManager.BeginGroup()
         {
             return new Linker(this);
         }
 
-        /// <summary>
-        /// Clears the history of IUnDo operations.
-        /// </summary>
-        public void Clear()
+        void IUnDoManager.Clear()
         {
             _doneActions.Clear();
             _undoneActions.Clear();
         }
 
-        /// <summary>
-        /// Executes the IUnDo command and store it in the manager hostory.
-        /// </summary>
-        /// <param name="command">The IUnDo to execute.</param>
-        public void Do(IUnDo command)
+        void IUnDoManager.Do(IUnDo command)
         {
-            if (command == null)
-            {
-                throw new ArgumentNullException(nameof(command));
-            }
+            command.CheckParameter(nameof(command));
 
             command.Do();
 
@@ -171,78 +158,54 @@ namespace WEAK.Input
             _undoneActions.Clear();
         }
 
-        /// <summary>
-        /// Returns a boolean to express if an undo can be executed.
-        /// </summary>
-        /// <returns>true if there is an IUnDo in the history and no group operation is in progress, else false.</returns>
-        public bool CanUndo()
+        void IUnDoManager.Undo()
         {
-            return _doneActions.Count > 0 && _linkerCount == 0;
-        }
-
-        /// <summary>
-        /// UnDoes the last executed IUnDo command of the manager history.
-        /// </summary>
-        public void Undo()
-        {
-            if (CanUndo())
+            if (_linkerCount != 0)
             {
-                IUnDo command = _doneActions.Pop();
-                command.Undo();
-                _undoneActions.Push(command);
-
-                int version = _doneVersions.Pop();
-                _undoneVersions.Push(version);
-                _currentVersion = _doneVersions.Peek();
+                throw new InvalidOperationException("Cannot perform Undo while a group operation is going on.");
             }
-        }
 
-        /// <summary>
-        /// UnDoes all executed IUnDo commands of the manager history.
-        /// </summary>
-        public void UndoAll()
-        {
-            while (CanUndo())
+            IUnDo command;
+            try
             {
-                Undo();
+                command = _doneActions.Pop();
             }
-        }
-
-        /// <summary>
-        /// Returns a boolean to express if a redo can be executed.
-        /// </summary>
-        /// <returns>true if there is an IUnDo in the undone history and no group poeration is in progress, else false.</returns>
-        public bool CanRedo()
-        {
-            return _undoneActions.Count > 0 && _linkerCount == 0;
-        }
-
-        /// <summary>
-        /// ReDoes the last undone IUnDo commands of the manager history.
-        /// </summary>
-        public void Redo()
-        {
-            if (CanRedo())
+            catch (InvalidOperationException)
             {
-                IUnDo command = _undoneActions.Pop();
-                command.Do();
-                _doneActions.Push(command);
-
-                int version = _undoneVersions.Pop();
-                _doneVersions.Push(version);
-                _currentVersion = version;
+                throw new InvalidOperationException("There is no action to undo.");
             }
+
+            command.Undo();
+            _undoneActions.Push(command);
+
+            int version = _doneVersions.Pop();
+            _undoneVersions.Push(version);
+            _currentVersion = _doneVersions.Peek();
         }
 
-        /// <summary>
-        /// ReDoes all undone IUnDo commands of the manager history.
-        /// </summary>
-        public void RedoAll()
+        void IUnDoManager.Redo()
         {
-            while (CanRedo())
+            if (_linkerCount != 0)
             {
-                Redo();
+                throw new InvalidOperationException("Cannot perform Redo while a group operation is going on.");
             }
+
+            IUnDo command;
+            try
+            {
+                command = _undoneActions.Pop();
+            }
+            catch (InvalidOperationException)
+            {
+                throw new InvalidOperationException("There is no action to redo.");
+            }
+
+            command.Do();
+            _doneActions.Push(command);
+
+            int version = _undoneVersions.Pop();
+            _doneVersions.Push(version);
+            _currentVersion = version;
         }
 
         #endregion

@@ -1,6 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NFluent;
+using NSubstitute;
 using WEAK.Input;
 
 namespace WEAK.Test.Input
@@ -11,39 +13,81 @@ namespace WEAK.Test.Input
         #region Methods
 
         [TestMethod]
-        public void ListUnDoTestNull()
+        public void ListUnDo_Should_throw_ArgumentNullException_When_source_is_null()
         {
-            try
-            {
-                new ListUnDo<int>(null, 0, 0, false);
-                Assert.Fail("Did not raise ArgumentNullException.");
-            }
-            catch (ArgumentNullException) { }
+            Check
+                .ThatCode(() => new ListUnDo<object>(null, 0, null, false))
+                .Throws<ArgumentNullException>()
+                .WithProperty("ParamName", "source");
         }
 
         [TestMethod]
-        public void DoTest()
+        public void Do_Should_insert_element_to_source_When_isAdd_is_true()
         {
-            List<object> values = new List<object>();
+            int index = 42;
             object value = new object();
-            IUnDo undo = new ListUnDo<object>(values, 0, value, true);
+            IList<object> source = Substitute.For<IList<object>>();
+            IUnDo undo = new ListUnDo<object>(source, index, value, true);
+
+            bool done = false;
+
+            source.When(s => s.Insert(index, value)).Do(_ => done = true);
 
             undo.Do();
 
-            Assert.AreSame(values[0], value, "Value is wrong.");
+            Check.That(done).IsTrue();
+        }
+
+
+        [TestMethod]
+        public void Do_Should_remove_element_from_source_When_isAdd_is_false()
+        {
+            int index = 42;
+            object value = new object();
+            IList<object> source = Substitute.For<IList<object>>();
+            IUnDo undo = new ListUnDo<object>(source, index, value, false);
+
+            bool done = false;
+
+            source.When(s => s.RemoveAt(index)).Do(_ => done = true);
+
+            undo.Do();
+
+            Check.That(done).IsTrue();
         }
 
         [TestMethod]
-        public void UndoTest()
+        public void Undo_Should_remove_element_from_source_When_isAdd_is_true()
         {
-            List<object> values = new List<object>();
+            int index = 42;
             object value = new object();
-            values.Add(value);
-            IUnDo undo = new ListUnDo<object>(values, 0, value, true);
+            IList<object> source = Substitute.For<IList<object>>();
+            IUnDo undo = new ListUnDo<object>(source, index, value, true);
+
+            bool done = false;
+
+            source.When(s => s.RemoveAt(index)).Do(_ => done = true);
 
             undo.Undo();
 
-            Assert.IsFalse(values.Contains(value), "Value is wrong.");
+            Check.That(done).IsTrue();
+        }
+
+        [TestMethod]
+        public void Undo_Should_insert_element_to_source_When_isAdd_is_false()
+        {
+            int index = 42;
+            object value = new object();
+            IList<object> source = Substitute.For<IList<object>>();
+            IUnDo undo = new ListUnDo<object>(source, index, value, false);
+
+            bool done = false;
+
+            source.When(s => s.Insert(index, value)).Do(_ => done = true);
+
+            undo.Undo();
+
+            Check.That(done).IsTrue();
         }
 
         #endregion

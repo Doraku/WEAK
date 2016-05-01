@@ -61,6 +61,7 @@
     <Compile Include="Communication\ExecutionMode.cs" />
     <Compile Include="Helper\IDisposableExtension.cs" />
     <Compile Include="Helper\ObjectExtension.cs" />
+    <Compile Include="Input\IUnDoManager.cs" />
     <Compile Include="Input\UnDo.cs" />
     <Compile Include="Module\IUnit.cs" />
     <Compile Include="Module\UnitManager.cs" />
@@ -82,7 +83,7 @@
     <Compile Include="Input\IUnDo.cs" />
     <Compile Include="Input\ListUnDo.cs" />
     <Compile Include="Input\UnDoManager.cs" />
-    <Compile Include="Input\UnDoManagerExtension.cs" />
+    <Compile Include="Input\IUnDoManagerExtension.cs" />
     <Compile Include="Input\ValueUnDo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

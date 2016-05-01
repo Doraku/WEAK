@@ -28,10 +28,7 @@ namespace WEAK.Input
         /// <exception cref="System.ArgumentNullException">setter is null.</exception>
         public ValueUnDo(Action<T> setter, T oldValue, T newValue)
         {
-            if (setter == null)
-            {
-                throw new ArgumentNullException(nameof(setter));
-            }
+            setter.CheckParameter(nameof(setter));
 
             _setter = setter;
             _oldValue = oldValue;

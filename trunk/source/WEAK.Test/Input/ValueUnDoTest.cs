@@ -1,5 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NFluent;
 using WEAK.Input;
 
 namespace WEAK.Test.Input
@@ -10,36 +11,38 @@ namespace WEAK.Test.Input
         #region Methods
 
         [TestMethod]
-        public void ValueUnDoTestNull()
+        public void ValueUnDo_Should_throw_ArgumentNullException_When_setter_is_null()
         {
-            try
-            {
-                new ValueUnDo<int>(null, 0, 0);
-                Assert.Fail("Did not raise ArgumentNullException.");
-            }
-            catch (ArgumentNullException) { }
+            Check
+                .ThatCode(() => new ValueUnDo<object>(null, null, null))
+                .Throws<ArgumentNullException>()
+                .WithProperty("ParamName", "setter");
         }
 
         [TestMethod]
-        public void DoTest()
+        public void Do_Should_set_newValue()
         {
-            int value = 0;
-            IUnDo undo = new ValueUnDo<int>(v => value = v, 42, 1337);
+            object value = null;
+            object oldValue = new object();
+            object newValue = new object();
+            IUnDo undo = new ValueUnDo<object>(v => value = v, oldValue, newValue);
 
             undo.Do();
 
-            Assert.AreEqual(value, 1337, "Value is wrong.");
+            Check.That(value).IsEqualTo(newValue);
         }
 
         [TestMethod]
-        public void UndoTest()
+        public void Undo_Should_set_oldValue()
         {
-            int value = 0;
-            IUnDo undo = new ValueUnDo<int>(v => value = v, 42, 1337);
+            object value = null;
+            object oldValue = new object();
+            object newValue = new object();
+            IUnDo undo = new ValueUnDo<object>(v => value = v, oldValue, newValue);
 
             undo.Undo();
 
-            Assert.AreEqual(value, 42, "Value is wrong.");
+            Check.That(value).IsEqualTo(oldValue);
         }
 
         #endregion

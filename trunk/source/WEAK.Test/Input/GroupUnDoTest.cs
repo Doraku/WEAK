@@ -1,6 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NFluent;
+using NSubstitute;
 using WEAK.Input;
 
 namespace WEAK.Test.Input
@@ -11,52 +13,65 @@ namespace WEAK.Test.Input
         #region Methods
 
         [TestMethod]
-        public void GroupUnDoTestNull()
+        public void GroupUnDo_Should_throw_ArgumentNullException_When_commands_is_null()
         {
-            try
-            {
-                new GroupUnDo(null);
-                Assert.Fail("Did not raise ArgumentNullException.");
-            }
-            catch (ArgumentNullException) { }
-
-            try
-            {
-                new GroupUnDo(new IUnDo[] { null });
-                Assert.Fail("Did not raise ArgumentException.");
-            }
-            catch (ArgumentException) { }
+            Check
+                .ThatCode(() => new GroupUnDo(null))
+                .Throws<ArgumentNullException>()
+                .WithProperty("ParamName", "commands");
         }
 
         [TestMethod]
-        public void DoTest()
+        public void GroupUnDo_Should_throw_ArgumentNullException_When_commands_contains_null()
         {
-            List<object> values = new List<object>();
-            object value = new object();
-            object otherValue = new object();
+            ArgumentException expectedException = new ArgumentException("IUnDo sequence contains null elements.", "commands");
+
+            Check
+                .ThatCode(() => new GroupUnDo(new IUnDo[] { null }))
+                .Throws<ArgumentException>()
+                .WithProperty("ParamName", "commands")
+                .And
+                .WithMessage(expectedException.Message);
+        }
+
+        [TestMethod]
+        public void Do_Should_execute_children_Do()
+        {
+            List<IUnDo> done = new List<IUnDo>();
+
+            IUnDo undo1 = Substitute.For<IUnDo>();
+            undo1.When(u => u.Do()).Do(_ => done.Add(undo1));
+
+            IUnDo undo2 = Substitute.For<IUnDo>();
+            undo2.When(u => u.Do()).Do(_ => done.Add(undo2));
+
             IUnDo undo = new GroupUnDo(
-                new ListUnDo<object>(values, 0, value, true),
-                new ValueUnDo<object>((v) => values[0] = v, value, otherValue));
+                undo1,
+                undo2);
 
             undo.Do();
 
-            Assert.AreSame(values[0], otherValue, "Value is wrong.");
+            Check.That(done).ContainsExactly(undo1, undo2);
         }
 
         [TestMethod]
-        public void UndoTest()
+        public void Undo_Should_execute_children_Undo_in_reverse()
         {
-            List<object> values = new List<object>();
-            object value = new object();
-            object otherValue = new object();
-            values.Add(otherValue);
+            List<IUnDo> done = new List<IUnDo>();
+
+            IUnDo undo1 = Substitute.For<IUnDo>();
+            undo1.When(u => u.Undo()).Do(_ => done.Add(undo1));
+
+            IUnDo undo2 = Substitute.For<IUnDo>();
+            undo2.When(u => u.Undo()).Do(_ => done.Add(undo2));
+
             IUnDo undo = new GroupUnDo(
-                new ListUnDo<object>(values, 0, value, true),
-                new ValueUnDo<object>((v) => values[0] = v, value, otherValue));
+                undo1,
+                undo2);
 
             undo.Undo();
 
-            Assert.IsFalse(values.Contains(value) || values.Contains(otherValue), "Value is wrong.");
+            Check.That(done).ContainsExactly(undo2, undo1);
         }
 
         #endregion

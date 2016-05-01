@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.Linq;
 using WEAK.Helper;
-using System.Linq;
 
 namespace WEAK.Input
 {
@@ -25,14 +24,7 @@ namespace WEAK.Input
         /// <exception cref="System.ArgumentException">commands contains null elements.</exception>
         public GroupUnDo(params IUnDo[] commands)
         {
-            if (commands == null)
-            {
-                throw new ArgumentNullException(nameof(commands));
-            }
-            if (commands.Any(i => i == null))
-            {
-                throw new ArgumentException("IUnDo sequence contains null elements.", nameof(commands));
-            }
+            commands.CheckParameter(nameof(commands), c => !c.Any(i => i == null), "IUnDo sequence contains null elements.");
 
             _commands = commands;
         }
