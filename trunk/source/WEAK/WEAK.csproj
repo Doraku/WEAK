@@ -72,7 +72,7 @@
     <Compile Include="Object\Linker.cs" />
     <Compile Include="Communication\EventAggregator.cs" />
     <Compile Include="Communication\IPublisher.cs" />
-    <Compile Include="DelegateExtension.cs" />
+    <Compile Include="Helper\DelegateExtension.cs" />
     <Compile Include="Object\Singleton.cs" />
     <Compile Include="Input\CollectionUnDo.cs" />
     <Compile Include="Input\DictionaryUnDo.cs" />

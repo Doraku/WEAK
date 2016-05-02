@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("Paillat Laszlo")]
 [assembly: AssemblyProduct("WEAK")]
-[assembly: AssemblyCopyright("Copyright © 2015")]
+[assembly: AssemblyCopyright("Copyright © 2015-2016")]
 
 [assembly: ComVisible(false)]
 
