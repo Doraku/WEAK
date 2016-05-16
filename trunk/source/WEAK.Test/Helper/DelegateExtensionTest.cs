@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using WEAK.Helper;
@@ -56,7 +58,7 @@ namespace WEAK.Test.Helper
             {
                 _action1Param?.Invoke(param);
             }
-
+            
             public bool InstanceFunc(bool param)
             {
                 return _func1Param?.Invoke(param) ?? false;
@@ -92,6 +94,15 @@ namespace WEAK.Test.Helper
             Action delegateAction = DelegateTest.StaticAction;
 
             Check.That<Action>(delegateAction.ToWeak()).IsEqualTo(delegateAction);
+        }
+
+        [TestMethod]
+        public void ToWeak_Should_return_delegateAction_When_delegateAction_is_a_value_type_method()
+        {
+            int target = 42;
+            Func<string> delegateAction = target.ToString;
+
+            Check.That<Func<string>>(delegateAction.ToWeak()).IsEqualTo(delegateAction);
         }
 
         [TestMethod]
@@ -157,6 +168,37 @@ namespace WEAK.Test.Helper
             Func<bool, bool> delegateAction = new Func<bool, bool>(test.InstanceFunc).ToWeak();
 
             Check.That(delegateAction(true)).IsTrue();
+        }
+
+        [TestMethod, TestCategory("Performance")]
+        public void WeakDelegate_Performance()
+        {
+            bool temp = false;
+            DelegateTest test = new DelegateTest(value => temp != value);
+            Func<bool, bool> delegateAction = new Func<bool, bool>(test.InstanceFunc);
+            Func<bool, bool> weakDelegateAction = new Func<bool, bool>(test.InstanceFunc).ToWeak();
+
+            Stopwatch wInstance = new Stopwatch();
+            Stopwatch wDelegate = new Stopwatch();
+            Stopwatch wWeak = new Stopwatch();
+
+            for (int i = 0; i < 1000000; ++i)
+            {
+                wInstance.Start();
+                test.InstanceFunc(true);
+                wInstance.Stop();
+
+                wDelegate.Start();
+                delegateAction(true);
+                wDelegate.Stop();
+
+                wWeak.Start();
+                weakDelegateAction(true);
+                wWeak.Stop();
+            }
+
+            Console.WriteLine($"weak to delegate ratio: {(double)wWeak.ElapsedTicks / wDelegate.ElapsedTicks}");
+            Console.WriteLine($"weak to instance ratio: {(double)wWeak.ElapsedTicks / wInstance.ElapsedTicks}");
         }
 
 

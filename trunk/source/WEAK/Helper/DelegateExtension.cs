@@ -31,18 +31,30 @@ namespace WEAK.Helper
 
         #region Methods
 
+        private static Expression GetGetTargetExpression<T>(T target, ParameterExpression targetVariable)
+            where T : class
+        {
+            WeakReference<T> weakTarget = new WeakReference<T>(target);
+
+            return Expression.Call(
+                Expression.Constant(weakTarget, typeof(WeakReference<T>)),
+                typeof(WeakReference<T>).GetMethod(nameof(weakTarget.TryGetTarget)),
+                targetVariable);
+        }
         /// <summary>
         /// Creates a wrap around a delegate, removing strong reference to its target so the delegate would not keep the object alive.
         /// </summary>
         /// <typeparam name="TDelegate">The type of the delegate.</typeparam>
         /// <param name="delegateAction">The delegate to wrap.</param>
         /// <returns>The weak delegate.
-        /// If delegate action was null, not a delegate, or a delegate of a static method, it will simply return the object delegateAction.</returns>
+        /// If delegate action was null, not a delegate, a delegate of a static method or a value type, it will simply return the object delegateAction.</returns>
         public static TDelegate ToWeak<TDelegate>(this TDelegate delegateAction)
             where TDelegate : class
         {
             Delegate unboxedDelegate = delegateAction as Delegate;
-            if (unboxedDelegate == null || unboxedDelegate.Method.IsStatic)
+            if (unboxedDelegate == null
+                || unboxedDelegate.Method.IsStatic
+                || unboxedDelegate.Target.GetType().IsValueType)
             {
                 return delegateAction;
             }
@@ -63,41 +75,35 @@ namespace WEAK.Helper
                 }
 
                 ParameterExpression targetVariable = Expression.Variable(unboxedDelegate.Target.GetType());
+
+                MethodInfo factoryMethod = typeof(DelegateExtension)
+                    .GetMethod(nameof(GetGetTargetExpression), BindingFlags.NonPublic | BindingFlags.Static)
+                    .MakeGenericMethod(unboxedDelegate.Target.GetType());
+
                 List<ParameterExpression> parameters = unboxedDelegate.Method.GetParameters().Select(p => Expression.Parameter(p.ParameterType)).ToList();
-                WeakReference weakTarget = new WeakReference(unboxedDelegate.Target);
                 Expression<TDelegate> labmdaInstance;
-                BinaryExpression getTargetExpression =
-                    Expression.Assign(
-                        targetVariable,
-                        Expression.Convert(
-                            Expression.Call(
-                                Expression.Constant(weakTarget, typeof(WeakReference)),
-                                typeof(WeakReference).GetProperty(nameof(weakTarget.Target)).GetGetMethod()),
-                            unboxedDelegate.Target.GetType()));
+                Expression getTargetExpression = factoryMethod.Invoke(null, new object[] { unboxedDelegate.Target, targetVariable }) as Expression;
 
                 if (unboxedDelegate.Method.ReturnType == typeof(void))
                 {
                     labmdaInstance = Expression.Lambda<TDelegate>(
                         Expression.Block(
                             new[] { targetVariable },
-                            getTargetExpression,
                             Expression.IfThen(
-                                Expression.Not(Expression.Equal(targetVariable, Expression.Constant(null))),
+                                getTargetExpression,
                                 Expression.Call(targetVariable, unboxedDelegate.Method, parameters))),
                         parameters);
                 }
                 else
                 {
-                    LabelTarget returnLabel = Expression.Label(unboxedDelegate.Method.ReturnType);
                     labmdaInstance = Expression.Lambda<TDelegate>(
                         Expression.Block(
                             unboxedDelegate.Method.ReturnType,
                             new[] { targetVariable },
-                            getTargetExpression,
-                            Expression.IfThen(
-                                Expression.Not(Expression.Equal(targetVariable, Expression.Constant(null))),
-                                Expression.Return(returnLabel, Expression.Call(targetVariable, unboxedDelegate.Method, parameters), unboxedDelegate.Method.ReturnType)),
-                            Expression.Label(returnLabel, Expression.Default(unboxedDelegate.Method.ReturnType))),
+                            Expression.Condition(
+                                getTargetExpression,
+                                Expression.Call(targetVariable, unboxedDelegate.Method, parameters),
+                                Expression.Default(unboxedDelegate.Method.ReturnType))),
                         parameters);
                 }
 
