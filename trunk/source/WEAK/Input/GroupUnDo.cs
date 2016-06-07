@@ -24,7 +24,8 @@ namespace WEAK.Input
         /// <exception cref="System.ArgumentException">commands contains null elements.</exception>
         public GroupUnDo(params IUnDo[] commands)
         {
-            commands.CheckParameter(nameof(commands), c => !c.Any(i => i == null), "IUnDo sequence contains null elements.");
+            commands.CheckForArgumentNullException(nameof(commands));
+            commands.CheckForArgumentException(nameof(commands), c => !c.Any(i => i == null), "IUnDo sequence contains null elements.");
 
             _commands = commands;
         }

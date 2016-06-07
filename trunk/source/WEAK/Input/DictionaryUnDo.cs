@@ -31,8 +31,8 @@ namespace WEAK.Input
         /// <exception cref="System.ArgumentNullException">source or key is null.</exception>
         public DictionaryUnDo(IDictionary<TKey, TValue> source, TKey key, TValue element, bool isAdd)
         {
-            source.CheckParameter(nameof(source));
-            key.CheckParameter(nameof(key));
+            source.CheckForArgumentNullException(nameof(source));
+            key.CheckForArgumentNullException(nameof(key));
 
             _source = source;
             _key = key;

@@ -14,7 +14,7 @@ namespace WEAK.Helper
         /// <param name="param">The param to check.</param>
         /// <param name="paramName">The name of the param to check.</param>
         /// <exception cref="ArgumentNullException">param is null.</exception>
-        public static void CheckParameter<T>(this T param, string paramName)
+        public static void CheckForArgumentNullException<T>(this T param, string paramName)
         {
             if (param == null)
             {
@@ -33,11 +33,11 @@ namespace WEAK.Helper
         /// <param name="message">The message used for the ArgumentException.</param>
         /// <exception cref="ArgumentNullException">param is null.</exception>
         /// <exception cref="ArgumentException">param does not check the validation predicate.</exception>
-        public static void CheckParameter<T>(this T param, string paramName, Predicate<T> validation, string message)
+        public static void CheckForArgumentException<T>(this T param, string paramName, Predicate<T> validation, string message)
         {
-            param.CheckParameter(paramName);
+            validation.CheckForArgumentNullException(nameof(validation));
 
-            if (!validation?.Invoke(param) ?? false)
+            if (!validation(param))
             {
                 throw new ArgumentException(message, paramName);
             }

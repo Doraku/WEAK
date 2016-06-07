@@ -32,7 +32,7 @@ namespace WEAK.Serialization
         /// <exception cref="SerializationException">There is a problem with the instance being written.</exception>
         public static XElement Save<T>(T instance)
         {
-            instance.CheckParameter(nameof(instance));
+            instance.CheckForArgumentNullException(nameof(instance));
 
             DataContractSerializer serializer = new DataContractSerializer(typeof(T));
             XElement container = new XElement(_containerName);
@@ -55,7 +55,7 @@ namespace WEAK.Serialization
         /// <exception cref="ArgumentNullException">element is null.</exception>
         public static T Load<T>(XElement element)
         {
-            element.CheckParameter(nameof(element));
+            element.CheckForArgumentNullException(nameof(element));
 
             DataContractSerializer serializer = new DataContractSerializer(typeof(T));
 
@@ -77,7 +77,7 @@ namespace WEAK.Serialization
         /// <exception cref="SerializationException">There is a problem with the instance being written.</exception>
         public static IEnumerable<XElement> SaveMany<T>(IEnumerable<T> instances)
         {
-            instances.CheckParameter(nameof(instances));
+            instances.CheckForArgumentNullException(nameof(instances));
 
             foreach (T instance in instances)
             {
@@ -94,7 +94,7 @@ namespace WEAK.Serialization
         /// <exception cref="ArgumentNullException">elements is null or contains null element(s).</exception>
         public static IEnumerable<T> LoadMany<T>(IEnumerable<XElement> elements)
         {
-            elements.CheckParameter(nameof(elements));
+            elements.CheckForArgumentNullException(nameof(elements));
 
             foreach (XElement element in elements)
             {

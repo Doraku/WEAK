@@ -75,8 +75,8 @@ namespace WEAK.Input
         /// <returns>A wrapped IList.</returns>
         public static IList<T> ToUnDo<T>(this IList<T> source, IUnDoManager manager)
         {
-            source.CheckParameter(nameof(source));
-            manager.CheckParameter(nameof(manager));
+            source.CheckForArgumentNullException(nameof(source));
+            manager.CheckForArgumentNullException(nameof(manager));
 
             return new UnDoList<T>(manager, source);
         }

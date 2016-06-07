@@ -525,6 +525,7 @@ namespace WEAK.Test.Communication
                 double ratio = (double)pubTime / (double)watch.ElapsedMilliseconds;
 
                 Trace.WriteLine(string.Format("Ratio is {0}", ratio));
+                Trace.WriteLine(string.Format("Time is {0}", pubTime));
 
                 Assert.IsTrue(ratio < 9, string.Format("Ratio is {0}", ratio));
 
@@ -589,6 +590,7 @@ namespace WEAK.Test.Communication
                     double ratio = (double)pubTime / (double)watch.ElapsedMilliseconds;
 
                     Trace.WriteLine(string.Format("Ratio is {0}", ratio));
+                    Trace.WriteLine(string.Format("Time is {0}", pubTime));
 
                     Assert.IsTrue(ratio < 1.1, string.Format("Ratio is {0}", ratio));
                 }

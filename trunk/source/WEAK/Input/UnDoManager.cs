@@ -141,7 +141,7 @@ namespace WEAK.Input
 
         void IUnDoManager.Do(IUnDo command)
         {
-            command.CheckParameter(nameof(command));
+            command.CheckForArgumentNullException(nameof(command));
 
             command.Do();
 

@@ -143,8 +143,8 @@ namespace WEAK.Input
         /// <returns>A wrapped ICollection.</returns>
         public static ICollection<T> ToUnDo<T>(this ICollection<T> source, IUnDoManager manager)
         {
-            source.CheckParameter(nameof(source));
-            manager.CheckParameter(nameof(manager));
+            source.CheckForArgumentNullException(nameof(source));
+            manager.CheckForArgumentNullException(nameof(manager));
 
             return new UnDoCollection<T>(manager, source);
         }

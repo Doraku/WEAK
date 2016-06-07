@@ -85,8 +85,8 @@ namespace WEAK.Input
         /// <returns>A wrapped IDictionary.</returns>
         public static IDictionary<TKey, TValue> ToUnDo<TKey, TValue>(this IDictionary<TKey, TValue> source, IUnDoManager manager)
         {
-            source.CheckParameter(nameof(source));
-            manager.CheckParameter(nameof(manager));
+            source.CheckForArgumentNullException(nameof(source));
+            manager.CheckForArgumentNullException(nameof(manager));
 
             return new UnDoDictionary<TKey, TValue>(manager, source);
         }

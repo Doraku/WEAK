@@ -27,8 +27,8 @@ namespace WEAK.Input
         /// <exception cref="System.ArgumentNullException">doAction or undoAction is null.</exception>
         public UnDo(Action doAction, Action undoAction)
         {
-            doAction.CheckParameter(nameof(doAction));
-            undoAction.CheckParameter(nameof(undoAction));
+            doAction.CheckForArgumentNullException(nameof(doAction));
+            undoAction.CheckForArgumentNullException(nameof(undoAction));
 
             _doAction = doAction;
             _undoAction = undoAction;

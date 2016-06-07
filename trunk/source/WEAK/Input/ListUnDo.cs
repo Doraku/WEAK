@@ -30,7 +30,7 @@ namespace WEAK.Input
         /// <exception cref="System.ArgumentNullException">source is null.</exception>
         public ListUnDo(IList<T> source, int index, T element, bool isAdd)
         {
-            source.CheckParameter(nameof(source));
+            source.CheckForArgumentNullException(nameof(source));
 
             _source = source;
             _index = index;

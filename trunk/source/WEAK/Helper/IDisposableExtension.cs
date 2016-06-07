@@ -86,7 +86,7 @@ namespace WEAK.Helper
         /// <exception cref="ArgumentNullException">disposables is null.</exception>
         public static IDisposable Merge(this IEnumerable<IDisposable> disposables)
         {
-            disposables.CheckParameter(nameof(disposables));
+            disposables.CheckForArgumentNullException(nameof(disposables));
 
             return new DisposableGroup(disposables);
         }
@@ -102,7 +102,7 @@ namespace WEAK.Helper
         /// <exception cref="ArgumentNullException">disposables is null.</exception>
         public static IDisposable Merge(this IDisposable disposable, params IDisposable[] disposables)
         {
-            disposables.CheckParameter(nameof(disposables));
+            disposables.CheckForArgumentNullException(nameof(disposables));
 
             return Merge(new[] { disposable }.Concat(disposables));
         }

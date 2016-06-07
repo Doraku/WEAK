@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using WEAK.Helper;
@@ -58,7 +57,7 @@ namespace WEAK.Test.Helper
             {
                 _action1Param?.Invoke(param);
             }
-            
+
             public bool InstanceFunc(bool param)
             {
                 return _func1Param?.Invoke(param) ?? false;

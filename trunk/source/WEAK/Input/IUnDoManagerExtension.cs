@@ -22,8 +22,8 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager or source is null.</exception>
         public static void DoAdd<T>(this IUnDoManager manager, ICollection<T> source, T value)
         {
-            manager.CheckParameter(nameof(manager));
-            source.CheckParameter(nameof(source));
+            manager.CheckForArgumentNullException(nameof(manager));
+            source.CheckForArgumentNullException(nameof(source));
 
             manager.Do(new CollectionUnDo<T>(source, value, true));
         }
@@ -37,8 +37,8 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager or source is null.</exception>
         public static void DoClear<T>(this IUnDoManager manager, ICollection<T> source)
         {
-            manager.CheckParameter(nameof(manager));
-            source.CheckParameter(nameof(source));
+            manager.CheckForArgumentNullException(nameof(manager));
+            source.CheckForArgumentNullException(nameof(source));
 
             List<T> oldValues = source.ToList();
 
@@ -56,8 +56,8 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager or source is null.</exception>
         public static bool DoRemove<T>(this IUnDoManager manager, ICollection<T> source, T value)
         {
-            manager.CheckParameter(nameof(manager));
-            source.CheckParameter(nameof(source));
+            manager.CheckForArgumentNullException(nameof(manager));
+            source.CheckForArgumentNullException(nameof(source));
 
             bool result = false;
 
@@ -82,9 +82,9 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager, source or key is null.</exception>
         public static void DoAdd<TKey, TValue>(this IUnDoManager manager, IDictionary<TKey, TValue> source, TKey key, TValue value)
         {
-            manager.CheckParameter(nameof(manager));
-            source.CheckParameter(nameof(source));
-            key.CheckParameter(nameof(key));
+            manager.CheckForArgumentNullException(nameof(manager));
+            source.CheckForArgumentNullException(nameof(source));
+            key.CheckForArgumentNullException(nameof(key));
 
             manager.Do(new DictionaryUnDo<TKey, TValue>(source, key, value, true));
         }
@@ -101,9 +101,9 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager, source or key is null.</exception>
         public static bool DoRemove<TKey, TValue>(this IUnDoManager manager, IDictionary<TKey, TValue> source, TKey key)
         {
-            manager.CheckParameter(nameof(manager));
-            source.CheckParameter(nameof(source));
-            key.CheckParameter(nameof(key));
+            manager.CheckForArgumentNullException(nameof(manager));
+            source.CheckForArgumentNullException(nameof(source));
+            key.CheckForArgumentNullException(nameof(key));
 
             bool result = false;
             TValue value;
@@ -130,9 +130,9 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager, source or key is null.</exception>
         public static void Do<TKey, TValue>(this IUnDoManager manager, IDictionary<TKey, TValue> source, TKey key, TValue value)
         {
-            manager.CheckParameter(nameof(manager));
-            source.CheckParameter(nameof(source));
-            key.CheckParameter(nameof(key));
+            manager.CheckForArgumentNullException(nameof(manager));
+            source.CheckForArgumentNullException(nameof(source));
+            key.CheckForArgumentNullException(nameof(key));
 
             TValue oldValue;
             if (source.TryGetValue(key, out oldValue))
@@ -156,8 +156,8 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager or source is null.</exception>
         public static void DoInsert<T>(this IUnDoManager manager, IList<T> source, int index, T value)
         {
-            manager.CheckParameter(nameof(manager));
-            source.CheckParameter(nameof(source));
+            manager.CheckForArgumentNullException(nameof(manager));
+            source.CheckForArgumentNullException(nameof(source));
 
             manager.Do(new ListUnDo<T>(source, index, value, true));
         }
@@ -172,8 +172,8 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager or source is null.</exception>
         public static void DoRemoveAt<T>(this IUnDoManager manager, IList<T> source, int index)
         {
-            manager.CheckParameter(nameof(manager));
-            source.CheckParameter(nameof(source));
+            manager.CheckForArgumentNullException(nameof(manager));
+            source.CheckForArgumentNullException(nameof(source));
 
             manager.Do(new ListUnDo<T>(source, index, source[index], false));
         }
@@ -189,8 +189,8 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager or source is null.</exception>
         public static void Do<T>(this IUnDoManager manager, IList<T> source, int index, T value)
         {
-            manager.CheckParameter(nameof(manager));
-            source.CheckParameter(nameof(source));
+            manager.CheckForArgumentNullException(nameof(manager));
+            source.CheckForArgumentNullException(nameof(source));
 
             manager.Do(v => source[index] = v, source[index], value);
         }
@@ -204,9 +204,9 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager, doAction or undoAction is null.</exception>
         public static void Do(this IUnDoManager manager, Action doAction, Action undoAction)
         {
-            manager.CheckParameter(nameof(manager));
-            doAction.CheckParameter(nameof(doAction));
-            undoAction.CheckParameter(nameof(undoAction));
+            manager.CheckForArgumentNullException(nameof(manager));
+            doAction.CheckForArgumentNullException(nameof(doAction));
+            undoAction.CheckForArgumentNullException(nameof(undoAction));
 
             manager.Do(new UnDo(doAction, undoAction));
         }
@@ -222,8 +222,8 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager or setter is null.</exception>
         public static void Do<T>(this IUnDoManager manager, Action<T> setter, T oldValue, T newValue)
         {
-            manager.CheckParameter(nameof(manager));
-            setter.CheckParameter(nameof(setter));
+            manager.CheckForArgumentNullException(nameof(manager));
+            setter.CheckForArgumentNullException(nameof(setter));
 
             manager.Do(new ValueUnDo<T>(setter, oldValue, newValue));
         }
@@ -235,7 +235,7 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager is null.</exception>
         public static void UndoAll(this IUnDoManager manager)
         {
-            manager.CheckParameter(nameof(manager));
+            manager.CheckForArgumentNullException(nameof(manager));
 
             while (manager.CanUndo)
             {
@@ -250,7 +250,7 @@ namespace WEAK.Input
         /// <exception cref="ArgumentNullException">manager is null.</exception>
         public static void RedoAll(this IUnDoManager manager)
         {
-            manager.CheckParameter(nameof(manager));
+            manager.CheckForArgumentNullException(nameof(manager));
 
             while (manager.CanRedo)
             {
