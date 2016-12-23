@@ -56,10 +56,13 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Communication\InnerPublisher.cs" />
     <Compile Include="Communication\SubscribeAttribute.cs" />
     <Compile Include="Communication\IPublisherExtension.cs" />
-    <Compile Include="Communication\ExecutionMode.cs" />
+    <Compile Include="Communication\PublishMode.cs" />
+    <Compile Include="Communication\Subscription.cs" />
     <Compile Include="Helper\IDisposableExtension.cs" />
+    <Compile Include="Helper\IntDispenser.cs" />
     <Compile Include="Helper\ObjectExtension.cs" />
     <Compile Include="Input\IUnDoManager.cs" />
     <Compile Include="Input\UnDo.cs" />
@@ -70,7 +73,7 @@
     <Compile Include="Object\KeyAttribute.cs" />
     <Compile Include="Object\ReferenceManager.cs" />
     <Compile Include="Object\Linker.cs" />
-    <Compile Include="Communication\EventAggregator.cs" />
+    <Compile Include="Communication\Publisher.cs" />
     <Compile Include="Communication\IPublisher.cs" />
     <Compile Include="Helper\DelegateExtension.cs" />
     <Compile Include="Object\Singleton.cs" />

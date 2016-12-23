@@ -15,7 +15,7 @@ namespace WEAK.Helper
         {
             #region Fields
 
-            private readonly List<IDisposable> _disposables;
+            private readonly IDisposable[] _disposables;
 
             private bool _isDisposed;
 
@@ -25,28 +25,29 @@ namespace WEAK.Helper
 
             public DisposableGroup(IEnumerable<IDisposable> disposables)
             {
-                _disposables = new List<IDisposable>();
+                _disposables = GetDisposables(disposables).ToArray();
 
                 _isDisposed = false;
-
-                InsertChild(disposables);
             }
 
             #endregion
 
             #region Methods
 
-            private void InsertChild(IEnumerable<IDisposable> disposables)
+            private IEnumerable<IDisposable> GetDisposables(IEnumerable<IDisposable> disposables)
             {
                 foreach (IDisposable disposable in disposables)
                 {
                     if (disposable is DisposableGroup)
                     {
-                        InsertChild((disposable as DisposableGroup)._disposables);
+                        foreach (IDisposable child in (disposable as DisposableGroup)._disposables)
+                        {
+                            yield return child;
+                        }
                     }
                     else
                     {
-                        _disposables.Add(disposable);
+                        yield return disposable;
                     }
                 }
             }
@@ -59,7 +60,7 @@ namespace WEAK.Helper
             {
                 if (!_isDisposed)
                 {
-                    for (int i = _disposables.Count - 1; i >= 0; --i)
+                    for (int i = _disposables.Length - 1; i >= 0; --i)
                     {
                         _disposables[i]?.Dispose();
                     }

@@ -41,10 +41,14 @@ namespace WEAK.Input
         /// <summary>
         /// ReDoes the last undone IUnDo commands of the manager history.
         /// </summary>
+        /// <exception cref="InvalidOperationException">Cannot perform Undo while a group operation is going on.</exception>
+        /// <exception cref="InvalidOperationException">There is no action to undo.</exception>
         void Redo();
         /// <summary>
         /// UnDoes the last executed IUnDo command of the manager history.
         /// </summary>
+        /// <exception cref="InvalidOperationException">Cannot perform Undo while a group operation is going on.</exception>
+        /// <exception cref="InvalidOperationException">There is no action to undo.</exception>
         void Undo();
     }
 }

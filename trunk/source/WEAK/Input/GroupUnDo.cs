@@ -34,7 +34,7 @@ namespace WEAK.Input
 
         #region IUnDo
 
-        void IUnDo.Do()
+        public void Do()
         {
             foreach (IUnDo command in _commands)
             {
@@ -42,7 +42,7 @@ namespace WEAK.Input
             }
         }
 
-        void IUnDo.Undo()
+        public void Undo()
         {
             for (int i = _commands.Length - 1; i >= 0; --i)
             {

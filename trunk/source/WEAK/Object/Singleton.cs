@@ -3,7 +3,7 @@
 namespace WEAK.Object
 {
     /// <summary>
-    /// Provides a mean to retrieve an unique instance for a give type, initialising it lazily throught the Factory class.
+    /// Provides a mean to retrieve an unique instance for a given type, initialising it lazily throught the Factory class.
     /// </summary>
     /// <typeparam name="T">The type of the instance.</typeparam>
     public static class Singleton<T>

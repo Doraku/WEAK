@@ -55,7 +55,7 @@ namespace WEAK.Module
             public UnitLoader(IPublisher publisher)
             {
                 _publisher = publisher;
-                _subscription = publisher.Subscribe(this);
+                _subscription = publisher.AutoSubscribe(this);
             }
 
             #endregion
@@ -151,12 +151,12 @@ namespace WEAK.Module
 
         public UnitManager()
         {
-            _publisher = new EventAggregator();
+            _publisher = new Publisher();
             _locker = new object();
             _pendingUnits = new Dictionary<Type, IDisposable>();
             _loadedUnits = new Dictionary<Type, IUnit>();
             _handle = new CountdownEvent(0);
-            _subscription = _publisher.Subscribe(this);
+            _subscription = _publisher.AutoSubscribe(this);
         }
 
         ~UnitManager()

@@ -169,13 +169,24 @@ namespace WEAK.Test.Helper
             Check.That(delegateAction(true)).IsTrue();
         }
 
+        [TestMethod]
+        public void WeakDelegate_Should_()
+        {
+            bool done = false;
+            DelegateTest test = new DelegateTest(b => { done = b; });
+            Action<bool> delegateAction = test.InstanceAction;
+            delegateAction += test.InstanceAction;
+            
+            Check.That(delegateAction.ToWeak()).IsEqualTo(delegateAction);
+        }
+
         [TestMethod, TestCategory("Performance")]
         public void WeakDelegate_Performance()
         {
             bool temp = false;
             DelegateTest test = new DelegateTest(value => temp != value);
             Func<bool, bool> delegateAction = new Func<bool, bool>(test.InstanceFunc);
-            Func<bool, bool> weakDelegateAction = new Func<bool, bool>(test.InstanceFunc).ToWeak();
+            Func<bool, bool> weakDelegateAction = delegateAction.ToWeak();
 
             Stopwatch wInstance = new Stopwatch();
             Stopwatch wDelegate = new Stopwatch();
@@ -199,7 +210,6 @@ namespace WEAK.Test.Helper
             Console.WriteLine($"weak to delegate ratio: {(double)wWeak.ElapsedTicks / wDelegate.ElapsedTicks}");
             Console.WriteLine($"weak to instance ratio: {(double)wWeak.ElapsedTicks / wInstance.ElapsedTicks}");
         }
-
 
         #endregion
     }

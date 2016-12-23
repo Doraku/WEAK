@@ -114,7 +114,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void SubscribeTestNull()
         {
-            IPublisher publisher = new EventAggregator();
+            IPublisher publisher = new Publisher();
 
             try
             {
@@ -131,7 +131,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void SubscribeTestDispose()
         {
-            IPublisher publisher = new EventAggregator();
+            IPublisher publisher = new Publisher();
             publisher.Dispose();
 
             try
@@ -145,7 +145,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void PublishTestDispose()
         {
-            IPublisher publisher = new EventAggregator();
+            IPublisher publisher = new Publisher();
             publisher.Dispose();
 
             try
@@ -159,7 +159,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void SubscribeTestReference()
         {
-            IPublisher publisher = new EventAggregator();
+            IPublisher publisher = new Publisher();
             bool done = false;
             Dummy dummy = new Dummy();
             Dummy.Action = () => done = true;
@@ -190,7 +190,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void PublishTestDirect()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             {
                 bool done = false;
                 Dummy dummy = new Dummy();
@@ -207,7 +207,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void PublishTestAsync()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             using (ManualResetEvent handle = new ManualResetEvent(false))
             {
                 Dummy dummy = new Dummy();
@@ -224,7 +224,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void PublishTestLongRunning()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             using (ManualResetEvent handle = new ManualResetEvent(false))
             {
                 Dummy dummy = new Dummy();
@@ -241,7 +241,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void PublishTestContextSame()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             using (ManualResetEvent handle = new ManualResetEvent(false))
             {
                 Dummy dummy = new Dummy();
@@ -258,7 +258,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void PublishTestContextDifferent()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             using (ManualResetEvent handle = new ManualResetEvent(false))
             {
                 Assert.IsTrue(Task.Factory.StartNew(() =>
@@ -278,7 +278,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void PublishTestContextAsync()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             using (ManualResetEvent handle = new ManualResetEvent(false))
             {
                 Assert.IsTrue(Task.Factory.StartNew(() =>
@@ -298,7 +298,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void PublishTestDerived()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             {
                 bool done = false;
                 Dummy dummy = new Dummy();
@@ -327,7 +327,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void PublishTestBase()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             {
                 bool done = false;
                 Dummy dummy = new Dummy();
@@ -344,7 +344,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void UnsubscribeTestInstance()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             {
                 bool done = false;
                 Dummy dummy = new Dummy();
@@ -368,7 +368,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void UnsubscribeTestStatic()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             {
                 bool done = false;
                 Dummy.Action = () => done = true;
@@ -391,13 +391,13 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void HookUpTest()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             {
                 bool done = false;
                 Dummy.Action = () => done = true;
                 Dummy dummy = new Dummy2();
 
-                IDisposable registers = publisher.Subscribe(dummy);
+                IDisposable registers = publisher.AutoSubscribe(dummy);
 
                 publisher.Publish(new Request());
 
@@ -459,7 +459,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void SubscribeTestOnce()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             {
                 int i = 0;
                 Dummy dummy = new Dummy();
@@ -477,11 +477,11 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void PublishTestDirectPerf()
         {
-            using (IPublisher publisher1 = new EventAggregator())
-            using (IPublisher publisher2 = new EventAggregator())
-            using (IPublisher publisher = new EventAggregator())
-            using (IPublisher publisher3 = new EventAggregator())
-            using (IPublisher publisher4 = new EventAggregator())
+            using (IPublisher publisher1 = new Publisher())
+            using (IPublisher publisher2 = new Publisher())
+            using (IPublisher publisher = new Publisher())
+            using (IPublisher publisher3 = new Publisher())
+            using (IPublisher publisher4 = new Publisher())
             {
                 int total = 1000000;
                 int i = 0;
@@ -537,7 +537,7 @@ namespace WEAK.Test.Communication
         public void PublishTestAsyncPerf()
         {
             int total = 1000000;
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             using (CountdownEvent countDown = new CountdownEvent(total))
             {
                 int i = 0;
@@ -600,7 +600,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void SubscriptionTest()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             {
                 bool done = false;
                 Dummy dummy = new Dummy();
@@ -617,7 +617,7 @@ namespace WEAK.Test.Communication
         [TestMethod]
         public void ExecutionOrderTest()
         {
-            using (IPublisher publisher = new EventAggregator())
+            using (IPublisher publisher = new Publisher())
             {
                 ManualResetEvent handle = new ManualResetEvent(false);
 

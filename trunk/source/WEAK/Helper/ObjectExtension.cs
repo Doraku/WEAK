@@ -16,15 +16,14 @@ namespace WEAK.Helper
         /// <exception cref="ArgumentNullException">param is null.</exception>
         public static void CheckForArgumentNullException<T>(this T param, string paramName)
         {
-            if (param == null)
+            if (ReferenceEquals(param, null))
             {
                 throw new ArgumentNullException(paramName);
             }
         }
 
         /// <summary>
-        /// Checks and throws an ArgumentNullException if the passed parameter is null
-        /// or an ArgumentException if it doesn't passed the validation predicate.
+        /// Checks and throws an ArgumentException if it doesn't passed the validation predicate.
         /// </summary>
         /// <typeparam name="T">The type of the param to check.</typeparam>
         /// <param name="param">The param to check.</param>

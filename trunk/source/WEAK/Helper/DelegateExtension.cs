@@ -31,7 +31,7 @@ namespace WEAK.Helper
 
         #region Methods
 
-        private static Expression GetGetTargetExpression<T>(T target, ParameterExpression targetVariable)
+        private static Expression GetTargetExpression<T>(T target, ParameterExpression targetVariable)
             where T : class
         {
             WeakReference<T> weakTarget = new WeakReference<T>(target);
@@ -54,7 +54,8 @@ namespace WEAK.Helper
             Delegate unboxedDelegate = delegateAction as Delegate;
             if (unboxedDelegate == null
                 || unboxedDelegate.Method.IsStatic
-                || unboxedDelegate.Target.GetType().IsValueType)
+                || unboxedDelegate.Target.GetType().IsValueType
+                || unboxedDelegate.GetInvocationList().Length > 1)
             {
                 return delegateAction;
             }
@@ -77,7 +78,7 @@ namespace WEAK.Helper
                 ParameterExpression targetVariable = Expression.Variable(unboxedDelegate.Target.GetType());
 
                 MethodInfo factoryMethod = typeof(DelegateExtension)
-                    .GetMethod(nameof(GetGetTargetExpression), BindingFlags.NonPublic | BindingFlags.Static)
+                    .GetMethod(nameof(GetTargetExpression), BindingFlags.NonPublic | BindingFlags.Static)
                     .MakeGenericMethod(unboxedDelegate.Target.GetType());
 
                 List<ParameterExpression> parameters = unboxedDelegate.Method.GetParameters().Select(p => Expression.Parameter(p.ParameterType)).ToList();

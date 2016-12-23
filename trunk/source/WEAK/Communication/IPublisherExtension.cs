@@ -24,7 +24,7 @@ namespace WEAK.Communication
 
         #region Methods
 
-        private static IDisposable Subscribe(IPublisher publisher, Type type, object target, BindingFlags flags)
+        private static IDisposable AutoSubscribe(IPublisher publisher, Type type, object target, BindingFlags flags)
         {
             List<IDisposable> subscriptions = new List<IDisposable>();
 
@@ -72,12 +72,12 @@ namespace WEAK.Communication
         /// <returns>A IDisposable to unregister.</returns>
         /// <exception cref="System.ArgumentNullException">publisher or type is null.</exception>
         /// <exception cref="System.NotSupportedException">The Subscribe attribute is used on an uncompatible method of the instance.</exception>
-        public static IDisposable Subscribe<T>(this IPublisher publisher)
+        public static IDisposable AutoSubscribe<T>(this IPublisher publisher)
             where T : class
         {
             publisher.CheckForArgumentNullException(nameof(publisher));
 
-            return Subscribe(publisher, typeof(T), null, BindingFlags.Default);
+            return AutoSubscribe(publisher, typeof(T), null, BindingFlags.Default);
         }
 
         /// <summary>
@@ -89,13 +89,13 @@ namespace WEAK.Communication
         /// <returns>A IDisposable to unregister.</returns>
         /// <exception cref="System.ArgumentNullException">publisher or target is null.</exception>
         /// <exception cref="System.NotSupportedException">The Subscribe attribute is used on an uncompatible method of the instance.</exception>
-        public static IDisposable Subscribe<T>(this IPublisher publisher, T target)
+        public static IDisposable AutoSubscribe<T>(this IPublisher publisher, T target)
             where T : class
         {
             publisher.CheckForArgumentNullException(nameof(publisher));
             target.CheckForArgumentNullException(nameof(target));
 
-            return Subscribe(publisher, target.GetType(), target, BindingFlags.Instance);
+            return AutoSubscribe(publisher, target.GetType(), target, BindingFlags.Instance);
         }
 
         #endregion

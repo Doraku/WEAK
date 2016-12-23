@@ -58,12 +58,12 @@ namespace WEAK.Input
 
         #region IUnDo
 
-        void IUnDo.Do()
+        public void Do()
         {
             Action(_isAdd);
         }
 
-        void IUnDo.Undo()
+        public void Undo()
         {
             Action(!_isAdd);
         }

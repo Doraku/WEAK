@@ -7,7 +7,7 @@
         <DockPanel>
             <Image Margin="4,4,4,2" DockPanel.Dock="Left" Stretch="None"
                    Source="{Binding Icon, RelativeSource={RelativeSource AncestorType=Window}}"/>
-            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Left"/>
         </DockPanel>
     </ControlTemplate>
     <ControlTemplate x:Key="WEAK_WindowBehavior_DefaultTemplate" TargetType="Window">

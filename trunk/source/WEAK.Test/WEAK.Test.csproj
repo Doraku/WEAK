@@ -68,7 +68,9 @@
   <ItemGroup>
     <Compile Include="Communication\EventAggregatorTest.cs" />
     <Compile Include="Communication\IPublisherExtensionTest.cs" />
+    <Compile Include="Communication\PublisherTest.cs" />
     <Compile Include="Helper\DelegateExtensionTest.cs" />
+    <Compile Include="Helper\IntDispenserTest.cs" />
     <Compile Include="Serialization\DataContractOperationTest.cs" />
     <Compile Include="Helper\IDisposableExtensionTest.cs" />
     <Compile Include="Helper\ObjectExtensionTest.cs" />

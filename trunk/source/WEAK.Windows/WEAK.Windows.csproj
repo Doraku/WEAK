@@ -59,6 +59,7 @@
     <Compile Include="Data\ContainsConverter.cs" />
     <Compile Include="Data\EqualsConverter.cs" />
     <Compile Include="Input\DelegateCommand.cs" />
+    <Compile Include="Input\AsyncDelegateCommand.cs" />
     <Compile Include="DependencyObjectExtensions.cs" />
     <Compile Include="Markup\EnumExtension.cs" />
     <Compile Include="Markup\ReferenceExtension.cs" />

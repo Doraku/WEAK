@@ -1,32 +1,37 @@
-﻿using System;
+﻿#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
+using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace WEAK.Windows.Input
 {
-    public sealed class DelegateCommand : ICommand
+    public sealed class AsyncDelegateCommand : ICommand
     {
         #region Fields
 
-        private readonly Action _execute;
+        private readonly Func<Task> _executeAsync;
         private readonly Func<bool> _canExecute;
+
+        private volatile bool _isExecuting;
 
         #endregion
 
         #region Initialisation
 
-        public DelegateCommand(Action execute, Func<bool> canExecute)
+        public AsyncDelegateCommand(Func<Task> executeAsync, Func<bool> canExecute)
         {
-            if (execute == null)
+            if (executeAsync == null)
             {
-                throw new ArgumentNullException(nameof(execute));
+                throw new ArgumentNullException(nameof(executeAsync));
             }
 
-            _execute = execute;
+            _executeAsync = executeAsync;
             _canExecute = canExecute;
         }
 
-        public DelegateCommand(Action execute)
-            : this(execute, null)
+        public AsyncDelegateCommand(Func<Task> executeAsync)
+            : this(executeAsync, null)
         { }
 
         #endregion
@@ -35,12 +40,16 @@ namespace WEAK.Windows.Input
 
         public bool CanExecute()
         {
-            return _canExecute?.Invoke() ?? true;
+            return !_isExecuting && (_canExecute?.Invoke() ?? true);
         }
 
-        public void Execute()
+        public async Task ExecuteAsync()
         {
-            _execute();
+            _isExecuting = true;
+
+            await _executeAsync();
+
+            _isExecuting = false;
         }
 
         #endregion
@@ -60,38 +69,40 @@ namespace WEAK.Windows.Input
 
         void ICommand.Execute(object parameter)
         {
-            Execute();
+            ExecuteAsync();
         }
 
         #endregion
     }
 
-    public sealed class DelegateCommand<T> : ICommand
+    public sealed class AsyncDelegateCommand<T> : ICommand
     {
         #region Fields
 
-        private readonly Action<T> _execute;
+        private readonly Func<Task<T>> _executeAsync;
         private readonly Predicate<T> _canExecute;
         private readonly bool _isClass;
+
+        private volatile bool _isExecuting;
 
         #endregion
 
         #region Initialisation
 
-        public DelegateCommand(Action<T> execute, Predicate<T> canExecute)
+        public AsyncDelegateCommand(Func<Task<T>> executeAsync, Predicate<T> canExecute)
         {
-            if (execute == null)
+            if (executeAsync == null)
             {
-                throw new ArgumentNullException(nameof(execute));
+                throw new ArgumentNullException(nameof(executeAsync));
             }
 
-            _execute = execute;
+            _executeAsync = executeAsync;
             _canExecute = canExecute;
             _isClass = typeof(T).IsClass;
         }
 
-        public DelegateCommand(Action<T> execute)
-            : this(execute, null)
+        public AsyncDelegateCommand(Func<Task<T>> executeAsync)
+            : this(executeAsync, null)
         { }
 
         #endregion
@@ -100,12 +111,16 @@ namespace WEAK.Windows.Input
 
         public bool CanExecute(T parameter)
         {
-            return parameter == null ? false : _canExecute?.Invoke(parameter) ?? true;
+            return !_isExecuting && (_canExecute?.Invoke(parameter) ?? true);
         }
 
-        public void Execute(T parameter)
+        public async Task ExecuteAsync(T parameter)
         {
-            _execute(parameter);
+            _isExecuting = true;
+
+            await _executeAsync();
+
+            _isExecuting = false;
         }
 
         #endregion
@@ -131,7 +146,7 @@ namespace WEAK.Windows.Input
 
         void ICommand.Execute(object parameter)
         {
-            Execute((T)parameter);
+            ExecuteAsync((T)parameter);
         }
 
         #endregion

@@ -39,12 +39,12 @@ namespace WEAK.Input
 
         #region IUnDo
 
-        void IUnDo.Do()
+        public void Do()
         {
             _setter(_newValue);
         }
 
-        void IUnDo.Undo()
+        public void Undo()
         {
             _setter(_oldValue);
         }

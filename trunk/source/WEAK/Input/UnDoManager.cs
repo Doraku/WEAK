@@ -113,33 +113,24 @@ namespace WEAK.Input
 
         #region IUnDoManager
 
-        int IUnDoManager.Version
-        {
-            get { return _currentVersion; }
-        }
+        public int Version => _currentVersion;
 
-        bool IUnDoManager.CanUndo
-        {
-            get { return _doneActions.Count > 0; }
-        }
+        public bool CanUndo => _doneActions.Count > 0;
 
-        bool IUnDoManager.CanRedo
-        {
-            get { return _undoneActions.Count > 0; }
-        }
+        public bool CanRedo => _undoneActions.Count > 0;
 
-        IDisposable IUnDoManager.BeginGroup()
+        public IDisposable BeginGroup()
         {
             return new Linker(this);
         }
 
-        void IUnDoManager.Clear()
+        public void Clear()
         {
             _doneActions.Clear();
             _undoneActions.Clear();
         }
 
-        void IUnDoManager.Do(IUnDo command)
+        public void Do(IUnDo command)
         {
             command.CheckForArgumentNullException(nameof(command));
 
@@ -158,7 +149,7 @@ namespace WEAK.Input
             _undoneActions.Clear();
         }
 
-        void IUnDoManager.Undo()
+        public void Undo()
         {
             if (_linkerCount != 0)
             {
@@ -183,7 +174,7 @@ namespace WEAK.Input
             _currentVersion = _doneVersions.Peek();
         }
 
-        void IUnDoManager.Redo()
+        public void Redo()
         {
             if (_linkerCount != 0)
             {

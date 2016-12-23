@@ -49,7 +49,7 @@ namespace WEAK.Object
                             object[] innerParameters;
                             if (attribute == null)
                             {
-                                creator = typeof(Factory<>).MakeGenericType(info.ParameterType).GetMethod("CreateInstance", new Type[0]);
+                                creator = typeof(Factory<>).MakeGenericType(info.ParameterType).GetMethod("CreateInstance", Type.EmptyTypes);
                                 innerParameters = new object[0];
                             }
                             else
