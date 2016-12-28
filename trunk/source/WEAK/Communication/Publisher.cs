@@ -29,9 +29,8 @@ namespace WEAK.Communication
 
         #region Fields
 
-        private static readonly object _locker;
         private static readonly ConcurrentDictionary<Type, Action<StrongBox<Action<object>[]>>> _addRelay;
-        private static readonly Dictionary<MethodInfo, StrippedDelegate> _strippedDelegates;
+        private static readonly IDictionary<MethodInfo, StrippedDelegate> _strippedDelegates;
         private static readonly IntDispenser _idDispenser;
 
         private readonly int _id;
@@ -45,7 +44,6 @@ namespace WEAK.Communication
 
         static Publisher()
         {
-            _locker = new object();
             _addRelay = new ConcurrentDictionary<Type, Action<StrongBox<Action<object>[]>>>();
             _strippedDelegates = new Dictionary<MethodInfo, StrippedDelegate>();
             _idDispenser = new IntDispenser(-1);
@@ -80,15 +78,8 @@ namespace WEAK.Communication
 
         #region Methods
 
-        private static IEnumerable<Type> GetTypes(Type type)
+        private static IEnumerable<Type> GetBaseTypes(Type type)
         {
-            yield return type;
-
-            foreach (Type inter in type.GetInterfaces())
-            {
-                yield return inter;
-            }
-
             if (type.IsInterface)
             {
                 yield return typeof(object);
@@ -113,27 +104,11 @@ namespace WEAK.Communication
                 actions).Compile();
         }
 
-        private static bool IsFirst(ExecutionMode executionMode)
-        {
-            switch (executionMode)
-            {
-                case ExecutionMode.Async:
-                case ExecutionMode.ContextAsync:
-                case ExecutionMode.LongRunning:
-                    return true;
-
-                case ExecutionMode.Direct:
-                case ExecutionMode.Context:
-                default:
-                    return false;
-            }
-        }
-
         private static StrippedDelegate GetStrippedDelegate(MethodInfo method, Type targetType)
         {
             StrippedDelegate result;
 
-            lock (_locker)
+            lock (_strippedDelegates)
             {
                 if (!_strippedDelegates.TryGetValue(method, out result))
                 {
@@ -153,14 +128,19 @@ namespace WEAK.Communication
                     il.Emit(OpCodes.Ret);
 
                     result = (StrippedDelegate)dynamicDelegate.CreateDelegate(typeof(StrippedDelegate));
-                    _strippedDelegates[method] = result;
+                    _strippedDelegates.Add(method, result);
                 }
             }
 
             return result;
         }
 
-        private static Action<object> GetWrapper(StrippedDelegate weakDelegate, WeakReference reference)
+        private static Action<object> GetWrapper(StrippedDelegate strippedDelegate, object target)
+        {
+            return arg => strippedDelegate(target, arg);
+        }
+
+        private static Action<object> GetWrapper(StrippedDelegate strippedDelegate, WeakReference reference)
         {
             return arg =>
             {
@@ -168,7 +148,7 @@ namespace WEAK.Communication
 
                 if (target != null)
                 {
-                    weakDelegate(target, arg);
+                    strippedDelegate(target, arg);
                 }
             };
         }
@@ -182,48 +162,54 @@ namespace WEAK.Communication
             }
         }
 
-        private Action<object> GetWrapper<T>(Action<T> action, ExecutionMode executionMode)
+        private Action<object> GetWrapper<T>(Action<T> action, ExecutionOption executionOption)
         {
-            StrippedDelegate weakDelegate = GetStrippedDelegate(action.Method, action.Method.DeclaringType);
+            StrippedDelegate strippedDelegate = GetStrippedDelegate(action.Method, action.Method.DeclaringType);
 
             Action<object> weakAction =
                 action.Method.IsStatic
-                ? arg => weakDelegate(null, arg)
-                : GetWrapper(weakDelegate, new WeakReference(action.Target));
-            SendOrPostCallback callback = new SendOrPostCallback(weakAction);
+                ? arg => strippedDelegate(null, arg)
+                : (
+                    executionOption.HasFlag(ExecutionOption.WeakReference)
+                    ? GetWrapper(strippedDelegate, new WeakReference(action.Target))
+                    : GetWrapper(strippedDelegate, action.Target));
 
-            switch (executionMode)
+            if (executionOption.HasFlag(ExecutionOption.Context))
             {
-                case ExecutionMode.Async:
-                    return o => Task.Factory.StartNew(weakAction, o);
+                SendOrPostCallback callback = new SendOrPostCallback(weakAction);
 
-                case ExecutionMode.LongRunning:
-                    return o => Task.Factory.StartNew(weakAction, o, TaskCreationOptions.LongRunning);
-
-                case ExecutionMode.Context:
-                    return o => _context.Send(callback, o);
-
-                case ExecutionMode.ContextAsync:
+                if (executionOption.HasFlag(ExecutionOption.Async))
+                {
                     return o => _context.Post(callback, o);
+                }
 
-                default:
-                    return weakAction;
+                return o => _context.Send(callback, o);
             }
+            else if (executionOption.HasFlag(ExecutionOption.LongRunning))
+            {
+                return o => Task.Factory.StartNew(weakAction, o, TaskCreationOptions.LongRunning);
+            }
+            else if (executionOption.HasFlag(ExecutionOption.Async))
+            {
+                return o => Task.Factory.StartNew(weakAction, o);
+            }
+
+            return weakAction;
         }
 
         #endregion
 
         #region IPublisher
 
-        public IDisposable Subscribe<T>(Action<T> action, ExecutionMode executionMode)
+        public IDisposable Subscribe<T>(Action<T> action, ExecutionOption executionOption)
         {
             ThrowIfIsDisposed();
 
             action.CheckForArgumentNullException(nameof(action));
 
-            Action<object> wrapper = GetWrapper(action, executionMode);
+            Action<object> wrapper = GetWrapper(action, executionOption);
 
-            InnerPublisher<T>.Subscribe(_id, wrapper, IsFirst(executionMode));
+            InnerPublisher<T>.Subscribe(_id, wrapper);
 
             return new Subscription(_id, wrapper);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -14,8 +15,7 @@ namespace WEAK.Helper
     {
         #region Fields
 
-        private static readonly Dictionary<MethodInfo, ConditionalWeakTable<object, Delegate>> _delegates;
-        private static readonly object _locker;
+        private static readonly ConcurrentDictionary<MethodInfo, ConditionalWeakTable<object, Delegate>> _delegates;
 
         #endregion
 
@@ -23,15 +23,14 @@ namespace WEAK.Helper
 
         static DelegateExtension()
         {
-            _delegates = new Dictionary<MethodInfo, ConditionalWeakTable<object, Delegate>>();
-            _locker = new object();
+            _delegates = new ConcurrentDictionary<MethodInfo, ConditionalWeakTable<object, Delegate>>();
         }
 
         #endregion
 
         #region Methods
 
-        private static Expression GetTargetExpression<T>(T target, ParameterExpression targetVariable)
+        private static Expression GetTryGetTargetExpression<T>(T target, ParameterExpression targetVariable)
             where T : class
         {
             WeakReference<T> weakTarget = new WeakReference<T>(target);
@@ -60,25 +59,21 @@ namespace WEAK.Helper
                 return delegateAction;
             }
 
-            lock (_locker)
+            ConditionalWeakTable<object, Delegate> delegates =
+                _delegates.GetOrAdd(unboxedDelegate.Method, _ => new ConditionalWeakTable<object, Delegate>());
+
+            lock (delegates)
             {
-                if (_delegates.ContainsKey(unboxedDelegate.Method))
+                Delegate cachedAction;
+                if (delegates.TryGetValue(unboxedDelegate.Target, out cachedAction))
                 {
-                    Delegate cachedAction;
-                    if (_delegates[unboxedDelegate.Method].TryGetValue(unboxedDelegate.Target, out cachedAction))
-                    {
-                        return cachedAction as TDelegate;
-                    }
-                }
-                else
-                {
-                    _delegates[unboxedDelegate.Method] = new ConditionalWeakTable<object, Delegate>();
+                    return cachedAction as TDelegate;
                 }
 
                 ParameterExpression targetVariable = Expression.Variable(unboxedDelegate.Target.GetType());
 
                 MethodInfo factoryMethod = typeof(DelegateExtension)
-                    .GetMethod(nameof(GetTargetExpression), BindingFlags.NonPublic | BindingFlags.Static)
+                    .GetMethod(nameof(GetTryGetTargetExpression), BindingFlags.NonPublic | BindingFlags.Static)
                     .MakeGenericMethod(unboxedDelegate.Target.GetType());
 
                 List<ParameterExpression> parameters = unboxedDelegate.Method.GetParameters().Select(p => Expression.Parameter(p.ParameterType)).ToList();
@@ -110,7 +105,7 @@ namespace WEAK.Helper
 
                 TDelegate weakAction = labmdaInstance.Compile();
 
-                _delegates[unboxedDelegate.Method].Add(unboxedDelegate.Target, weakAction as Delegate);
+                delegates.Add(unboxedDelegate.Target, weakAction as Delegate);
 
                 return weakAction;
             }

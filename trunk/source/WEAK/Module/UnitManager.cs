@@ -62,7 +62,7 @@ namespace WEAK.Module
 
             #region Callbacks
 
-            [Subscribe(ExecutionMode.LongRunning)]
+            [Subscribe(ExecutionOption.LongRunning)]
             private void On(LoadRequest loadRequest)
             {
                 T unit = default(T);
@@ -267,7 +267,7 @@ namespace WEAK.Module
 
         #region Callbacks
 
-        [Subscribe(ExecutionMode.Context)]
+        [Subscribe(ExecutionOption.Context)]
         private void On(LoadResult result)
         {
             if (result.Unit != null)

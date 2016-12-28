@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace WEAK.Communication
 {
     public sealed partial class Publisher
     {
-        public static class InnerPublisher<T>
+        private static class InnerPublisher<T>
         {
             #region Fields
 
             private static readonly List<StrongBox<Action<object>[]>> _relays;
+
+            private static Action<object>[] _ownActions;
 
             public static readonly StrongBox<Action<object>[]> Actions;
 
@@ -21,10 +24,13 @@ namespace WEAK.Communication
             static InnerPublisher()
             {
                 _relays = new List<StrongBox<Action<object>[]>>();
+                _ownActions = new Action<object>[_idDispenser.LastInt + 1];
 
-                Actions = new StrongBox<Action<object>[]>(new Action<object>[_idDispenser.LastInt + 1]);
+                Actions = new StrongBox<Action<object>[]>(new Action<object>[0]);
 
-                foreach (Type type in GetTypes(typeof(T)))
+                _relays = new List<StrongBox<Action<object>[]>> { Actions };
+
+                foreach (Type type in GetBaseTypes(typeof(T)).Concat(typeof(T).GetInterfaces()))
                 {
                     _addRelay.GetOrAdd(type, GetAddRelay)(Actions);
                 }
@@ -38,39 +44,40 @@ namespace WEAK.Communication
             {
                 lock (_relays)
                 {
-                    _relays.Add(actions);
-
-                    if (typeof(T) == typeof(object))
+                    if (actions.Value.Length == 0)
                     {
-                        Array.Copy(Actions.Value, actions.Value, Math.Min(actions.Value.Length, actions.Value.Length));
+                        actions.Value = new Action<object>[Actions.Value.Length];
+                        Array.Copy(Actions.Value, actions.Value, Actions.Value.Length);
                     }
+                    else if (_relays.Count == 1)
+                    {
+                        for (int i = 0; i < _ownActions.Length; ++i)
+                        {
+                            if (_ownActions[i] != null)
+                            {
+                                foreach (Action<object> action in _ownActions[i].GetInvocationList())
+                                {
+                                    actions.Value[i] += action;
+                                }
+                            }
+                        }
+                    }
+
+                    _relays.Add(actions);
                 }
             }
 
-            public static void Subscribe(int id, Action<object> action, bool isFirst)
+            public static void Subscribe(int id, Action<object> action)
             {
                 lock (_relays)
                 {
+                    _ownActions[id] += action;
+
                     foreach (StrongBox<Action<object>[]> actions in _relays)
                     {
                         lock (actions)
                         {
-                            Action<object> newAction = action;
-                            Action<object> temp = actions.Value[id];
-
-                            if (temp != null)
-                            {
-                                if (isFirst)
-                                {
-                                    newAction = (Action<object>)Delegate.Combine(newAction, temp);
-                                }
-                                else
-                                {
-                                    newAction = (Action<object>)Delegate.Combine(temp, newAction);
-                                }
-                            }
-
-                            actions.Value[id] = newAction;
+                            actions.Value[id] += action;
                         }
                     }
                 }
@@ -80,6 +87,8 @@ namespace WEAK.Communication
             {
                 lock (_relays)
                 {
+                    _ownActions[id] -= action;
+
                     foreach (StrongBox<Action<object>[]> actions in _relays)
                     {
                         lock (actions)
@@ -94,6 +103,8 @@ namespace WEAK.Communication
             {
                 lock (_relays)
                 {
+                    _ownActions[id] = null;
+
                     foreach (StrongBox<Action<object>[]> actions in _relays)
                     {
                         lock (actions)
@@ -119,6 +130,10 @@ namespace WEAK.Communication
                                     Action<object>[] newActions = new Action<object>[(id + 1) * 2];
                                     Array.Copy(actions.Value, newActions, actions.Value.Length);
                                     actions.Value = newActions;
+
+                                    Action<object>[] newOwnActions = new Action<object>[(id + 1) * 2];
+                                    Array.Copy(_ownActions, newOwnActions, _ownActions.Length);
+                                    _ownActions = newOwnActions;
                                 }
                             }
                         }

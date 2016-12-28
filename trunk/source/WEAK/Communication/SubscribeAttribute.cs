@@ -13,7 +13,7 @@ namespace WEAK.Communication
         /// <summary>
         /// Gets the PublishingMode of the attribute.
         /// </summary>
-        public ExecutionMode PublishingMode { get; }
+        public ExecutionOption PublishingMode { get; }
 
         #endregion
 
@@ -23,7 +23,7 @@ namespace WEAK.Communication
         /// Initialise a new instance of SubscribeAttribute.
         /// </summary>
         /// <param name="publishingMode"></param>
-        public SubscribeAttribute(ExecutionMode publishingMode)
+        public SubscribeAttribute(ExecutionOption publishingMode)
         {
             PublishingMode = publishingMode;
         }

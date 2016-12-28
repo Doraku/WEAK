@@ -13,25 +13,25 @@ namespace WEAK.Test.Communication
 
         private class InvalidNumberOfParameter
         {
-            [Subscribe(ExecutionMode.Direct)]
+            [Subscribe(ExecutionOption.None)]
             public static void Method(object arg1, object arg2) { }
         }
 
         private class InvalidReturnType
         {
-            [Subscribe(ExecutionMode.Direct)]
+            [Subscribe(ExecutionOption.None)]
             public static object Method(object arg1) { return null; }
         }
 
         private class StaticMethod
         {
-            [Subscribe(ExecutionMode.Direct)]
+            [Subscribe(ExecutionOption.None)]
             public static void Method(object arg) { }
         }
 
         private class InstanceMethod
         {
-            [Subscribe(ExecutionMode.Direct)]
+            [Subscribe(ExecutionOption.None)]
             public void Method(object arg) { }
         }
 
@@ -82,7 +82,7 @@ namespace WEAK.Test.Communication
         {
             bool done = false;
             IPublisher publisher = Substitute.For<IPublisher>();
-            publisher.When(p => p.Subscribe<object>(StaticMethod.Method, ExecutionMode.Direct)).Do(_ => done = true);
+            publisher.When(p => p.Subscribe<object>(StaticMethod.Method, ExecutionOption.None)).Do(_ => done = true);
 
             publisher.AutoSubscribe<StaticMethod>();
 
@@ -121,7 +121,7 @@ namespace WEAK.Test.Communication
             bool done = false;
             IPublisher publisher = Substitute.For<IPublisher>();
             InstanceMethod target = new InstanceMethod();
-            publisher.When(p => p.Subscribe<object>(target.Method, ExecutionMode.Direct)).Do(_ => done = true);
+            publisher.When(p => p.Subscribe<object>(target.Method, ExecutionOption.None)).Do(_ => done = true);
 
             publisher.AutoSubscribe(target);
 
@@ -136,7 +136,7 @@ namespace WEAK.Test.Communication
             bool done = false;
             IPublisher publisher = Substitute.For<IPublisher>();
             DerivedClass target = new DerivedClass();
-            publisher.When(p => p.Subscribe<object>(target.Method, ExecutionMode.Direct)).Do(_ => done = true);
+            publisher.When(p => p.Subscribe<object>(target.Method, ExecutionOption.None)).Do(_ => done = true);
 
             publisher.AutoSubscribe(target);
 

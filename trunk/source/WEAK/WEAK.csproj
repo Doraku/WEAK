@@ -59,7 +59,7 @@
     <Compile Include="Communication\InnerPublisher.cs" />
     <Compile Include="Communication\SubscribeAttribute.cs" />
     <Compile Include="Communication\IPublisherExtension.cs" />
-    <Compile Include="Communication\PublishMode.cs" />
+    <Compile Include="Communication\ExecutionOption.cs" />
     <Compile Include="Communication\Subscription.cs" />
     <Compile Include="Helper\IDisposableExtension.cs" />
     <Compile Include="Helper\IntDispenser.cs" />

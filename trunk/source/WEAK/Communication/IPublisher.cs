@@ -14,7 +14,7 @@ namespace WEAK.Communication
         /// <param name="action">The action to subscribe.</param>
         /// <param name="executionMode">The mode of execution.</param>
         /// <returns>A System.IDisposable to dispose to remove the subscription.</returns>
-        IDisposable Subscribe<T>(Action<T> action, ExecutionMode executionMode);
+        IDisposable Subscribe<T>(Action<T> action, ExecutionOption executionMode);
         /// <summary>
         /// Publish an argument of type T.
         /// </summary>
