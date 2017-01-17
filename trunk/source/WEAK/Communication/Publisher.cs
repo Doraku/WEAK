@@ -56,10 +56,9 @@ namespace WEAK.Communication
         /// <exception cref="ArgumentNullException">context is null.</exception>
         public Publisher(SynchronizationContext context)
         {
-            context.CheckForArgumentNullException(nameof(context));
+            _context = context.CheckForArgumentNullException(nameof(context));
 
             _id = _idDispenser.GetFreeInt();
-            _context = context;
 
             InnerPublisher<object>.Add(_id);
 

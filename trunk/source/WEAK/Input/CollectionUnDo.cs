@@ -27,9 +27,7 @@ namespace WEAK.Input
         /// <param name="isAdd">true if the operation is an Add, false for a Remove.</param>
         public CollectionUnDo(ICollection<T> source, T element, bool isAdd)
         {
-            source.CheckForArgumentNullException(nameof(source));
-
-            _source = source;
+            _source = source.CheckForArgumentNullException(nameof(source));
             _element = element;
             _isAdd = isAdd;
         }

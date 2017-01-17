@@ -363,7 +363,7 @@ namespace WEAK.Test.Communication
 
                 publisher.Publish(new object());
 
-                Console.WriteLine($"subscribes/second: {count/watch.Elapsed.TotalSeconds}");
+                Console.WriteLine($"subscribes/second: {count / watch.Elapsed.TotalSeconds}");
             }
         }
 
@@ -387,6 +387,24 @@ namespace WEAK.Test.Communication
 
                 Console.WriteLine($"subscribes/second: {count / watch.Elapsed.TotalSeconds}");
             }
+        }
+
+        [TestMethod, TestCategory("Memory")]
+        public void Subscribe_Memory()
+        {
+            Console.WriteLine($"memory before: {GC.GetTotalMemory(true) / 1024}");
+
+            using (IPublisher publisher = new Publisher())
+            {
+                for (int i = 0; i < 10000000; ++i)
+                {
+                    publisher.Subscribe<object>(_ => { }, ExecutionOption.None);
+                }
+
+                publisher.Publish(new object());
+            }
+
+            Console.WriteLine($"memory after: {GC.GetTotalMemory(true) / 1024}");
         }
 
         #endregion

@@ -47,13 +47,23 @@ namespace WEAK.Test.Helper
         }
 
         [TestMethod]
-        public void CheckForArgumentException_Should_not_throw_When_param_is_validated()
+        public void CheckForArgumentException_Should_return_param()
         {
             object param = new object();
 
             Check
-                .ThatCode(() => param.CheckForArgumentException(nameof(param), p => true, "message"))
-                .Not.ThrowsAny();
+                .That(param.CheckForArgumentException(nameof(param), p => true, "message"))
+                .IsEqualTo(param);
+        }
+
+        [TestMethod]
+        public void CheckForArgumentNullException_Should_return_param()
+        {
+            object param = new object();
+
+            Check
+                .That(param.CheckForArgumentNullException(nameof(param)))
+                .IsEqualTo(param);
         }
 
         #endregion

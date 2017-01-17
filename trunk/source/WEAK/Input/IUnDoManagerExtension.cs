@@ -109,7 +109,6 @@ namespace WEAK.Input
             TValue value;
             if (source.TryGetValue(key, out value))
             {
-
                 manager.Do(new DictionaryUnDo<TKey, TValue>(source, key, value, false));
                 result = true;
             }
