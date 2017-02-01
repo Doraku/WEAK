@@ -52,15 +52,10 @@ namespace WEAK.Windows
         public static bool TryGetParent<T>(this DependencyObject reference, out T parent) where T : DependencyObject
         {
             parent = null;
-
-            if ((reference as ContentElement).TryGetParent(out parent))
-            {
-                return true;
-            }
-
+            
             while (reference != null)
             {
-                reference = LogicalTreeHelper.GetParent(reference);
+                reference = VisualTreeHelper.GetParent(reference);
                 if (reference is T)
                 {
                     parent = reference as T;

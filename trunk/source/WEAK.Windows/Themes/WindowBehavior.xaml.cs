@@ -9,61 +9,6 @@ namespace WEAK.Windows.Themes
 {
     internal sealed partial class WindowBehavior : ResourceDictionary
     {
-        #region Types
-
-        internal sealed class BackgroundConverter : IValueConverter
-        {
-            #region Fields
-
-            private static readonly BackgroundConverter _instance;
-
-            #endregion
-
-            #region Properties
-
-            public static BackgroundConverter Instance
-            {
-                get { return _instance; }
-            }
-
-            #endregion
-
-            #region Initialisation
-
-            static BackgroundConverter()
-            {
-                _instance = new BackgroundConverter();
-            }
-
-            #endregion
-
-            #region
-
-            object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            {
-                LinearGradientBrush ret = new LinearGradientBrush();
-                if (value is Color)
-                {
-                    ret.StartPoint = new Point(0, 0);
-                    ret.EndPoint = new Point(0, 1);
-                    ret.Opacity = .1;
-                    ret.GradientStops.Add(new GradientStop(Colors.Transparent, .2));
-                    ret.GradientStops.Add(new GradientStop((Color)value, .5));
-                    ret.GradientStops.Add(new GradientStop(Colors.Transparent, .8));
-                }
-                return ret;
-            }
-
-            object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            {
-                throw new NotImplementedException();
-            }
-
-            #endregion
-        }
-
-        #endregion
-
         #region Methods
 
         private static void ResizeGrip(FrameworkElement titleElement)
@@ -142,6 +87,7 @@ namespace WEAK.Windows.Themes
             window.StateChanged += OnStateChanged;
 
             ResizeGrip(sender as FrameworkElement);
+            OnStateChanged(window, null);
         }
 
         #endregion

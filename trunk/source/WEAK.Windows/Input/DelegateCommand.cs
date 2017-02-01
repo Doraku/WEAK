@@ -100,7 +100,7 @@ namespace WEAK.Windows.Input
 
         public bool CanExecute(T parameter)
         {
-            return parameter == null ? false : _canExecute?.Invoke(parameter) ?? true;
+            return _canExecute?.Invoke(parameter) ?? true;
         }
 
         public void Execute(T parameter)

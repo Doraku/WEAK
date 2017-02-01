@@ -61,8 +61,6 @@
                 </UniformGrid>
                 <ContentControl Template="{TemplateBinding local:WindowBehavior.TitleTemplate}"
                                 Content="{TemplateBinding Title}" SizeChanged="OnSizeChanged" Loaded="OnLoaded"/>
-                <Rectangle Grid.Row="1" Grid.ColumnSpan="2"
-                           Fill="{Binding BorderBrush.Color, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={x:Static themes:WindowBehavior+BackgroundConverter.Instance}}"/>
                 <ContentPresenter Grid.Row="1" Grid.ColumnSpan="2" Margin="{TemplateBinding Padding}"/>
             </Grid>
         </Border>

@@ -79,7 +79,7 @@ namespace WEAK.Windows.Input
     {
         #region Fields
 
-        private readonly Func<Task<T>> _executeAsync;
+        private readonly Func<T, Task> _executeAsync;
         private readonly Predicate<T> _canExecute;
         private readonly bool _isClass;
 
@@ -89,7 +89,7 @@ namespace WEAK.Windows.Input
 
         #region Initialisation
 
-        public AsyncDelegateCommand(Func<Task<T>> executeAsync, Predicate<T> canExecute)
+        public AsyncDelegateCommand(Func<T, Task> executeAsync, Predicate<T> canExecute)
         {
             if (executeAsync == null)
             {
@@ -101,7 +101,7 @@ namespace WEAK.Windows.Input
             _isClass = typeof(T).IsClass;
         }
 
-        public AsyncDelegateCommand(Func<Task<T>> executeAsync)
+        public AsyncDelegateCommand(Func<T, Task> executeAsync)
             : this(executeAsync, null)
         { }
 
@@ -118,7 +118,7 @@ namespace WEAK.Windows.Input
         {
             _isExecuting = true;
 
-            await _executeAsync();
+            await _executeAsync(parameter);
 
             _isExecuting = false;
         }
