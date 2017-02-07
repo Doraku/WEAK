@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>LaszloPaillat.WEAK</id>
+    <id>LaszloPaillat.WEAK.Windows</id>
     <version>$version$</version>
     <title>$title$</title>
     <authors>Paillat Laszlo</authors>
@@ -13,6 +13,9 @@
     <description>$description$</description>
     <releaseNotes>Beta version</releaseNotes>
     <copyright>Copyright 2015-2017</copyright>
-    <tags>framework weak publisher command</tags>
+    <tags>wpf command</tags>
+    <dependencies>
+      <dependency id="LaszloPaillat.WEAK" version="$version$" />
+    </dependencies>
   </metadata>
 </package>

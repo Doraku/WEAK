@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		GlobalAssemblyInfo.cs = GlobalAssemblyInfo.cs
 		WEAK\WEAK.nuspec = WEAK\WEAK.nuspec
 		WEAK.snk = WEAK.snk
+		WEAK.Windows\WEAK.Windows.nuspec = WEAK.Windows\WEAK.Windows.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WEAK.Windows.Test", "WEAK.Windows.Test\WEAK.Windows.Test.csproj", "{8E2435F1-91D4-48E5-B5E1-2C640C42AED3}"
