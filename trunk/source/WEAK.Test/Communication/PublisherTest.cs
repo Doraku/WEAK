@@ -396,7 +396,7 @@ namespace WEAK.Test.Communication
 
             using (IPublisher publisher = new Publisher())
             {
-                for (int i = 0; i < 10000000; ++i)
+                for (int i = 0; i < 1000000; ++i)
                 {
                     publisher.Subscribe<object>(_ => { }, ExecutionOption.None);
                 }

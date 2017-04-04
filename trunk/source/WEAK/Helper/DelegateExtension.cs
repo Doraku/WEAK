@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace WEAK.Helper
 {
@@ -13,21 +11,6 @@ namespace WEAK.Helper
     /// </summary>
     public static class DelegateExtension
     {
-        #region Fields
-
-        private static readonly ConcurrentDictionary<MethodInfo, ConditionalWeakTable<object, Delegate>> _delegates;
-
-        #endregion
-
-        #region Initialisation
-
-        static DelegateExtension()
-        {
-            _delegates = new ConcurrentDictionary<MethodInfo, ConditionalWeakTable<object, Delegate>>();
-        }
-
-        #endregion
-
         #region Methods
 
         private static Expression GetTryGetTargetExpression<T>(T target, ParameterExpression targetVariable)
@@ -50,65 +33,67 @@ namespace WEAK.Helper
         public static TDelegate ToWeak<TDelegate>(this TDelegate delegateAction)
             where TDelegate : class
         {
+            typeof(TDelegate).CheckForArgumentException(nameof(delegateAction), typeof(Delegate).IsAssignableFrom, "Parameter is not a Delegate type");
+
             Delegate unboxedDelegate = delegateAction as Delegate;
-            if (unboxedDelegate == null
-                || unboxedDelegate.Method.IsStatic
-                || unboxedDelegate.Target.GetType().IsValueType
-                || unboxedDelegate.GetInvocationList().Length > 1)
+
+            if (unboxedDelegate == null)
             {
                 return delegateAction;
             }
 
-            ConditionalWeakTable<object, Delegate> delegates =
-                _delegates.GetOrAdd(unboxedDelegate.Method, _ => new ConditionalWeakTable<object, Delegate>());
+            Delegate weakAction = null;
 
-            lock (delegates)
+            foreach (Delegate child in unboxedDelegate.GetInvocationList())
             {
-                Delegate cachedAction;
-                if (delegates.TryGetValue(unboxedDelegate.Target, out cachedAction))
+                if (child.Method.IsStatic)
                 {
-                    return cachedAction as TDelegate;
-                }
-
-                ParameterExpression targetVariable = Expression.Variable(unboxedDelegate.Target.GetType());
-
-                MethodInfo factoryMethod = typeof(DelegateExtension)
-                    .GetMethod(nameof(GetTryGetTargetExpression), BindingFlags.NonPublic | BindingFlags.Static)
-                    .MakeGenericMethod(unboxedDelegate.Target.GetType());
-
-                List<ParameterExpression> parameters = unboxedDelegate.Method.GetParameters().Select(p => Expression.Parameter(p.ParameterType)).ToList();
-                Expression<TDelegate> labmdaInstance;
-                Expression getTargetExpression = factoryMethod.Invoke(null, new object[] { unboxedDelegate.Target, targetVariable }) as Expression;
-
-                if (unboxedDelegate.Method.ReturnType == typeof(void))
-                {
-                    labmdaInstance = Expression.Lambda<TDelegate>(
-                        Expression.Block(
-                            new[] { targetVariable },
-                            Expression.IfThen(
-                                getTargetExpression,
-                                Expression.Call(targetVariable, unboxedDelegate.Method, parameters))),
-                        parameters);
+                    weakAction = Delegate.Combine(weakAction, child);
                 }
                 else
                 {
-                    labmdaInstance = Expression.Lambda<TDelegate>(
-                        Expression.Block(
-                            unboxedDelegate.Method.ReturnType,
-                            new[] { targetVariable },
-                            Expression.Condition(
-                                getTargetExpression,
-                                Expression.Call(targetVariable, unboxedDelegate.Method, parameters),
-                                Expression.Default(unboxedDelegate.Method.ReturnType))),
-                        parameters);
+                    Type targetType = child.Target.GetType();
+
+                    targetType.CheckForArgumentException(nameof(delegateAction), t => !t.IsValueType, "Delegate contains method from a value type");
+
+                    ParameterExpression targetVariable = Expression.Variable(targetType);
+
+                    MethodInfo factoryMethod = typeof(DelegateExtension)
+                        .GetMethod(nameof(GetTryGetTargetExpression), BindingFlags.NonPublic | BindingFlags.Static)
+                        .MakeGenericMethod(targetType);
+
+                    List<ParameterExpression> parameters = child.Method.GetParameters().Select(p => Expression.Parameter(p.ParameterType)).ToList();
+                    Expression<TDelegate> labmdaInstance;
+                    Expression getTargetExpression = factoryMethod.Invoke(null, new object[] { child.Target, targetVariable }) as Expression;
+
+                    if (child.Method.ReturnType == typeof(void))
+                    {
+                        labmdaInstance = Expression.Lambda<TDelegate>(
+                            Expression.Block(
+                                new[] { targetVariable },
+                                Expression.IfThen(
+                                    getTargetExpression,
+                                    Expression.Call(targetVariable, child.Method, parameters))),
+                            parameters);
+                    }
+                    else
+                    {
+                        labmdaInstance = Expression.Lambda<TDelegate>(
+                            Expression.Block(
+                                child.Method.ReturnType,
+                                new[] { targetVariable },
+                                Expression.Condition(
+                                    getTargetExpression,
+                                    Expression.Call(targetVariable, child.Method, parameters),
+                                    Expression.Default(child.Method.ReturnType))),
+                            parameters);
+                    }
+
+                    weakAction = Delegate.Combine(weakAction, labmdaInstance.Compile() as Delegate);
                 }
-
-                TDelegate weakAction = labmdaInstance.Compile();
-
-                delegates.Add(unboxedDelegate.Target, weakAction as Delegate);
-
-                return weakAction;
             }
+
+            return weakAction as TDelegate;
         }
 
         #endregion

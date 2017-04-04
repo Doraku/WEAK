@@ -36,7 +36,7 @@ namespace WEAK.Communication
         private readonly int _id;
         private readonly SynchronizationContext _context;
 
-        private int _isDisposed;
+        private volatile int _isDisposed;
 
         #endregion
 

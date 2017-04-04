@@ -15,4 +15,7 @@
     <copyright>$copyright$</copyright>
     <tags>weak framework publisher command</tags>
   </metadata>
+  <files>
+    <file src="bin\net45\WEAK.dll" target="lib\net45" />
+  </files>
 </package>

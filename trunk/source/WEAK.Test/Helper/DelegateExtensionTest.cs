@@ -71,11 +71,11 @@ namespace WEAK.Test.Helper
         #region Methods
 
         [TestMethod]
-        public void ToWeak_Should_return_delegateAction_When_delegateAction_is_not_a_delegate()
+        public void ToWeak_Should_throw_ArgumentException_When_delegateAction_is_not_a_delegate()
         {
             object delegateAction = new object();
 
-            Check.That(delegateAction.ToWeak()).IsEqualTo(delegateAction);
+            Check.ThatCode(() => delegateAction.ToWeak()).Throws<ArgumentException>();
         }
 
         [TestMethod]
@@ -96,12 +96,12 @@ namespace WEAK.Test.Helper
         }
 
         [TestMethod]
-        public void ToWeak_Should_return_delegateAction_When_delegateAction_is_a_value_type_method()
+        public void ToWeak_Should_throw_ArgumentException_When_delegateAction_is_a_value_type_method()
         {
             int target = 42;
             Func<string> delegateAction = target.ToString;
 
-            Check.That<Func<string>>(delegateAction.ToWeak()).IsEqualTo(delegateAction);
+            Check.ThatCode(() => delegateAction.ToWeak()).Throws<ArgumentException>();
         }
 
         [TestMethod]
@@ -140,15 +140,6 @@ namespace WEAK.Test.Helper
         }
 
         [TestMethod]
-        public void ToWeak_Should_return_same_delegate_When_delegate_is_the_same_instance_method()
-        {
-            DelegateTest test = new DelegateTest();
-            Action delegateAction = new Action(test.InstanceAction);
-
-            Check.That<Action>(delegateAction.ToWeak()).IsEqualTo(delegateAction.ToWeak());
-        }
-
-        [TestMethod]
         public void WeakDelegate_Should_behave_like_expected_Action()
         {
             bool done = false;
@@ -170,18 +161,57 @@ namespace WEAK.Test.Helper
         }
 
         [TestMethod]
-        public void WeakDelegate_Should_()
+        public void WeakDelegate_Should_behave_not_hold_strong_reference()
+        {
+            bool done = false;
+            DelegateTest test = new DelegateTest(b => { done = b; });
+
+            WeakReference reference = new WeakReference(test);
+
+            Action<bool> delegateAction = new Action<bool>(test.InstanceAction).ToWeak();
+
+            delegateAction(true);
+
+            Check.That(done).IsTrue();
+
+            test = null;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            done = false;
+            delegateAction(true);
+
+            Check.That(done).IsFalse();
+            Check.That(reference.IsAlive).IsFalse();
+        }
+
+        [TestMethod]
+        public void WeakDelegate_Should_create_weak_of_all_invocation_list()
         {
             bool done = false;
             DelegateTest test = new DelegateTest(b => { done = b; });
             Action<bool> delegateAction = test.InstanceAction;
+            test = new DelegateTest(b => { done = b; });
             delegateAction += test.InstanceAction;
-            
-            Check.That(delegateAction.ToWeak()).IsEqualTo(delegateAction);
+
+            Check.That(delegateAction.ToWeak()).IsNotEqualTo(delegateAction);
+
+            delegateAction = delegateAction.ToWeak();
+
+            test = null;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            done = false;
+            delegateAction(true);
+
+            Check.That(done).IsFalse();
         }
 
         [TestMethod, TestCategory("Performance")]
-        public void WeakDelegate_Performance()
+        public void WeakDelegate_call_Performance()
         {
             bool temp = false;
             DelegateTest test = new DelegateTest(value => temp != value);
@@ -209,6 +239,28 @@ namespace WEAK.Test.Helper
 
             Console.WriteLine($"weak to delegate ratio: {(double)wWeak.ElapsedTicks / wDelegate.ElapsedTicks}");
             Console.WriteLine($"weak to instance ratio: {(double)wWeak.ElapsedTicks / wInstance.ElapsedTicks}");
+        }
+
+        [TestMethod, TestCategory("Performance")]
+        public void WeakDelegate_create_Performance()
+        {
+            DelegateTest test = new DelegateTest(value => { });
+
+            test.InstanceAction();
+
+            Action weakAction;
+            Stopwatch watch = new Stopwatch();
+
+            for (int i = 0; i < 10000; ++i)
+            {
+                watch.Start();
+                weakAction = new Action(test.InstanceAction).ToWeak();
+                watch.Stop();
+
+                weakAction();
+            }
+
+            Console.WriteLine($"weak creation: { 10000 / watch.Elapsed.TotalSeconds}");
         }
 
         #endregion

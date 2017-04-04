@@ -18,4 +18,7 @@
       <dependency id="WEAK.Core" version="$version$" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="bin\net45\WEAK.Windows.dll" target="lib\net45" />
+  </files>
 </package>

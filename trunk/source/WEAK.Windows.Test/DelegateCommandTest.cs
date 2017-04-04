@@ -51,17 +51,8 @@ namespace WEAK.Windows.Test
         public void GenericClassTest()
         {
             bool done = false;
-            DelegateCommand<Dummy> command = new DelegateCommand<Dummy>(p => Assert.Fail());
-            Dummy parameter = null;
-
-            if (command.CanExecute(parameter))
-            {
-                command.Execute(parameter);
-            }
-
-            done = false;
-            command = new DelegateCommand<Dummy>(p => done = true);
-            parameter = new Dummy();
+            DelegateCommand<Dummy> command = new DelegateCommand<Dummy>(p => done = true);
+            Dummy parameter = new Dummy();
 
             if (command.CanExecute(parameter))
             {
