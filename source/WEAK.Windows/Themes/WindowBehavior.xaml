@@ -1,0 +1,73 @@
+﻿<ResourceDictionary x:Class="WEAK.Windows.Themes.WindowBehavior" x:ClassModifier="internal"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:WEAK.Windows.AttachedProperty"
+                    xmlns:themes="clr-namespace:WEAK.Windows.Themes">
+    <ControlTemplate x:Key="WEAK_WindowBehavior_DefaultTitleTemplate" TargetType="ContentControl">
+        <DockPanel>
+            <Image Margin="4,4,4,2" DockPanel.Dock="Left" Stretch="None"
+                   Source="{Binding Icon, RelativeSource={RelativeSource AncestorType=Window}}"/>
+            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        </DockPanel>
+    </ControlTemplate>
+    <ControlTemplate x:Key="WEAK_WindowBehavior_DefaultTemplate" TargetType="Window">
+        <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"
+                Background="{TemplateBinding Background}">
+            <Grid Background="Transparent" Margin="{TemplateBinding Margin}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <UniformGrid Grid.Column="1" Rows="1" VerticalAlignment="Top" UseLayoutRounding="True"
+                             WindowChrome.IsHitTestVisibleInChrome="True" IsHitTestVisible="True">
+                    <UniformGrid.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="BorderThickness" Value="1,0,1,1"/>
+                            <Setter Property="BorderBrush" Value="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Grid>
+                                            <Rectangle Name="BackgroundElement" Opacity="0" Fill="{TemplateBinding BorderBrush}"/>
+                                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,10,10,6"/>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Opacity" Value=".33" TargetName="BackgroundElement"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Opacity" Value=".66" TargetName="BackgroundElement"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </UniformGrid.Resources>
+                    <Button Click="OnMinimize" Visibility="{TemplateBinding local:WindowBehavior.MinimizeButtonVisibility}">
+                        <Path Data="F1M0,0L0,3 9,3 9,0 0,0z"  Fill="{TemplateBinding BorderBrush}"/>
+                    </Button>
+                    <Button Click="OnNormalMaximize" Visibility="{TemplateBinding local:WindowBehavior.NormalMaximizeButtonVisibility}">
+                        <Path Name="MaximisePath" Data="F1M0,0L0,9 9,9 9,0 0,0 0,3 8,3 8,8 1,8 1,3z" Fill="{TemplateBinding BorderBrush}"/>
+                    </Button>
+                    <Button Click="OnClose" Visibility="{TemplateBinding local:WindowBehavior.CloseButtonVisibility}">
+                        <Path Data="F1M0,1.25L1.25,0 9,7.75 7.75,9z M7.75,0L9,1.25 1.25,9 0,7.75z" Fill="{TemplateBinding BorderBrush}"/>
+                    </Button>
+                </UniformGrid>
+                <ContentControl Template="{TemplateBinding local:WindowBehavior.TitleTemplate}"
+                                Content="{TemplateBinding Title}" SizeChanged="OnSizeChanged" Loaded="OnLoaded"/>
+                <ContentPresenter Grid.Row="1" Grid.ColumnSpan="2" Margin="{TemplateBinding Padding}"/>
+            </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="WindowState" Value="Maximized">
+                <Setter Property="Data" TargetName="MaximisePath" Value="F1M0,10L0,3 3,3 3,0 10,0 10,2 4,2 4,3 7,3 7,6 6,6 6,5 1,5 1,10z M1,10L7,10 7,7 10,7 10,2 9,2 9,6 6,6 6,9 1,9z"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+</ResourceDictionary>
