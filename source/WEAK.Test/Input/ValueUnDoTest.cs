@@ -1,16 +1,15 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using WEAK.Input;
+using Xunit;
 
 namespace WEAK.Test.Input
 {
-    [TestClass]
     public class ValueUnDoTest
     {
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void ValueUnDo_Should_throw_ArgumentNullException_When_setter_is_null()
         {
             Check
@@ -19,7 +18,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "setter");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_Should_set_newValue()
         {
             object value = null;
@@ -32,7 +31,7 @@ namespace WEAK.Test.Input
             Check.That(value).IsEqualTo(newValue);
         }
 
-        [TestMethod]
+        [Fact]
         public void Undo_Should_set_oldValue()
         {
             object value = null;

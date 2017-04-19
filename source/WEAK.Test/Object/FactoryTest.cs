@@ -1,13 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using WEAK.Object;
+using Xunit;
 
 namespace WEAK.Test.Object
 {
-    [TestClass]
     public class FactoryTest
     {
         #region Types
@@ -102,59 +101,58 @@ namespace WEAK.Test.Object
 
         #region Methods
 
-        [ClassInitialize]
-        public static void Initialise(TestContext context)
+        public FactoryTest()
         {
             Linker<IDummy>.Register<Dummy>();
             Linker<ADummy>.Register<Dummy>();
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateInstanceTest()
         {
             Dummy instance = Factory<Dummy>.CreateInstance();
 
-            Assert.IsNotNull(instance, "instance is null");
+            //Assert.IsNotNull(instance, "instance is null");
 
-            Assert.AreNotSame(instance, Factory<Dummy>.CreateInstance(), "instance are the same");
+            //Assert.AreNotSame(instance, Factory<Dummy>.CreateInstance(), "instance are the same");
         }
 
-        [TestMethod]
+        [Fact]
         public void FactoryTestInvalid()
         {
             try
             {
                 DummyFail instance = Factory<DummyFail>.CreateInstance();
-                Assert.Fail("InvalidOperationException was not raised");
+                //Assert.Fail("InvalidOperationException was not raised");
             }
             catch (InvalidOperationException)
             { }
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateInstanceTestComposite()
         {
             DummyComposite instance = Factory<DummyComposite>.CreateInstance();
 
-            Assert.IsNotNull(instance, "instance is null");
-            Assert.IsNotNull(instance.O1, "instance is null");
-            Assert.IsNotNull(instance.O2, "instance is null");
-            Assert.IsNotNull(instance.O3, "instance is null");
+            //Assert.IsNotNull(instance, "instance is null");
+            //Assert.IsNotNull(instance.O1, "instance is null");
+            //Assert.IsNotNull(instance.O2, "instance is null");
+            //Assert.IsNotNull(instance.O3, "instance is null");
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateInstanceTestCyclic()
         {
             try
             {
                 DummyCompositeFail instance = Factory<DummyCompositeFail>.CreateInstance();
-                Assert.Fail("InvalidOperationException was not raised");
+                //Assert.Fail("InvalidOperationException was not raised");
             }
             catch (InvalidOperationException)
             { }
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateInstanceTestCompositeThreadSafe()
         {
             List<Task> tasks = new List<Task>();
@@ -164,33 +162,33 @@ namespace WEAK.Test.Object
                 {
                     DummyComposite instance = Factory<DummyComposite>.CreateInstance();
 
-                    Assert.IsNotNull(instance, "instance is null");
-                    Assert.IsNotNull(instance.O1, "instance is null");
-                    Assert.IsNotNull(instance.O2, "instance is null");
-                    Assert.IsNotNull(instance.O3, "instance is null");
+                    //Assert.IsNotNull(instance, "instance is null");
+                    //Assert.IsNotNull(instance.O1, "instance is null");
+                    //Assert.IsNotNull(instance.O2, "instance is null");
+                    //Assert.IsNotNull(instance.O3, "instance is null");
                 }));
             }
 
             Task.WaitAll(tasks.ToArray());
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateInstanceTestInterface()
         {
             IDummy instance = Factory<IDummy>.CreateInstance();
 
-            Assert.IsNotNull(instance, "instance is null");
+            //Assert.IsNotNull(instance, "instance is null");
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateInstanceWithKey()
         {
             DummyWithKey instance1 = Factory<DummyWithKey>.CreateInstance();
             DummyWithKey instance2 = Factory<DummyWithKey>.CreateInstance();
 
-            Assert.AreNotSame(instance1, instance2, "same object");
-            Assert.AreSame(instance1.Param, instance2.Param, "different object");
-            Assert.AreSame(instance1.Param2, instance2.Param2, "different object");
+            //Assert.AreNotSame(instance1, instance2, "same object");
+            //Assert.AreSame(instance1.Param, instance2.Param, "different object");
+            //Assert.AreSame(instance1.Param2, instance2.Param2, "different object");
         }
 
         #endregion

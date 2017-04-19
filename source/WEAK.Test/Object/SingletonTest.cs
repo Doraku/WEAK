@@ -1,10 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using WEAK.Object;
+using Xunit;
 
 namespace WEAK.Test.Object
 {
-    [TestClass]
     public class SingletonTest
     {
         #region Types
@@ -26,23 +25,23 @@ namespace WEAK.Test.Object
 
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void SingletonTestValid()
         {
             Dummy instance = Singleton<Dummy>.Instance;
 
-            Assert.IsNotNull(instance, "instance is null");
+            //Assert.IsNotNull(instance, "instance is null");
 
-            Assert.AreSame(instance, Singleton<Dummy>.Instance, "instances are different");
+            //Assert.Equals(instance, Singleton<Dummy>.Instance, "instances are different");
         }
 
-        [TestMethod]
+        [Fact]
         public void SingletonTestInvalid()
         {
             try
             {
                 DummyFail instance = Singleton<DummyFail>.Instance;
-                Assert.Fail("InvalidOperationException was not raised");
+                //Assert.Fail("InvalidOperationException was not raised");
             }
             catch (InvalidOperationException)
             { }

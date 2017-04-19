@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using NSubstitute;
 using WEAK.Input;
+using Xunit;
 
 namespace WEAK.Test.Input
 {
-    [TestClass]
     public class IListExtensionTest
     {
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void ToUnDo_Should_throw_ArgumentNullException_When_source_is_null()
         {
             IList<int> source = null;
@@ -26,7 +22,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void ToUnDo_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IList<int> source = Substitute.For<IList<int>>();
@@ -37,7 +33,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoList_IndexOf_Should_return_IndexOf()
         {
             IList<object> source = Substitute.For<IList<object>>();
@@ -51,7 +47,7 @@ namespace WEAK.Test.Input
             Check.That(unDoList.IndexOf(value)).IsEqualTo(source.IndexOf(value));
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoList_Insert_Should_Insert()
         {
             IList<object> source = Substitute.For<IList<object>>();
@@ -71,7 +67,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoList_RemoveAt_Should_RemoveAt()
         {
             IList<object> source = Substitute.For<IList<object>>();
@@ -90,7 +86,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoList_this_index_get_Should_return_this_index_get()
         {
             IList<object> source = Substitute.For<IList<object>>();
@@ -105,7 +101,7 @@ namespace WEAK.Test.Input
             Check.That(unDoList[index]).IsEqualTo(source[index]);
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoList_this_index_set_Should_set_this_index()
         {
             IList<object> source = Substitute.For<IList<object>>();

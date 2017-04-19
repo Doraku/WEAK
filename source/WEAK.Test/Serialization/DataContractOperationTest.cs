@@ -4,13 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using WEAK.Serialization;
+using Xunit;
 
 namespace WEAK.Test.Serialization
 {
-    [TestClass]
     public class DataContractOperationTest
     {
         #region Types
@@ -26,7 +25,7 @@ namespace WEAK.Test.Serialization
 
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void Save_Should_throw_ArgumentNullException_When_instance_is_null()
         {
             Dummy instance = null;
@@ -37,7 +36,7 @@ namespace WEAK.Test.Serialization
                 .WithProperty("ParamName", "instance");
         }
 
-        [TestMethod]
+        [Fact]
         public void Save_Should_return_XElement()
         {
             Dummy instance = new Dummy { Property = "test" };
@@ -47,7 +46,7 @@ namespace WEAK.Test.Serialization
             Check.That(element).IsNotNull();
         }
 
-        [TestMethod]
+        [Fact]
         public void Load_Should_throw_ArgumentNullException_When_element_is_null()
         {
             XElement element = null;
@@ -57,7 +56,7 @@ namespace WEAK.Test.Serialization
                 .WithProperty("ParamName", "element");
         }
 
-        [TestMethod]
+        [Fact]
         public void Load_Should_return_instance()
         {
             Dummy instance = new Dummy { Property = "instance" };
@@ -69,7 +68,7 @@ namespace WEAK.Test.Serialization
             Check.That(loadedInstance.Property).IsEqualTo(instance.Property);
         }
 
-        [TestMethod]
+        [Fact]
         public void SaveMany_Should_throw_ArgumentNullException_When_instances_is_null()
         {
             IEnumerable<Dummy> instances = null;
@@ -80,7 +79,7 @@ namespace WEAK.Test.Serialization
                 .WithProperty("ParamName", "instances");
         }
 
-        [TestMethod]
+        [Fact]
         public void SaveMany_Should_return_XElements()
         {
             Dummy instance1 = new Dummy { Property = "instance1" };
@@ -92,7 +91,7 @@ namespace WEAK.Test.Serialization
             Check.That(elements.Count).IsEqualTo(2);
         }
 
-        [TestMethod]
+        [Fact]
         public void LoadMany_Should_throw_ArgumentNullException_When_elements_is_null()
         {
             IEnumerable<XElement> elements = null;
@@ -102,7 +101,7 @@ namespace WEAK.Test.Serialization
                 .WithProperty("ParamName", "elements");
         }
 
-        [TestMethod]
+        [Fact]
         public void LoadMany_Should_return_instances()
         {
             Dummy instance1 = new Dummy { Property = "instance1" };
@@ -117,7 +116,7 @@ namespace WEAK.Test.Serialization
             Check.That(loadedInstances[1].Property).IsEqualTo(instance2.Property);
         }
 
-        [TestMethod]
+        [Fact]
         public void Save_filePath_Should_throw_ArgumentNullException_When_instance_is_null()
         {
             string filePath = $"{nameof(Save_filePath_Should_throw_ArgumentNullException_When_instance_is_null)}.txt";
@@ -129,7 +128,7 @@ namespace WEAK.Test.Serialization
                 .WithProperty("ParamName", "instance");
         }
 
-        [TestMethod]
+        [Fact]
         public void Save_filePath_Should_save_in_file()
         {
             string filePath = $"{nameof(Save_filePath_Should_save_in_file)}.txt";
@@ -144,7 +143,7 @@ namespace WEAK.Test.Serialization
             File.Delete(filePath);
         }
 
-        [TestMethod]
+        [Fact]
         public void Load_filePath_Should_return_instance()
         {
             string filePath = $"{nameof(Load_filePath_Should_return_instance)}.txt";
@@ -159,7 +158,7 @@ namespace WEAK.Test.Serialization
             File.Delete(filePath);
         }
 
-        [TestMethod]
+        [Fact]
         public void SaveMany_filePath_Should_throw_ArgumentNullException_When_instances_is_null()
         {
             string filePath = $"{nameof(SaveMany_filePath_Should_throw_ArgumentNullException_When_instances_is_null)}.txt";
@@ -171,7 +170,7 @@ namespace WEAK.Test.Serialization
                 .WithProperty("ParamName", "instances");
         }
 
-        [TestMethod]
+        [Fact]
         public void SaveMany_filePath_Should_save_in_file()
         {
             string filePath = $"{nameof(SaveMany_filePath_Should_save_in_file)}.txt";
@@ -187,7 +186,7 @@ namespace WEAK.Test.Serialization
             File.Delete(filePath);
         }
 
-        [TestMethod]
+        [Fact]
         public void LoadMany_filePath_Should_return_instances()
         {
             string filePath = $"{nameof(LoadMany_filePath_Should_return_instances)}.txt";

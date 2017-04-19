@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using WEAK.Helper;
+using Xunit;
 
 namespace WEAK.Test.Helper
 {
-    [TestClass]
     public class IntDispenserTest
     {
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void LastInt_Should_return_startInt_after_creation()
         {
             IntDispenser dispender = new IntDispenser(42);
@@ -21,7 +20,7 @@ namespace WEAK.Test.Helper
             Check.That(dispender.LastInt).IsEqualTo(42);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetFreeInt_Should_return_next_int()
         {
             IntDispenser dispender = new IntDispenser(42);
@@ -29,7 +28,7 @@ namespace WEAK.Test.Helper
             Check.That(dispender.GetFreeInt()).IsEqualTo(43);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetFreeInt_Should_be_multithread_safe()
         {
             IntDispenser dispender = new IntDispenser(42);
@@ -55,7 +54,7 @@ namespace WEAK.Test.Helper
             Check.That(ids.Count).IsEqualTo(ids.Distinct().Count());
         }
 
-        [TestMethod]
+        [Fact]
         public void LastInt_Should_return_same_int_as_last_GetFreeInt()
         {
             IntDispenser dispender = new IntDispenser(42);
@@ -63,7 +62,7 @@ namespace WEAK.Test.Helper
             Check.That(dispender.GetFreeInt()).IsEqualTo(dispender.LastInt);
         }
 
-        [TestMethod]
+        [Fact]
         public void ReleaseInt_Should_put_releasedInt_to_be_reused()
         {
             IntDispenser dispender = new IntDispenser(42);

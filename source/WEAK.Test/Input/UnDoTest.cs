@@ -1,17 +1,16 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using NSubstitute;
 using WEAK.Input;
+using Xunit;
 
 namespace WEAK.Test.Input
 {
-    [TestClass]
     public class UnDoTest
     {
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void UnDo_Should_throw_ArgumentNullException_When_doAction_is_null()
         {
             Check
@@ -20,7 +19,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "doAction");
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDo_Should_throw_ArgumentNullException_When_undoAction_is_null()
         {
             Check
@@ -29,7 +28,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "undoAction");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_Should_do_doAction()
         {
             bool done = false;
@@ -40,7 +39,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void Undo_Should_do_undoAction()
         {
             bool done = false;

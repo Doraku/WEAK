@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using NSubstitute;
 using WEAK.Input;
+using Xunit;
 
 namespace WEAK.Test.Input
 {
-    [TestClass]
     public class IUnDoManagerExtensionTest
     {
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void DoAdd_ICollection_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -26,7 +25,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoAdd_ICollection_Should_throw_ArgumentNullException_When_source_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -39,7 +38,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoClear_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -52,7 +51,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoClear_Should_throw_ArgumentNullException_When_source_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -65,7 +64,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoClear_Should_add_old_elements_When_undone()
         {
             ICollection<object> source = new List<object>
@@ -93,7 +92,7 @@ namespace WEAK.Test.Input
             Check.That(source).ContainsExactly(sourceCopy);
         }
 
-        [TestMethod]
+        [Fact]
         public void DoRemove_ICollection_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -106,7 +105,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoRemove_ICollection_Should_throw_ArgumentNullException_When_source_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -119,7 +118,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoAdd_IDictionary_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -133,7 +132,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoAdd_IDictionary_Should_throw_ArgumentNullException_When_source_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -147,7 +146,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoAdd_IDictionary_Should_throw_ArgumentNullException_When_key_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -161,7 +160,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "key");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoRemove_IDictionary_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -174,7 +173,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoRemove_IDictionary_Should_throw_ArgumentNullException_When_source_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -187,7 +186,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoRemove_IDictionary_Should_throw_ArgumentNullException_When_key_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -200,7 +199,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "key");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_IDictionary_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -213,7 +212,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_IDictionary_Should_throw_ArgumentNullException_When_source_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -226,7 +225,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_IDictionary_Should_throw_ArgumentNullException_When_key_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -239,7 +238,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "key");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_IDictionary_Should_remove_element_When_undone()
         {
             object key = new object();
@@ -262,7 +261,7 @@ namespace WEAK.Test.Input
             Check.That(source.ContainsKey(key)).IsFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void DoInsert_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -275,7 +274,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoInsert_Should_throw_ArgumentNullException_When_source_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -288,7 +287,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoRemoveAt_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -301,7 +300,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void DoRemoveAt_Should_throw_ArgumentNullException_When_source_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -314,7 +313,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_IList_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -327,7 +326,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_IList_Should_throw_ArgumentNullException_When_source_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -340,7 +339,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_UnDo_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -353,7 +352,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_UnDo_Should_throw_ArgumentNullException_When_doAction_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -366,7 +365,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "doAction");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_UnDo_Should_throw_ArgumentNullException_When_undoAction_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -379,7 +378,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "undoAction");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_ValueUnDo_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -391,7 +390,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_ValueUnDo_Should_throw_ArgumentNullException_When_setter_is_null()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -403,7 +402,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "setter");
         }
 
-        [TestMethod]
+        [Fact]
         public void UndoAll_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -414,7 +413,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void UndoAll_Should_Undo_while_CanUndo()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();
@@ -431,7 +430,7 @@ namespace WEAK.Test.Input
             Check.That(undoCount).IsEqualTo(count);
         }
 
-        [TestMethod]
+        [Fact]
         public void RedoAll_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IUnDoManager manager = null;
@@ -442,7 +441,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void RedoAll_Should_Redo_while_CanRedo()
         {
             IUnDoManager manager = Substitute.For<IUnDoManager>();

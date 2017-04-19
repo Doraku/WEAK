@@ -1,10 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using WEAK.Object;
+using Xunit;
 
 namespace WEAK.Test.Object
 {
-    [TestClass]
     public class LinkerTest
     {
         #region Types
@@ -28,25 +27,24 @@ namespace WEAK.Test.Object
 
         #region Methods
 
-        [ClassInitialize]
-        public static void Initialise(TestContext context)
+        public LinkerTest()
         {
             Linker<IDummy>.Register<Dummy>(false);
             Linker<IDummySingleton>.Register<Dummy>(true);
             Linker<ADummy>.Register<Dummy>(false);
         }
 
-        [TestMethod]
+        [Fact]
         public void TryRegisterTestFail()
         {
-            Assert.IsFalse(Linker<IDummy>.TryRegister<Dummy>(), "dual register");
+            //Assert.IsFalse(Linker<IDummy>.TryRegister<Dummy>(), "dual register");
 
-            Assert.IsFalse(Linker<IDummy>.TryRegister<Dummy>(false), "dual register");
+            //Assert.IsFalse(Linker<IDummy>.TryRegister<Dummy>(false), "dual register");
 
             try
             {
                 Linker<Dummy>.TryRegister<Dummy>();
-                Assert.Fail("InvalidOperationException was not raised");
+                //Assert.Fail("InvalidOperationException was not raised");
             }
             catch (InvalidOperationException)
             { }
@@ -54,19 +52,19 @@ namespace WEAK.Test.Object
             try
             {
                 Linker<Dummy>.TryRegister<Dummy>(false);
-                Assert.Fail("InvalidOperationException was not raised");
+                //Assert.Fail("InvalidOperationException was not raised");
             }
             catch (InvalidOperationException)
             { }
         }
 
-        [TestMethod]
+        [Fact]
         public void RegisterTestFail()
         {
             try
             {
                 Linker<IDummy>.Register<Dummy>();
-                Assert.Fail("InvalidOperationException was not raised");
+                //Assert.Fail("InvalidOperationException was not raised");
             }
             catch (InvalidOperationException)
             { }
@@ -74,19 +72,19 @@ namespace WEAK.Test.Object
             try
             {
                 Linker<Dummy>.Register<Dummy>();
-                Assert.Fail("InvalidOperationException was not raised");
+                //Assert.Fail("InvalidOperationException was not raised");
             }
             catch (InvalidOperationException)
             { }
         }
 
-        [TestMethod]
+        [Fact]
         public void ResolveTestFail()
         {
             try
             {
                 Linker<Dummy>.Resolve();
-                Assert.Fail("InvalidOperationException was not raised");
+                //Assert.Fail("InvalidOperationException was not raised");
             }
             catch (InvalidOperationException)
             { }
@@ -94,7 +92,7 @@ namespace WEAK.Test.Object
             try
             {
                 Linker<INotUsed>.Resolve();
-                Assert.Fail("InvalidOperationException was not raised");
+                //Assert.Fail("InvalidOperationException was not raised");
             }
             catch (InvalidOperationException)
             { }
@@ -102,49 +100,49 @@ namespace WEAK.Test.Object
             try
             {
                 Linker<INotUsed>.Resolve("test");
-                Assert.Fail("InvalidOperationException was not raised");
+                //Assert.Fail("InvalidOperationException was not raised");
             }
             catch (InvalidOperationException)
             { }
         }
 
-        [TestMethod]
+        [Fact]
         public void ResolveTestSingleton()
         {
             IDummySingleton instance = Linker<IDummySingleton>.Resolve();
 
-            Assert.AreSame(instance, Linker<IDummySingleton>.Resolve(), "instances are not the same");
+            //Assert.AreSame(instance, Linker<IDummySingleton>.Resolve(), "instances are not the same");
 
-            Assert.AreSame(instance, Linker<IDummySingleton>.Resolve("test"), "instances are not the same");
+            //Assert.AreSame(instance, Linker<IDummySingleton>.Resolve("test"), "instances are not the same");
         }
 
-        [TestMethod]
+        [Fact]
         public void ResolveTestInterface()
         {
             IDummy instance = Linker<IDummy>.Resolve();
 
-            Assert.AreNotSame(instance, Linker<IDummy>.Resolve(), "instances are the same");
+            //Assert.AreNotSame(instance, Linker<IDummy>.Resolve(), "instances are the same");
 
-            Assert.AreNotSame(instance, Linker<IDummy>.Resolve("test"), "instances are the same");
+            //Assert.AreNotSame(instance, Linker<IDummy>.Resolve("test"), "instances are the same");
         }
 
-        [TestMethod]
+        [Fact]
         public void ResolveTestAbstract()
         {
             ADummy instance = Linker<ADummy>.Resolve();
 
-            Assert.AreNotSame(instance, Linker<ADummy>.Resolve(), "instances are the same");
+            //Assert.AreNotSame(instance, Linker<ADummy>.Resolve(), "instances are the same");
 
-            Assert.AreNotSame(instance, Linker<ADummy>.Resolve("test"), "instances are the same");
+            //Assert.AreNotSame(instance, Linker<ADummy>.Resolve("test"), "instances are the same");
         }
 
-        [TestMethod]
+        [Fact]
         public void ResolveTestKeyNullOrEmpty()
         {
             try
             {
                 Linker<IDummy>.Resolve(null);
-                Assert.Fail("ArgumentException was not raised");
+                //Assert.Fail("ArgumentException was not raised");
             }
             catch (ArgumentException)
             { }
@@ -152,23 +150,23 @@ namespace WEAK.Test.Object
             try
             {
                 Linker<IDummy>.Resolve(string.Empty);
-                Assert.Fail("ArgumentException was not raised");
+                //Assert.Fail("ArgumentException was not raised");
             }
             catch (ArgumentException)
             { }
         }
 
-        [TestMethod]
+        [Fact]
         public void ResolveTestKey()
         {
             ADummy instance = Linker<ADummy>.Resolve("test");
 
-            Assert.AreSame(instance, Linker<ADummy>.Resolve("test"), "instances are not the same");
+            //Assert.AreSame(instance, Linker<ADummy>.Resolve("test"), "instances are not the same");
 
-            Assert.AreNotSame(instance, Linker<ADummy>.Resolve("test2"), "instances are the same");
+            //Assert.AreNotSame(instance, Linker<ADummy>.Resolve("test2"), "instances are the same");
         }
 
-        [TestMethod]
+        [Fact]
         public void ResolveTestReference()
         {
             ADummy instance = Linker<ADummy>.Resolve("test");
@@ -180,7 +178,7 @@ namespace WEAK.Test.Object
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
-            Assert.IsFalse(reference.IsAlive, "instance is still alive");
+            //Assert.IsFalse(reference.IsAlive, "instance is still alive");
         }
 
         #endregion

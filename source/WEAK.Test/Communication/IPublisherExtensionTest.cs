@@ -1,12 +1,11 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using NSubstitute;
 using WEAK.Communication;
+using Xunit;
 
 namespace WEAK.Test.Communication
 {
-    [TestClass]
     public class IPublisherExtensionTest
     {
         #region Types
@@ -42,7 +41,7 @@ namespace WEAK.Test.Communication
 
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void AutoSubscribe_Should_thow_ArgumentNullException_When_publisher_is_null()
         {
             IPublisher publisher = null;
@@ -53,7 +52,7 @@ namespace WEAK.Test.Communication
                 .WithProperty("ParamName", "publisher");
         }
 
-        [TestMethod]
+        [Fact]
         public void AutoSubscribe_Should_thow_NotSupportedException_When_method_has_invalid_numbers_of_parameter()
         {
             IPublisher publisher = Substitute.For<IPublisher>();
@@ -65,7 +64,7 @@ namespace WEAK.Test.Communication
                 .Throws<NotSupportedException>();
         }
 
-        [TestMethod]
+        [Fact]
         public void AutoSubscribe_Should_thow_NotSupportedException_When_method_has_a_non_void_return_type()
         {
             IPublisher publisher = Substitute.For<IPublisher>();
@@ -77,7 +76,7 @@ namespace WEAK.Test.Communication
                 .Throws<NotSupportedException>();
         }
 
-        [TestMethod]
+        [Fact]
         public void AutoSubscribe_Should_call_publisher_Subscribe_on_decorated_static_method()
         {
             bool done = false;
@@ -91,7 +90,7 @@ namespace WEAK.Test.Communication
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void AutoSubscribe_target_Should_thow_ArgumentNullException_When_publisher_is_null()
         {
             IPublisher publisher = null;
@@ -103,7 +102,7 @@ namespace WEAK.Test.Communication
                 .WithProperty("ParamName", "publisher");
         }
 
-        [TestMethod]
+        [Fact]
         public void AutoSubscribe_target_Should_thow_ArgumentNullException_When_target_is_null()
         {
             IPublisher publisher = Substitute.For<IPublisher>();
@@ -115,7 +114,7 @@ namespace WEAK.Test.Communication
                 .WithProperty("ParamName", "target");
         }
 
-        [TestMethod]
+        [Fact]
         public void AutoSubscribe_target_Should_call_publisher_Subscribe_on_decorated_instance_method()
         {
             bool done = false;
@@ -130,7 +129,7 @@ namespace WEAK.Test.Communication
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void AutoSubscribe_target_Should_call_publisher_Subscribe_on_decorated_method_from_base_class()
         {
             bool done = false;

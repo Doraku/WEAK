@@ -1,14 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using WEAK.Object;
+using Xunit;
 
 namespace WEAK.Test.Object
 {
-    [TestClass]
     public class ReferenceManagerTest
     {
         #region Types
@@ -39,25 +34,25 @@ namespace WEAK.Test.Object
 
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void GetTestNull()
         {
             try
             {
                 ReferenceManager<string, Dummy>.Get(null);
-                Assert.Fail("ArgumentNullException was not raised");
+                //Assert.Fail("ArgumentNullException was not raised");
             }
             catch (ArgumentNullException)
             { }
         }
 
-        [TestMethod]
+        [Fact]
         public void GetOrCreateTestNull()
         {
             try
             {
                 ReferenceManager<string, Dummy>.GetOrCreate(null);
-                Assert.Fail("ArgumentNullException was not raised");
+                //Assert.Fail("ArgumentNullException was not raised");
             }
             catch (ArgumentNullException)
             { }
@@ -65,25 +60,25 @@ namespace WEAK.Test.Object
             try
             {
                 ReferenceManager<string, Dummy>.GetOrCreate(string.Empty, null);
-                Assert.Fail("ArgumentNullException was not raised");
+                //Assert.Fail("ArgumentNullException was not raised");
             }
             catch (ArgumentNullException)
             { }
         }
 
-        [TestMethod]
+        [Fact]
         public void ReleaseTestNull()
         {
             try
             {
                 ReferenceManager<string, Dummy>.Release(null);
-                Assert.Fail("ArgumentNullException was not raised");
+                //Assert.Fail("ArgumentNullException was not raised");
             }
             catch (ArgumentNullException)
             { }
         }
 
-        [TestMethod]
+        [Fact]
         public void TestReference()
         {
             Dummy instance = ReferenceManager<string, Dummy>.GetOrCreate("TestReference");
@@ -94,17 +89,17 @@ namespace WEAK.Test.Object
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
-            Assert.IsFalse(reference.IsAlive, "instance still alive");
+            //Assert.IsFalse(reference.IsAlive, "instance still alive");
         }
 
-        [TestMethod]
+        [Fact]
         public void GetOrCreateTest()
         {
             Dummy instance = ReferenceManager<string, Dummy>.GetOrCreate("GetOrCreateTest");
             WeakReference reference = new WeakReference(instance);
 
-            Assert.IsNotNull(instance, "instance is null");
-            Assert.AreSame(instance, ReferenceManager<string, Dummy>.GetOrCreate("GetOrCreateTest"));
+            //Assert.IsNotNull(instance, "instance is null");
+            //Assert.AreSame(instance, ReferenceManager<string, Dummy>.GetOrCreate("GetOrCreateTest"));
 
             instance = null;
 
@@ -113,40 +108,40 @@ namespace WEAK.Test.Object
 
             instance = ReferenceManager<string, Dummy>.GetOrCreate("GetOrCreateTest");
 
-            Assert.AreNotSame(instance, reference.Target, "instances are the same");
+            //Assert.AreNotSame(instance, reference.Target, "instances are the same");
         }
 
-        [TestMethod]
+        [Fact]
         public void GetOrCreateTestCreator()
         {
             Dummy instance = ReferenceManager<string, Dummy>.GetOrCreate("GetOrCreateTestCreator", (k) => new Dummy(k));
 
-            Assert.IsNotNull(instance, "instance is null");
-            Assert.AreEqual(instance.Field, "GetOrCreateTestCreator");
+            //Assert.IsNotNull(instance, "instance is null");
+            //Assert.AreEqual(instance.Field, "GetOrCreateTestCreator");
         }
 
-        [TestMethod]
+        [Fact]
         public void GetTest()
         {
             Dummy instance = ReferenceManager<string, Dummy>.Get("GetTest");
 
-            Assert.IsNull(instance, "instance is not null");
+            //Assert.IsNull(instance, "instance is not null");
 
             instance = ReferenceManager<string, Dummy>.GetOrCreate("GetTest");
 
-            Assert.AreSame(instance, ReferenceManager<string, Dummy>.Get("GetTest"));
+            //Assert.AreSame(instance, ReferenceManager<string, Dummy>.Get("GetTest"));
         }
 
-        [TestMethod]
+        [Fact]
         public void ReleaseTest()
         {
             Dummy instance = ReferenceManager<string, Dummy>.GetOrCreate("ReleaseTest");
 
-            Assert.IsNotNull(instance, "instance is null");
+            //Assert.IsNotNull(instance, "instance is null");
 
-            Assert.AreSame(instance, ReferenceManager<string, Dummy>.Release("ReleaseTest"), "instances are not the same");
+            //Assert.AreSame(instance, ReferenceManager<string, Dummy>.Release("ReleaseTest"), "instances are not the same");
 
-            Assert.IsNull(ReferenceManager<string, Dummy>.Get("ReleaseTest"));
+            //Assert.IsNull(ReferenceManager<string, Dummy>.Get("ReleaseTest"));
         }
 
         #endregion

@@ -3,19 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using NSubstitute;
 using WEAK.Input;
+using Xunit;
 
 namespace WEAK.Test.Input
 {
-    [TestClass]
     public class ICollectionExtensionTest
     {
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void ToUnDo_Should_throw_ArgumentNullException_When_source_is_null()
         {
             ICollection<int> source = null;
@@ -26,7 +25,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void ToUnDo_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             ICollection<int> source = Substitute.For<ICollection<int>>();
@@ -37,7 +36,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void ToUnDo_Should_return_an_ICollection()
         {
             ICollection<int> source = Substitute.For<ICollection<int>>();
@@ -46,7 +45,7 @@ namespace WEAK.Test.Input
             Check.That(source.ToUnDo(manager)).IsNotNull();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_Add_Should_Add()
         {
             ICollection<object> source = Substitute.For<ICollection<object>>();
@@ -65,7 +64,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_Clear_Should_Clear()
         {
             ICollection<object> source = Substitute.For<ICollection<object>>();
@@ -83,7 +82,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_Contains_Should_return_Contains()
         {
             ICollection<object> source = Substitute.For<ICollection<object>>();
@@ -97,7 +96,7 @@ namespace WEAK.Test.Input
             Check.That(unDoCollection.Contains(value)).IsEqualTo(source.Contains(value));
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_CopyTo_Should_CopyTo()
         {
             ICollection<object> source = Substitute.For<ICollection<object>>();
@@ -116,7 +115,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_Count_Should_return_Count()
         {
             ICollection<object> source = Substitute.For<ICollection<object>>();
@@ -129,7 +128,7 @@ namespace WEAK.Test.Input
             Check.That(unDoCollection.Count).IsEqualTo(source.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_IsReadOnly_Should_return_IsReadOnly()
         {
             ICollection<object> source = Substitute.For<ICollection<object>>();
@@ -142,7 +141,7 @@ namespace WEAK.Test.Input
             Check.That(unDoCollection.IsReadOnly).IsEqualTo(source.IsReadOnly);
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_Remove_Should_return_Remove()
         {
             ICollection<object> source = Substitute.For<ICollection<object>>();
@@ -158,7 +157,7 @@ namespace WEAK.Test.Input
             Check.That(unDoCollection.Remove(value)).IsEqualTo(source.Remove(value));
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_GetEnumerator_T_Should_return_GetEnumerator_T()
         {
             ICollection<object> source = Substitute.For<ICollection<object>>();
@@ -173,7 +172,7 @@ namespace WEAK.Test.Input
             Check.That(unDoCollection.GetEnumerator()).IsEqualTo(source.GetEnumerator());
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_GetEnumerator_Should_return_GetEnumerator()
         {
             ICollection<object> source = Substitute.For<ICollection<object>>();
@@ -187,7 +186,7 @@ namespace WEAK.Test.Input
             Check.That((unDoCollection as IEnumerable).GetEnumerator()).IsEqualTo((source as IEnumerable).GetEnumerator());
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_CollectionChanged_add_Should_add_CollectionChanged()
         {
             ICollection<object> source = Substitute.For<ICollection<object>, INotifyCollectionChanged>();
@@ -206,7 +205,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_CollectionChanged_remove_Should_remove_CollectionChanged()
         {
             ICollection<object> source = Substitute.For<ICollection<object>, INotifyCollectionChanged>();
@@ -225,7 +224,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_PropertyChanged_add_Should_add_PropertyChanged()
         {
             ICollection<object> source = Substitute.For<ICollection<object>, INotifyPropertyChanged>();
@@ -244,7 +243,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoCollection_PropertyChanged_remove_Should_remove_PropertyChanged()
         {
             ICollection<object> source = Substitute.For<ICollection<object>, INotifyPropertyChanged>();

@@ -3,14 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using NSubstitute;
 using WEAK.Communication;
+using Xunit;
 
 namespace WEAK.Test.Communication
 {
-    [TestClass]
     public class PublisherTest
     {
         #region Types
@@ -38,7 +37,7 @@ namespace WEAK.Test.Communication
 
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void Subscribe_Should_throw_ArgumentNullException_When_action_is_null()
         {
             using (IPublisher publisher = new Publisher())
@@ -51,7 +50,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Subscribe_Should_throw_ObjectDisposedException_When_disposed()
         {
             using (IPublisher publisher = new Publisher())
@@ -66,7 +65,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Publish_Should_throw_ObjectDisposedException_When_disposed()
         {
             using (IPublisher publisher = new Publisher())
@@ -79,7 +78,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Subscribe_Publish_Should_execute()
         {
             using (IPublisher publisher = new Publisher())
@@ -95,7 +94,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Subscribe_Publish_Should_not_execute()
         {
             using (IPublisher publisher = new Publisher())
@@ -113,7 +112,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Subscribe_Publish_static_Should_execute()
         {
             using (IPublisher publisher = new Publisher())
@@ -126,7 +125,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Subscribe_Publish_Async_Should_execute()
         {
             using (IPublisher publisher = new Publisher())
@@ -142,7 +141,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Subscribe_Publish_LongRunning_Should_execute()
         {
             using (IPublisher publisher = new Publisher())
@@ -158,7 +157,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Subscribe_Publish_Context_Should_execute()
         {
             SynchronizationContext context = Substitute.For<SynchronizationContext>();
@@ -180,7 +179,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Subscribe_Publish_Context_Aync_Should_execute()
         {
             SynchronizationContext context = Substitute.For<SynchronizationContext>();
@@ -202,7 +201,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Subscribe_WeakReference_Should_not_keep_alive()
         {
             using (IPublisher publisher = new Publisher())
@@ -227,7 +226,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Publish_Should_not_execute_When_subscription_is_disposed()
         {
             using (IPublisher publisher = new Publisher())
@@ -242,7 +241,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Publish_Should_execute_on_derived_types()
         {
             using (IPublisher publisher = new Publisher())
@@ -258,7 +257,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Publish_Should_execute_on_implemented_interfaces()
         {
             using (IPublisher publisher = new Publisher())
@@ -274,7 +273,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Publish_Should_execute_on_object_for_interfaces()
         {
             using (IPublisher publisher = new Publisher())
@@ -290,7 +289,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod, TestCategory("Performance")]
+        [Fact, Trait("Category", "Performance")]
         public void Publish_None_Performance()
         {
             bool temp = false;
@@ -318,7 +317,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod, TestCategory("Performance")]
+        [Fact, Trait("Category", "Performance")]
         public void Publish_WeakReference_Performance()
         {
             object temp = new object();
@@ -345,7 +344,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod, TestCategory("Performance")]
+        [Fact, Trait("Category", "Performance")]
         public void Subscribe_None_Performance()
         {
             using (IPublisher publisher = new Publisher())
@@ -367,7 +366,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod, TestCategory("Performance")]
+        [Fact, Trait("Category", "Performance")]
         public void Subscribe_WeakReference_Performance()
         {
             using (IPublisher publisher = new Publisher())
@@ -389,7 +388,7 @@ namespace WEAK.Test.Communication
             }
         }
 
-        [TestMethod, TestCategory("Memory")]
+        [Fact, Trait("Category", "Memory")]
         public void Subscribe_Memory()
         {
             Console.WriteLine($"memory before: {GC.GetTotalMemory(true) / 1024}");

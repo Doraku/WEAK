@@ -1,0 +1,16 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+
+    <PackageReleaseNotes>Beta version</PackageReleaseNotes>
+    
+    <Authors>Paillat Laszlo</Authors>
+    <Copyright>Copyright © 2015-2017</Copyright>
+    
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\WEAK.snk</AssemblyOriginatorKeyFile>
+    
+    <PackageProjectUrl>https://weak.codeplex.com</PackageProjectUrl>
+    <PackageLicenseUrl>https://weak.codeplex.com/license</PackageLicenseUrl>
+  </PropertyGroup>
+</Project>

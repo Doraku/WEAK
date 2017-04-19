@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using NSubstitute;
 using WEAK.Input;
+using Xunit;
 
 namespace WEAK.Test.Input
 {
-    [TestClass]
     public class ListUnDoTest
     {
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void ListUnDo_Should_throw_ArgumentNullException_When_source_is_null()
         {
             Check
@@ -21,7 +20,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_Should_insert_element_to_source_When_isAdd_is_true()
         {
             int index = 42;
@@ -39,7 +38,7 @@ namespace WEAK.Test.Input
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Do_Should_remove_element_from_source_When_isAdd_is_false()
         {
             int index = 42;
@@ -56,7 +55,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void Undo_Should_remove_element_from_source_When_isAdd_is_true()
         {
             int index = 42;
@@ -73,7 +72,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void Undo_Should_insert_element_to_source_When_isAdd_is_false()
         {
             int index = 42;

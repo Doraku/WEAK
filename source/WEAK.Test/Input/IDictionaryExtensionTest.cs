@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using NSubstitute;
 using WEAK.Input;
+using Xunit;
 
 namespace WEAK.Test.Input
 {
-    [TestClass]
     public class IDictionaryExtensionTest
     {
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void ToUnDo_Should_throw_ArgumentNullException_When_source_is_null()
         {
             IDictionary<object, object> source = null;
@@ -23,7 +22,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "source");
         }
 
-        [TestMethod]
+        [Fact]
         public void ToUnDo_Should_throw_ArgumentNullException_When_manager_is_null()
         {
             IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
@@ -34,7 +33,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "manager");
         }
 
-        [TestMethod]
+        [Fact]
         public void ToUnDo_Should_return_an_IDictionary()
         {
             IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
@@ -43,7 +42,7 @@ namespace WEAK.Test.Input
             Check.That(source.ToUnDo(manager)).IsNotNull();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoDictionary_Add_key_Should_Add_key()
         {
             IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
@@ -63,7 +62,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoDictionary_ContainsKey_Should_return_ContainsKey()
         {
             IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
@@ -77,7 +76,7 @@ namespace WEAK.Test.Input
             Check.That(unDoDictionary.ContainsKey(key)).IsEqualTo(source.ContainsKey(key));
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoDictionary_Remove_key_Should_return_Remove_key()
         {
             IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
@@ -94,7 +93,7 @@ namespace WEAK.Test.Input
             Check.That(unDoDictionary.Remove(key)).IsEqualTo(source.Remove(key));
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoDictionary_TryGetValue_Should_return_TryGetValue()
         {
             IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
@@ -112,7 +111,7 @@ namespace WEAK.Test.Input
             Check.That(value1).IsEqualTo(value2);
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoDictionary_this_key_get_Should_return_this_key_get()
         {
             IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
@@ -127,7 +126,7 @@ namespace WEAK.Test.Input
             Check.That(unDoDictionary[key]).IsEqualTo(source[key]);
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoDictionary_this_key_set_Should_set_this_key_When_TryGetValue_is_true()
         {
             IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
@@ -148,7 +147,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoDictionary_this_key_set_Should_set_this_key_When_TryGetValue_is_false()
         {
             IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
@@ -169,7 +168,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoDictionary_Keys_Should_return_Keys()
         {
             IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();
@@ -183,7 +182,7 @@ namespace WEAK.Test.Input
             Check.That(unDoDictionary.Keys).IsEqualTo(source.Keys);
         }
 
-        [TestMethod]
+        [Fact]
         public void UnDoDictionary_Values_Should_return_Values()
         {
             IDictionary<object, object> source = Substitute.For<IDictionary<object, object>>();

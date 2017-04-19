@@ -1,17 +1,16 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using NSubstitute;
 using WEAK.Input;
+using Xunit;
 
 namespace WEAK.Test.Input
 {
-    [TestClass]
     public class UnDoManagerTest
     {
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void Version_Should_incremente_When_a_command_is_done()
         {
             IUnDoManager manager = new UnDoManager();
@@ -23,7 +22,7 @@ namespace WEAK.Test.Input
             Check.That(manager.Version).IsGreaterThan(oldVersion);
         }
 
-        [TestMethod]
+        [Fact]
         public void Version_Should_return_old_value_When_a_command_is_undone()
         {
             IUnDoManager manager = new UnDoManager();
@@ -36,7 +35,7 @@ namespace WEAK.Test.Input
             Check.That(manager.Version).IsEqualTo(oldVersion);
         }
 
-        [TestMethod]
+        [Fact]
         public void Version_Should_return_last_value_When_a_command_is_redone()
         {
             IUnDoManager manager = new UnDoManager();
@@ -51,7 +50,7 @@ namespace WEAK.Test.Input
             Check.That(manager.Version).IsEqualTo(lastVersion);
         }
 
-        [TestMethod]
+        [Fact]
         public void CanUndo_Should_return_false_When_no_command_has_been_done()
         {
             IUnDoManager manager = new UnDoManager();
@@ -59,7 +58,7 @@ namespace WEAK.Test.Input
             Check.That(manager.CanUndo).IsFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void CanUndo_Should_return_true_When_a_command_has_been_done()
         {
             IUnDoManager manager = new UnDoManager();
@@ -69,7 +68,7 @@ namespace WEAK.Test.Input
             Check.That(manager.CanUndo).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void CanUndo_Should_return_false_When_all_commands_have_been_undone()
         {
             IUnDoManager manager = new UnDoManager();
@@ -80,7 +79,7 @@ namespace WEAK.Test.Input
             Check.That(manager.CanUndo).IsFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void CanRedo_Should_return_false_When_no_command_has_been_done()
         {
             IUnDoManager manager = new UnDoManager();
@@ -88,7 +87,7 @@ namespace WEAK.Test.Input
             Check.That(manager.CanRedo).IsFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void CanRedo_Should_return_true_When_a_command_has_been_undone()
         {
             IUnDoManager manager = new UnDoManager();
@@ -99,7 +98,7 @@ namespace WEAK.Test.Input
             Check.That(manager.CanRedo).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void CanRedo_Should_return_false_When_all_commands_have_been_redone()
         {
             IUnDoManager manager = new UnDoManager();
@@ -111,7 +110,7 @@ namespace WEAK.Test.Input
             Check.That(manager.CanRedo).IsFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void Clear_Should_clear_undone_and_done_history()
         {
             IUnDoManager manager = new UnDoManager();
@@ -129,7 +128,7 @@ namespace WEAK.Test.Input
             Check.That(manager.CanRedo).IsFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_Should_throw_ArgumentNullException_When_command_is_null()
         {
             IUnDoManager manager = new UnDoManager();
@@ -140,7 +139,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "command");
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_Should_Do()
         {
             IUnDoManager manager = new UnDoManager();
@@ -154,7 +153,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_Should_not_add_command_in_history_when_a_group_is_going_on()
         {
             IUnDoManager manager = new UnDoManager();
@@ -169,7 +168,7 @@ namespace WEAK.Test.Input
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void BeginGroup_Should_return_an_IDisposable()
         {
             IUnDoManager manager = new UnDoManager();
@@ -177,7 +176,7 @@ namespace WEAK.Test.Input
             Check.That(manager.BeginGroup()).IsNotNull();
         }
 
-        [TestMethod]
+        [Fact]
         public void BeginGroup_Should_add_commands_as_one_operation_in_history_once_disposed()
         {
             IUnDoManager manager = new UnDoManager();
@@ -197,7 +196,7 @@ namespace WEAK.Test.Input
             Check.That(manager.Version).IsEqualTo(version);
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_Should_clear_undone_history()
         {
             IUnDoManager manager = new UnDoManager();
@@ -213,7 +212,7 @@ namespace WEAK.Test.Input
             Check.That(manager.CanRedo).IsFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void Undo_Should_throw_InvalidOperationException_When_CanUndo_is_false()
         {
             IUnDoManager manager = new UnDoManager();
@@ -224,7 +223,7 @@ namespace WEAK.Test.Input
                 .WithMessage("There is no action to undo.");
         }
 
-        [TestMethod]
+        [Fact]
         public void Undo_Should_throw_InvalidOperationException_When_a_group_operation_is_going_on()
         {
             IUnDoManager manager = new UnDoManager();
@@ -238,7 +237,7 @@ namespace WEAK.Test.Input
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Undo_Should_Undo()
         {
             IUnDoManager manager = new UnDoManager();
@@ -253,7 +252,7 @@ namespace WEAK.Test.Input
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void Redo_Should_throw_InvalidOperationException_When_CanRedo_is_false()
         {
             IUnDoManager manager = new UnDoManager();
@@ -264,7 +263,7 @@ namespace WEAK.Test.Input
                 .WithMessage("There is no action to redo.");
         }
 
-        [TestMethod]
+        [Fact]
         public void Redo_Should_throw_InvalidOperationException_When_a_group_operation_is_going_on()
         {
             IUnDoManager manager = new UnDoManager();
@@ -278,7 +277,7 @@ namespace WEAK.Test.Input
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Redo_Should_Redo()
         {
             IUnDoManager manager = new UnDoManager();

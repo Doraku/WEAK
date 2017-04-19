@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using NSubstitute;
 using WEAK.Input;
+using Xunit;
 
 namespace WEAK.Test.Input
 {
-    [TestClass]
     public class GroupUnDoTest
     {
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void GroupUnDo_Should_throw_ArgumentNullException_When_commands_is_null()
         {
             Check
@@ -21,7 +20,7 @@ namespace WEAK.Test.Input
                 .WithProperty("ParamName", "commands");
         }
 
-        [TestMethod]
+        [Fact]
         public void GroupUnDo_Should_throw_ArgumentNullException_When_commands_contains_null()
         {
             ArgumentException expectedException = new ArgumentException("IUnDo sequence contains null elements.", "commands");
@@ -34,7 +33,7 @@ namespace WEAK.Test.Input
                 .WithMessage(expectedException.Message);
         }
 
-        [TestMethod]
+        [Fact]
         public void Do_Should_execute_children_Do()
         {
             List<IUnDo> done = new List<IUnDo>();
@@ -54,7 +53,7 @@ namespace WEAK.Test.Input
             Check.That(done).ContainsExactly(undo1, undo2);
         }
 
-        [TestMethod]
+        [Fact]
         public void Undo_Should_execute_children_Undo_in_reverse()
         {
             List<IUnDo> done = new List<IUnDo>();

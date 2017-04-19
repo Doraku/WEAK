@@ -1,16 +1,15 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using WEAK.Helper;
+using Xunit;
 
 namespace WEAK.Test.Helper
 {
-    [TestClass]
     public class ObjectExtensionTest
     {
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void CheckForArgumentNullException_Should_throw_ArgumentNullException_When_param_is_null()
         {
             object param = null;
@@ -21,7 +20,7 @@ namespace WEAK.Test.Helper
                 .WithProperty("ParamName", nameof(param));
         }
 
-        [TestMethod]
+        [Fact]
         public void CheckForArgumentException_Should_throw_ArgumentNullException_When_validation_is_null()
         {
             object param = new object();
@@ -32,7 +31,7 @@ namespace WEAK.Test.Helper
                 .WithProperty("ParamName", "validation");
         }
 
-        [TestMethod]
+        [Fact]
         public void CheckForArgumentException_Should_throw_ArgumentException_When_param_is_not_validated()
         {
             object param = new object();
@@ -46,7 +45,7 @@ namespace WEAK.Test.Helper
                 .And.WithMessage(expectedException.Message);
         }
 
-        [TestMethod]
+        [Fact]
         public void CheckForArgumentException_Should_return_param()
         {
             object param = new object();
@@ -56,7 +55,7 @@ namespace WEAK.Test.Helper
                 .IsEqualTo(param);
         }
 
-        [TestMethod]
+        [Fact]
         public void CheckForArgumentNullException_Should_return_param()
         {
             object param = new object();

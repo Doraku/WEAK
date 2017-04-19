@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using WEAK.Helper;
+using Xunit;
 
 namespace WEAK.Test.Helper
 {
-    [TestClass]
     public class DelegateExtensionTest
     {
         #region Types
@@ -70,7 +69,7 @@ namespace WEAK.Test.Helper
 
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void ToWeak_Should_throw_ArgumentException_When_delegateAction_is_not_a_delegate()
         {
             object delegateAction = new object();
@@ -78,7 +77,7 @@ namespace WEAK.Test.Helper
             Check.ThatCode(() => delegateAction.ToWeak()).Throws<ArgumentException>();
         }
 
-        [TestMethod]
+        [Fact]
         public void ToWeak_Should_return_null_When_delegateAction_is_a_null_delegate()
         {
             Action delegateAction = null;
@@ -86,7 +85,7 @@ namespace WEAK.Test.Helper
             Check.That<Action>(delegateAction.ToWeak()).IsNull();
         }
 
-        [TestMethod]
+        [Fact]
         public void ToWeak_Should_return_delegateAction_When_delegateAction_is_a_static_method()
         {
             DelegateTest.StaticAction();
@@ -95,7 +94,7 @@ namespace WEAK.Test.Helper
             Check.That<Action>(delegateAction.ToWeak()).IsEqualTo(delegateAction);
         }
 
-        [TestMethod]
+        [Fact]
         public void ToWeak_Should_throw_ArgumentException_When_delegateAction_is_a_value_type_method()
         {
             int target = 42;
@@ -104,7 +103,7 @@ namespace WEAK.Test.Helper
             Check.ThatCode(() => delegateAction.ToWeak()).Throws<ArgumentException>();
         }
 
-        [TestMethod]
+        [Fact]
         public void ToWeak_Should_return_a_weak_delegate_When_delegateAction_is_an_instance_method()
         {
             bool done = false;
@@ -130,7 +129,7 @@ namespace WEAK.Test.Helper
             Check.That(done).IsFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void ToWeak_Should_return_delegateAction_When_delegateAction_is_a_weak_delegate()
         {
             DelegateTest test = new DelegateTest();
@@ -139,7 +138,7 @@ namespace WEAK.Test.Helper
             Check.That<Action>(delegateAction.ToWeak()).IsEqualTo(delegateAction);
         }
 
-        [TestMethod]
+        [Fact]
         public void WeakDelegate_Should_behave_like_expected_Action()
         {
             bool done = false;
@@ -151,7 +150,7 @@ namespace WEAK.Test.Helper
             Check.That(done).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void WeakDelegate_Should_behave_like_expected_Func()
         {
             DelegateTest test = new DelegateTest(b => b);
@@ -160,7 +159,7 @@ namespace WEAK.Test.Helper
             Check.That(delegateAction(true)).IsTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void WeakDelegate_Should_behave_not_hold_strong_reference()
         {
             bool done = false;
@@ -186,7 +185,7 @@ namespace WEAK.Test.Helper
             Check.That(reference.IsAlive).IsFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void WeakDelegate_Should_create_weak_of_all_invocation_list()
         {
             bool done = false;
@@ -210,7 +209,7 @@ namespace WEAK.Test.Helper
             Check.That(done).IsFalse();
         }
 
-        [TestMethod, TestCategory("Performance")]
+        [Fact, Trait("Category", "Performance")]
         public void WeakDelegate_call_Performance()
         {
             bool temp = false;
@@ -241,7 +240,7 @@ namespace WEAK.Test.Helper
             Console.WriteLine($"weak to instance ratio: {(double)wWeak.ElapsedTicks / wInstance.ElapsedTicks}");
         }
 
-        [TestMethod, TestCategory("Performance")]
+        [Fact, Trait("Category", "Performance")]
         public void WeakDelegate_create_Performance()
         {
             DelegateTest test = new DelegateTest(value => { });

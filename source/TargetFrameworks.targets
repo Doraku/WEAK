@@ -1,0 +1,5 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TargetFrameworks>net46;net45</TargetFrameworks>
+  </PropertyGroup>
+</Project>

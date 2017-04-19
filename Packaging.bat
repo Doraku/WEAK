@@ -1,39 +1,20 @@
 call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsMSBuildCmd.bat" > NUL
 
-DEL *.nupkg
+msbuild /t:Clean /p:Configuration=Release .\source\WEAK.sln
+msbuild /t:Build /p:Configuration=Release .\source\WEAK.sln
 
-msbuild /t:Clean,Build /p:Configuration=net45 .\source\WEAK.sln
-msbuild /t:Clean,Build /p:Configuration=net46 .\source\WEAK.sln
+C:\Users\Doraku\.nuget\packages\xunit.runner.console\2.2.0\tools\xunit.console.exe .\source\WEAK.Test\bin\Release\net45\WEAK.Test.dll -notrait "Category=Performance" -notrait "Category=Memory" -html result_weak_net45.html
 
-mstest /testcontainer:.\source\WEAK.Test\bin\net45\WEAK.Test.dll /noresults /detail:errormessage /category:"!Performance&!Memory" /usestderr 2> error.txt
 @ECHO off
 FOR /f %%i in ("error.txt") do SET size=%%~zi
 IF %size% GTR 0 GOTO :end
 @ECHO on
 
-mstest /testcontainer:.\source\WEAK.Test\bin\net46\WEAK.Test.dll /noresults /detail:errormessage /category:"!Performance&!Memory" /usestderr 2> error.txt
-@ECHO off
-FOR /f %%i in ("error.txt") do SET size=%%~zi
-IF %size% GTR 0 GOTO :end
-@ECHO on
-
-mstest /testcontainer:.\source\WEAK.Windows.Test\bin\net45\WEAK.Windows.Test.dll /noresults /detail:errormessage /category:"!Performance&!Memory" /usestderr 2> error.txt
-@ECHO off
-FOR /f %%i in ("error.txt") do SET size=%%~zi
-IF %size% GTR 0 GOTO :end
-@ECHO on
-mstest /testcontainer:.\source\WEAK.Windows.Test\bin\net46\WEAK.Windows.Test.dll /noresults /detail:errormessage /category:"!Performance&!Memory" /usestderr 2> error.txt
-@ECHO off
-FOR /f %%i in ("error.txt") do SET size=%%~zi
-IF %size% GTR 0 GOTO :end
-@ECHO on
-
-nuget pack .\source\WEAK\WEAK.csproj -properties Configuration=net46
-nuget pack .\source\WEAK.Windows\WEAK.Windows.csproj -properties Configuration=net46
+msbuild /t:Pack /p:Configuration=Release .\source\WEAK.sln
 
 :end
-
+@ECHO off
 rd TestResults /s /q
 
-FOR /f %%i in ("error.txt") do SET size=%%~zi
-IF %size% GTR 0 more "error.txt"
+@ECHO on
+more "error.txt"

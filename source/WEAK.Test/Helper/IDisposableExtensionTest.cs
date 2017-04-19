@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using NSubstitute;
 using WEAK.Helper;
+using Xunit;
 
 namespace WEAK.Test.Helper
 {
-    [TestClass]
     public class IDisposableExtensionTest
     {
         #region Methods
 
-        [TestMethod]
+        [Fact]
         public void Merge_Should_throw_ArgumentNullException_When_disposables_is_null()
         {
             IEnumerable<IDisposable> disposables = null;
@@ -23,7 +22,7 @@ namespace WEAK.Test.Helper
                 .WithProperty("ParamName", "disposables");
         }
 
-        [TestMethod]
+        [Fact]
         public void Merge_Should_throw_ArgumentNullException_When_disposables_param_is_null()
         {
             IDisposable disposable = null;
@@ -34,7 +33,7 @@ namespace WEAK.Test.Helper
                 .WithProperty("ParamName", "disposables");
         }
 
-        [TestMethod]
+        [Fact]
         public void Merge_Should_return_an_IDisposable()
         {
             IDisposable disposable = Substitute.For<IDisposable>();
@@ -42,7 +41,7 @@ namespace WEAK.Test.Helper
             Check.That(disposable.Merge()).IsNotNull();
         }
 
-        [TestMethod]
+        [Fact]
         public void DisposableGroup_Dispose_Should_dispose_children_in_reverse_order()
         {
             List<IDisposable> disposed = new List<IDisposable>();
@@ -65,7 +64,7 @@ namespace WEAK.Test.Helper
                 .ContainsExactly(disposable3, disposable2, disposable1);
         }
 
-        [TestMethod]
+        [Fact]
         public void DisposableGroup_Dispose_Should_dispose_only_once()
         {
             int disposedCount = 0;
@@ -83,7 +82,7 @@ namespace WEAK.Test.Helper
                 .IsEqualTo(1);
         }
 
-        [TestMethod]
+        [Fact]
         public void Merge_Should_merge_already_merged_IDisposable()
         {
             List<IDisposable> disposed = new List<IDisposable>();
