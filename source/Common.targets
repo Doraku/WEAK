@@ -10,7 +10,7 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\WEAK.snk</AssemblyOriginatorKeyFile>
     
-    <PackageProjectUrl>https://weak.codeplex.com</PackageProjectUrl>
-    <PackageLicenseUrl>https://weak.codeplex.com/license</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Doraku/WEAK</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/Doraku/WEAK/master/license.md</PackageLicenseUrl>
   </PropertyGroup>
 </Project>

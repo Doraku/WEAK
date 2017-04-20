@@ -5,10 +5,7 @@ VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{C869D584-C763-4C4E-9CE9-3D7A3D297AB3}"
 	ProjectSection(SolutionItems) = preProject
-		..\.gitignore = ..\.gitignore
 		Common.targets = Common.targets
-		..\Packaging.bat = ..\Packaging.bat
-		TargetFrameworks.targets = TargetFrameworks.targets
 		WEAK.snk = WEAK.snk
 	EndProjectSection
 EndProject

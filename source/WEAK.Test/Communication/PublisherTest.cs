@@ -137,7 +137,7 @@ namespace WEAK.Test.Communication
 
                 publisher.Publish(new object());
 
-                Check.That(waitHandle.WaitOne(1000)).IsTrue();
+                Check.That(waitHandle.WaitOne(10000)).IsTrue();
             }
         }
 
@@ -153,7 +153,7 @@ namespace WEAK.Test.Communication
 
                 publisher.Publish(new object());
 
-                Check.That(waitHandle.WaitOne(1000)).IsTrue();
+                Check.That(waitHandle.WaitOne(10000)).IsTrue();
             }
         }
 

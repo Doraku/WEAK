@@ -27,7 +27,7 @@ namespace WEAK.Test.Object
 
         #region Methods
 
-        public LinkerTest()
+        static LinkerTest()
         {
             Linker<IDummy>.Register<Dummy>(false);
             Linker<IDummySingleton>.Register<Dummy>(true);

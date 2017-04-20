@@ -101,7 +101,7 @@ namespace WEAK.Test.Object
 
         #region Methods
 
-        public FactoryTest()
+        static FactoryTest()
         {
             Linker<IDummy>.Register<Dummy>();
             Linker<ADummy>.Register<Dummy>();
