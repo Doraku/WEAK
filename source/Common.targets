@@ -11,6 +11,6 @@
     <AssemblyOriginatorKeyFile>..\WEAK.snk</AssemblyOriginatorKeyFile>
     
     <PackageProjectUrl>https://github.com/Doraku/WEAK</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/Doraku/WEAK/master/license.md</PackageLicenseUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/Doraku/WEAK/master/LICENSE.md</PackageLicenseUrl>
   </PropertyGroup>
 </Project>
