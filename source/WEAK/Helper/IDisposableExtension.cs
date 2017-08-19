@@ -84,10 +84,7 @@ namespace WEAK.Helper
         /// </summary>
         /// <param name="disposables">The instances to merge.</param>
         /// <returns>A single IDisposable.</returns>
-        public static IDisposable Merge(this IEnumerable<IDisposable> disposables)
-        {
-            return new DisposableGroup(disposables);
-        }
+        public static IDisposable Merge(this IEnumerable<IDisposable> disposables) => new DisposableGroup(disposables);
 
         /// <summary>
         /// Merges IDisposable instances into a single IDisposable.
@@ -97,10 +94,7 @@ namespace WEAK.Helper
         /// <param name="disposable">An instance to merge.</param>
         /// <param name="disposables">An array of instances to merge.</param>
         /// <returns>A single IDisposable.</returns>
-        public static IDisposable Merge(this IDisposable disposable, params IDisposable[] disposables)
-        {
-            return Merge(new[] { disposable }.Concat(disposables));
-        }
+        public static IDisposable Merge(this IDisposable disposable, params IDisposable[] disposables) => Merge(new[] { disposable }.Concat(disposables ?? Enumerable.Empty<IDisposable>()));
 
         #endregion
     }
