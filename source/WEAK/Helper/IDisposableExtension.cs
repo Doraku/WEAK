@@ -25,7 +25,7 @@ namespace WEAK.Helper
 
             public DisposableGroup(IEnumerable<IDisposable> disposables)
             {
-                _disposables = GetDisposables(disposables).ToArray();
+                _disposables = GetDisposables(disposables ?? Enumerable.Empty<IDisposable>()).ToArray();
 
                 _isDisposed = false;
             }
@@ -38,9 +38,9 @@ namespace WEAK.Helper
             {
                 foreach (IDisposable disposable in disposables)
                 {
-                    if (disposable is DisposableGroup)
+                    if (disposable is DisposableGroup group)
                     {
-                        foreach (IDisposable child in (disposable as DisposableGroup)._disposables)
+                        foreach (IDisposable child in group._disposables)
                         {
                             yield return child;
                         }
@@ -84,11 +84,8 @@ namespace WEAK.Helper
         /// </summary>
         /// <param name="disposables">The instances to merge.</param>
         /// <returns>A single IDisposable.</returns>
-        /// <exception cref="ArgumentNullException">disposables is null.</exception>
         public static IDisposable Merge(this IEnumerable<IDisposable> disposables)
         {
-            disposables.CheckForArgumentNullException(nameof(disposables));
-
             return new DisposableGroup(disposables);
         }
 
@@ -100,11 +97,8 @@ namespace WEAK.Helper
         /// <param name="disposable">An instance to merge.</param>
         /// <param name="disposables">An array of instances to merge.</param>
         /// <returns>A single IDisposable.</returns>
-        /// <exception cref="ArgumentNullException">disposables is null.</exception>
         public static IDisposable Merge(this IDisposable disposable, params IDisposable[] disposables)
         {
-            disposables.CheckForArgumentNullException(nameof(disposables));
-
             return Merge(new[] { disposable }.Concat(disposables));
         }
 

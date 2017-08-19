@@ -12,25 +12,25 @@ namespace WEAK.Test.Helper
         #region Methods
 
         [Fact]
-        public void Merge_Should_throw_ArgumentNullException_When_disposables_is_null()
+        public void Merge_Should_not_throw_When_disposables_is_null()
         {
             IEnumerable<IDisposable> disposables = null;
 
             Check
                 .ThatCode(() => disposables.Merge())
-                .Throws<ArgumentNullException>()
-                .WithProperty("ParamName", "disposables");
+                .Not
+                .Throws<Exception>();
         }
 
         [Fact]
-        public void Merge_Should_throw_ArgumentNullException_When_disposables_param_is_null()
+        public void Merge_Should_not_throw_When_disposables_param_is_null()
         {
             IDisposable disposable = null;
 
             Check
                 .ThatCode(() => disposable.Merge(null))
-                .Throws<ArgumentNullException>()
-                .WithProperty("ParamName", "disposables");
+                .Not
+                .Throws<Exception>();
         }
 
         [Fact]
